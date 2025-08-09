@@ -15,10 +15,11 @@ def update_mood():
     data = request.json
     mood = data.get('mood')
     date = data.get('date')
+    content = data.get('content')
 
     with open('../data/moods.csv', 'a') as f:
         csv_writer = csv.writer(f)
-        csv_writer.writerow([date, mood])
+        csv_writer.writerow([date, mood, content])
 
     return {
         'status': 'success'

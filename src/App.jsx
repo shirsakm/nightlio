@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MDArea from './components/MarkdownArea.jsx';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [selectedMood, setSelectedMood] = useState(null);
+  const markdownRef = useRef();
 
   const moods = [
     { label: "😢", value: 1 },
@@ -38,7 +38,7 @@ function App() {
           </span>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
         {moods.map(mood => (
           <button
             key={mood.value}
@@ -54,11 +54,12 @@ function App() {
           </button>
         ))}
       </div>
-      <MDArea />
+      <MDArea ref={markdownRef} />
       <div style={{ marginTop: '5rem' }}>
         <button
           onClick={() => {
             if (selectedMood) {
+              const markdownContent = markdownRef.current?.getMarkdown() || '';
               fetch('/api/mood', {
                 method: 'POST',
                 headers: {
@@ -67,6 +68,7 @@ function App() {
                 body: JSON.stringify({
                   mood: selectedMood,
                   date: new Date(currentTime * 1000).toLocaleDateString(),
+                  content: markdownContent,
                 })
               });
             }
