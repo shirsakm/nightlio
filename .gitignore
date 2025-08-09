@@ -30,3 +30,4 @@ instance/
 *.pyo
 *.pyd
 __pycache__/
+*.csv

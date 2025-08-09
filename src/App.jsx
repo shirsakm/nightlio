@@ -26,18 +26,20 @@ function App() {
 
   return (
     <>
-      <h1>
-        Nightlio
-      </h1>
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <span>
-          Nightly Mood Tracker
-        </span>
-        <span>
-          Recording for {new Date(currentTime * 1000).toLocaleDateString()}
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '5rem' }}>
+        <h1>
+          Nightlio
+        </h1>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <span>
+            Nightly Mood Tracker
+          </span>
+          <span>
+            Recording for {new Date(currentTime * 1000).toLocaleDateString()}
+          </span>
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+      <div style={{ display: 'flex', gap: '1rem' }}>
         {moods.map(mood => (
           <button
             key={mood.value}
@@ -52,6 +54,25 @@ function App() {
             {mood.label}
           </button>
         ))}
+      </div>
+      <div style={{ marginTop: '5rem' }}>
+        <button
+          onClick={() => {
+            if (selectedMood) {
+              fetch('/api/mood', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  mood: selectedMood,
+                  date: new Date(currentTime * 1000).toLocaleDateString(),
+                })
+              });
+            }
+          }}>
+          Submit
+        </button>
       </div>
     </>
   )
