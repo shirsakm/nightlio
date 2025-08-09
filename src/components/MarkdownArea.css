@@ -1,0 +1,14 @@
+/* Force your font on the TUI editor */
+.toastui-editor-contents {
+    font-family: "Roboto", sans-serif !important;
+}
+
+.toastui-editor-md-preview,
+.toastui-editor-md-preview-content {
+    font-family: "Roboto", sans-serif !important;
+}
+
+/* You can also change toolbar font if needed */
+.toastui-editor-defaultUI-toolbar {
+    font-family: "Roboto", sans-serif !important;
+}

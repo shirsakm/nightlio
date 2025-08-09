@@ -11,6 +11,8 @@
     "api": "cd api && venv/bin/flask run --no-debugger"
   },
   "dependencies": {
+    "@toast-ui/react-editor": "^3.2.3",
+    "@uiw/react-md-editor": "^4.0.8",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
