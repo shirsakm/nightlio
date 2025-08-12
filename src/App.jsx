@@ -168,8 +168,8 @@ function App() {
           {pastEntries.length === 0 ? (
             <p style={{ textAlign: 'center', color: '#666' }}>No entries yet. Create your first mood entry!</p>
           ) : (
-            pastEntries.map((entry, index) => (
-              <div key={index} style={{
+            pastEntries.map((entry) => (
+              <div key={entry.id || entry.date} style={{
                 border: '1px solid #eee',
                 borderRadius: '8px',
                 padding: '1rem',

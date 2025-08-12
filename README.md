@@ -8,7 +8,7 @@ A minimal daily journal app inspired by Daylio, built with React and Flask.
 - **Journal Entries**: Write detailed thoughts using a markdown editor
 - **History View**: Browse past entries with dates and moods
 - **Responsive Design**: Works great on mobile and desktop
-- **Data Persistence**: Entries saved to CSV file
+- **Data Persistence**: Entries saved to SQLite database
 
 ## Getting Started
 
@@ -49,11 +49,22 @@ The app will be available at `http://localhost:5173`
 
 1. **Create Entry**: Select your mood and write your thoughts
 2. **View History**: Click "View History" to see past entries
-3. **Data Storage**: All entries are saved in `data/moods.csv`
+3. **Data Storage**: All entries are saved in SQLite database (`data/nightlio.db`)
+4. **Migration**: If you have existing CSV data, run `npm run migrate` to convert it
 
 ## Tech Stack
 
-- **Frontend**: React, Vite, Toast UI Editor
-- **Backend**: Flask, Flask-CORS
-- **Storage**: CSV files
+- **Frontend**: React, Vite, MDXEditor, React Markdown
+- **Backend**: Flask, Flask-CORS, SQLite
+- **Storage**: SQLite database with proper schema
 - **Styling**: CSS with responsive design
+
+## API Endpoints
+
+- `GET /api/time` - Get current server time
+- `POST /api/mood` - Create new mood entry
+- `GET /api/moods` - Get all mood entries (supports date range filtering)
+- `GET /api/mood/<id>` - Get specific mood entry
+- `PUT /api/mood/<id>` - Update mood entry
+- `DELETE /api/mood/<id>` - Delete mood entry
+- `GET /api/statistics` - Get mood statistics and distribution
