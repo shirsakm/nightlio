@@ -50,7 +50,6 @@ The app will be available at `http://localhost:5173`
 1. **Create Entry**: Select your mood and write your thoughts
 2. **View History**: Click "View History" to see past entries
 3. **Data Storage**: All entries are saved in SQLite database (`data/nightlio.db`)
-4. **Migration**: If you have existing CSV data, run `npm run migrate` to convert it
 
 ## Tech Stack
 

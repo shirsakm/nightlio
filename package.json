@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "api": "cd api && python -m venv venv && venv/bin/pip install -r requirements.txt && venv/bin/flask run --no-debugger",
     "api:dev": "cd api && venv/bin/flask run --debug",
-    "migrate": "cd api && venv/bin/python migrate_csv_to_db.py"
+
   },
   "dependencies": {
     "@mdxeditor/editor": "^3.11.6",
