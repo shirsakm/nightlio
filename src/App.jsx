@@ -47,21 +47,21 @@ function App() {
     <>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ 
-          color: '#667eea', 
+          color: '#5E81AC', 
           marginBottom: '0.5rem',
           fontSize: '2.5rem'
         }}>
           Nightlio
         </h1>
         <p style={{ 
-          color: '#666', 
+          color: '#434C5E', 
           margin: '0.5rem 0',
           fontSize: '1.1rem'
         }}>
           Nightly Mood Tracker
         </p>
         <p style={{ 
-          color: '#888', 
+          color: '#4C566A', 
           margin: '0',
           fontSize: '0.9rem'
         }}>
@@ -75,12 +75,13 @@ function App() {
             }}
             style={{
               padding: '0.5rem 1rem',
-              backgroundColor: '#667eea',
-              color: 'white',
+              backgroundColor: '#5E81AC',
+              color: '#ECEFF4',
               border: 'none',
               borderRadius: '20px',
               cursor: 'pointer',
-              fontSize: '0.9rem'
+              fontSize: '0.9rem',
+              transition: 'all 0.2s ease'
             }}
           >
             {showHistory ? 'New Entry' : 'View History'}
@@ -144,11 +145,12 @@ function App() {
               style={{
                 padding: '1rem 2rem',
                 fontSize: '1.1rem',
-                backgroundColor: selectedMood ? '#4CAF50' : '#ccc',
-                color: 'white',
+                backgroundColor: selectedMood ? '#A3BE8C' : '#4C566A',
+                color: '#ECEFF4',
                 border: 'none',
                 borderRadius: '8px',
-                cursor: selectedMood && !isSubmitting ? 'pointer' : 'not-allowed'
+                cursor: selectedMood && !isSubmitting ? 'pointer' : 'not-allowed',
+                transition: 'all 0.2s ease'
               }}>
               {isSubmitting ? 'Saving...' : 'Submit Entry'}
             </button>
@@ -156,7 +158,8 @@ function App() {
               <div style={{ 
                 marginTop: '1rem', 
                 padding: '0.5rem',
-                color: submitMessage.includes('success') ? 'green' : 'red'
+                color: submitMessage.includes('success') ? '#A3BE8C' : '#BF616A',
+                fontWeight: '500'
               }}>
                 {submitMessage}
               </div>
@@ -166,15 +169,16 @@ function App() {
       ) : (
         <div style={{ textAlign: 'left' }}>
           {pastEntries.length === 0 ? (
-            <p style={{ textAlign: 'center', color: '#666' }}>No entries yet. Create your first mood entry!</p>
+            <p style={{ textAlign: 'center', color: '#4C566A' }}>No entries yet. Create your first mood entry!</p>
           ) : (
             pastEntries.map((entry) => (
               <div key={entry.id || entry.date} style={{
-                border: '1px solid #eee',
+                border: '1px solid #D8DEE9',
                 borderRadius: '8px',
                 padding: '1rem',
                 marginBottom: '1rem',
-                backgroundColor: '#f9f9f9'
+                backgroundColor: '#E5E9F0',
+                boxShadow: '0 2px 8px rgba(46, 52, 64, 0.1)'
               }}>
                 <div style={{ 
                   display: 'flex', 
@@ -183,10 +187,10 @@ function App() {
                   gap: '0.5rem'
                 }}>
                   <span style={{ fontSize: '1.5rem' }}>{getMoodEmoji(entry.mood)}</span>
-                  <span style={{ fontWeight: 'bold', color: '#667eea' }}>{entry.date}</span>
+                  <span style={{ fontWeight: 'bold', color: '#5E81AC' }}>{entry.date}</span>
                 </div>
                 <div style={{ 
-                  color: '#333',
+                  color: '#2E3440',
                   lineHeight: '1.6'
                 }}>
                   <ReactMarkdown className="history-markdown">

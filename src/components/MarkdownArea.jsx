@@ -46,10 +46,11 @@ const MyComponent = forwardRef((props, ref) => {
 
   return (
     <div style={{ 
-      border: '1px solid #e1e5e9',
+      border: '1px solid #D8DEE9',
       borderRadius: '8px',
       overflow: 'hidden',
-      backgroundColor: 'white'
+      backgroundColor: '#ECEFF4',
+      boxShadow: '0 2px 8px rgba(46, 52, 64, 0.1)'
     }}>
       <MDXEditor
         ref={editorRef}

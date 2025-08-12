@@ -3,9 +3,9 @@
   margin: 0 auto;
   padding: 1rem;
   text-align: center;
-  background: white;
+  background: #ECEFF4;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(46, 52, 64, 0.15);
   min-height: 90vh;
 }
 
@@ -25,7 +25,7 @@
   border: 3px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: #f8f9fa;
+  background: #E5E9F0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,13 +33,15 @@
 
 .mood-button:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(46, 52, 64, 0.2);
+  background: #D8DEE9;
 }
 
 .mood-button.selected {
-  border-color: #667eea;
-  background: #e8f0fe;
+  border-color: #5E81AC;
+  background: #D8DEE9;
   transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(94, 129, 172, 0.3);
 }
 
 @media (max-width: 600px) {
@@ -65,54 +67,57 @@
 }
 
 .mdx-editor .mdxeditor-toolbar {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e1e5e9;
+  background: #E5E9F0;
+  border-bottom: 1px solid #D8DEE9;
   padding: 8px 12px;
 }
 
 .mdx-editor .mdxeditor-toolbar button {
   border-radius: 4px;
   transition: all 0.2s ease;
+  color: #4C566A;
 }
 
 .mdx-editor .mdxeditor-toolbar button:hover {
-  background: #e9ecef;
+  background: #D8DEE9;
+  color: #2E3440;
 }
 
 .mdx-editor .mdxeditor-toolbar button[data-state="on"] {
-  background: #667eea;
-  color: white;
+  background: #5E81AC;
+  color: #ECEFF4;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor {
   padding: 20px;
   min-height: 350px;
   line-height: 1.6;
+  background: #ECEFF4;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor h1 {
-  color: #667eea;
+  color: #5E81AC;
   font-size: 1.8rem;
   margin-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid #D8DEE9;
   padding-bottom: 0.5rem;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor h2 {
-  color: #555;
+  color: #434C5E;
   font-size: 1.4rem;
   margin: 1.5rem 0 1rem 0;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor h3 {
-  color: #666;
+  color: #4C566A;
   font-size: 1.2rem;
   margin: 1.2rem 0 0.8rem 0;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor p {
   margin-bottom: 1rem;
-  color: #333;
+  color: #2E3440;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor ul,
@@ -123,20 +128,21 @@
 
 .mdx-editor .mdxeditor-rich-text-editor li {
   margin-bottom: 0.5rem;
-  color: #333;
+  color: #2E3440;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor blockquote {
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #5E81AC;
   margin: 1.5rem 0;
   padding: 1rem 1.5rem;
-  background: #f8f9ff;
+  background: #E5E9F0;
   font-style: italic;
-  color: #555;
+  color: #434C5E;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor code {
-  background: #f1f3f4;
+  background: #D8DEE9;
+  color: #2E3440;
   padding: 2px 6px;
   border-radius: 3px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -144,8 +150,9 @@
 }
 
 .mdx-editor .mdxeditor-rich-text-editor pre {
-  background: #f8f8f8;
-  border: 1px solid #e1e5e9;
+  background: #3B4252;
+  color: #ECEFF4;
+  border: 1px solid #434C5E;
   border-radius: 6px;
   padding: 1rem;
   overflow-x: auto;
@@ -153,12 +160,12 @@
 }
 
 .mdx-editor .mdxeditor-rich-text-editor a {
-  color: #667eea;
+  color: #5E81AC;
   text-decoration: underline;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor a:hover {
-  color: #5a67d8;
+  color: #81A1C1;
 }
 
 /* Focus styles */
@@ -195,28 +202,28 @@
 }/* 
 History Markdown Styles */
 .history-markdown h1 {
-  color: #667eea;
+  color: #5E81AC;
   font-size: 1.3rem;
   margin: 0 0 0.8rem 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #D8DEE9;
   padding-bottom: 0.3rem;
 }
 
 .history-markdown h2 {
-  color: #555;
+  color: #434C5E;
   font-size: 1.1rem;
   margin: 1rem 0 0.5rem 0;
 }
 
 .history-markdown h3 {
-  color: #666;
+  color: #4C566A;
   font-size: 1rem;
   margin: 0.8rem 0 0.4rem 0;
 }
 
 .history-markdown p {
   margin: 0.5rem 0;
-  color: #333;
+  color: #2E3440;
 }
 
 .history-markdown ul,
@@ -230,15 +237,16 @@ History Markdown Styles */
 }
 
 .history-markdown blockquote {
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #5E81AC;
   margin: 0.8rem 0;
   padding: 0.5rem 1rem;
-  background: #f8f9ff;
+  background: #E5E9F0;
   font-style: italic;
 }
 
 .history-markdown code {
-  background: #f1f3f4;
+  background: #D8DEE9;
+  color: #2E3440;
   padding: 1px 4px;
   border-radius: 2px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -246,8 +254,9 @@ History Markdown Styles */
 }
 
 .history-markdown pre {
-  background: #f8f8f8;
-  border: 1px solid #e1e5e9;
+  background: #3B4252;
+  color: #ECEFF4;
+  border: 1px solid #434C5E;
   border-radius: 4px;
   padding: 0.8rem;
   overflow-x: auto;
@@ -260,16 +269,16 @@ History Markdown Styles */
 }
 
 .history-markdown a {
-  color: #667eea;
+  color: #5E81AC;
   text-decoration: underline;
 }
 
 .history-markdown strong {
   font-weight: 600;
-  color: #333;
+  color: #2E3440;
 }
 
 .history-markdown em {
   font-style: italic;
-  color: #555;
+  color: #434C5E;
 }
