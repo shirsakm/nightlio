@@ -1,12 +1,59 @@
-# React + Vite
+# Nightlio - Daily Mood Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimal daily journal app inspired by Daylio, built with React and Flask.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Mood Tracking**: Select from 5 emoji-based mood levels (😢 to 😁)
+- **Journal Entries**: Write detailed thoughts using a markdown editor
+- **History View**: Browse past entries with dates and moods
+- **Responsive Design**: Works great on mobile and desktop
+- **Data Persistence**: Entries saved to CSV file
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+- Node.js (for the frontend)
+- Python 3.7+ (for the API)
+
+### Installation
+
+1. Install frontend dependencies:
+```bash
+npm install
+```
+
+2. Set up the Python API:
+```bash
+cd api
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Running the App
+
+1. Start the Flask API (in one terminal):
+```bash
+npm run api:dev
+```
+
+2. Start the React frontend (in another terminal):
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+## Usage
+
+1. **Create Entry**: Select your mood and write your thoughts
+2. **View History**: Click "View History" to see past entries
+3. **Data Storage**: All entries are saved in `data/moods.csv`
+
+## Tech Stack
+
+- **Frontend**: React, Vite, Toast UI Editor
+- **Backend**: Flask, Flask-CORS
+- **Storage**: CSV files
+- **Styling**: CSS with responsive design

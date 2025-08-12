@@ -1,6 +1,275 @@
 #root {
-  max-width: 1280px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  min-height: 90vh;
 }
 
+.mood-grid {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.mood-button {
+  font-size: 3rem;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.mood-button.selected {
+  border-color: #667eea;
+  background: #e8f0fe;
+  transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+  #root {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+  
+  .mood-button {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+  }
+}
+
+
+/* MDXEditor Custom Styles */
+.mdx-editor {
+  min-height: 400px;
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+.mdx-editor .mdxeditor-toolbar {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e1e5e9;
+  padding: 8px 12px;
+}
+
+.mdx-editor .mdxeditor-toolbar button {
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.mdx-editor .mdxeditor-toolbar button:hover {
+  background: #e9ecef;
+}
+
+.mdx-editor .mdxeditor-toolbar button[data-state="on"] {
+  background: #667eea;
+  color: white;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor {
+  padding: 20px;
+  min-height: 350px;
+  line-height: 1.6;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor h1 {
+  color: #667eea;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor h2 {
+  color: #555;
+  font-size: 1.4rem;
+  margin: 1.5rem 0 1rem 0;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor h3 {
+  color: #666;
+  font-size: 1.2rem;
+  margin: 1.2rem 0 0.8rem 0;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor p {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor ul,
+.mdx-editor .mdxeditor-rich-text-editor ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor li {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor blockquote {
+  border-left: 4px solid #667eea;
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: #f8f9ff;
+  font-style: italic;
+  color: #555;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor code {
+  background: #f1f3f4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor pre {
+  background: #f8f8f8;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor a {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor a:hover {
+  color: #5a67d8;
+}
+
+/* Focus styles */
+.mdx-editor .mdxeditor-rich-text-editor:focus-within {
+  outline: none;
+}
+
+/* Placeholder styling */
+.mdx-editor .mdxeditor-rich-text-editor:empty::before {
+  content: "Start writing your thoughts...";
+  color: #999;
+  font-style: italic;
+}
+
+/* Mobile responsiveness for editor */
+@media (max-width: 600px) {
+  .mdx-editor .mdxeditor-toolbar {
+    padding: 6px 8px;
+    flex-wrap: wrap;
+  }
+  
+  .mdx-editor .mdxeditor-toolbar button {
+    margin: 2px;
+  }
+  
+  .mdx-editor .mdxeditor-rich-text-editor {
+    padding: 15px;
+    min-height: 300px;
+  }
+  
+  .mdx-editor .mdxeditor-rich-text-editor h1 {
+    font-size: 1.5rem;
+  }
+}/* 
+History Markdown Styles */
+.history-markdown h1 {
+  color: #667eea;
+  font-size: 1.3rem;
+  margin: 0 0 0.8rem 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.3rem;
+}
+
+.history-markdown h2 {
+  color: #555;
+  font-size: 1.1rem;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.history-markdown h3 {
+  color: #666;
+  font-size: 1rem;
+  margin: 0.8rem 0 0.4rem 0;
+}
+
+.history-markdown p {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.history-markdown ul,
+.history-markdown ol {
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+}
+
+.history-markdown li {
+  margin-bottom: 0.2rem;
+}
+
+.history-markdown blockquote {
+  border-left: 3px solid #667eea;
+  margin: 0.8rem 0;
+  padding: 0.5rem 1rem;
+  background: #f8f9ff;
+  font-style: italic;
+}
+
+.history-markdown code {
+  background: #f1f3f4;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85em;
+}
+
+.history-markdown pre {
+  background: #f8f8f8;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  padding: 0.8rem;
+  overflow-x: auto;
+  margin: 0.8rem 0;
+}
+
+.history-markdown pre code {
+  background: none;
+  padding: 0;
+}
+
+.history-markdown a {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.history-markdown strong {
+  font-weight: 600;
+  color: #333;
+}
+
+.history-markdown em {
+  font-style: italic;
+  color: #555;
+}

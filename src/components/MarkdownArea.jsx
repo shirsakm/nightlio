@@ -1,38 +1,100 @@
-import '@toast-ui/editor/dist/toastui-editor.css';
-import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
-import { useRef, forwardRef, useImperativeHandle } from 'react';
-
-import { Editor } from '@toast-ui/react-editor';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+import {
+  MDXEditor,
+  headingsPlugin,
+  listsPlugin,
+  quotePlugin,
+  thematicBreakPlugin,
+  markdownShortcutPlugin,
+  linkPlugin,
+  linkDialogPlugin,
+  imagePlugin,
+  tablePlugin,
+  codeBlockPlugin,
+  codeMirrorPlugin,
+  diffSourcePlugin,
+  frontmatterPlugin,
+  directivesPlugin,
+  AdmonitionDirectiveDescriptor,
+  toolbarPlugin,
+  UndoRedo,
+  BoldItalicUnderlineToggles,
+  CodeToggle,
+  CreateLink,
+  InsertImage,
+  InsertTable,
+  InsertThematicBreak,
+  ListsToggle,
+  BlockTypeSelect,
+  Separator
+} from '@mdxeditor/editor';
+import '@mdxeditor/editor/style.css';
 
 const MyComponent = forwardRef((props, ref) => {
-  const editorRef = useRef();
+  const editorRef = useRef(null);
 
   useImperativeHandle(ref, () => ({
     getMarkdown: () => {
-      return editorRef.current?.getInstance().getMarkdown();
-    }
+      return editorRef.current?.getMarkdown() || '';
+    },
+    getInstance: () => ({
+      setMarkdown: (newValue) => {
+        editorRef.current?.setMarkdown(newValue);
+      }
+    })
   }));
 
   return (
-    <Editor
-      ref={editorRef}
-      initialValue="# Enter title here
+    <div style={{ 
+      border: '1px solid #e1e5e9',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      backgroundColor: 'white'
+    }}>
+      <MDXEditor
+        ref={editorRef}
+        markdown={`# How was your day?
 
-Write your thoughts here"
-      previewStyle="vertical"
-      height="400px"
-      initialEditType="markdown"
-      useCommandShortcut={true}
-      usageStatistics={false}
-      theme="dark"
-      toolbarItems={[
-        ["heading", "bold", "italic", "strike"],
-        ["hr", "quote"],
-        ["ul", "ol"],
-        ["link"]
-      ]}
-      hideModeSwitch={true}
-    />
+Write about your thoughts, feelings, and experiences...`}
+        contentEditableClassName="prose"
+        plugins={[
+          headingsPlugin(),
+          listsPlugin(),
+          quotePlugin(),
+          thematicBreakPlugin(),
+          markdownShortcutPlugin(),
+          linkPlugin(),
+          linkDialogPlugin(),
+          imagePlugin(),
+          tablePlugin(),
+          codeBlockPlugin({ defaultCodeBlockLanguage: 'txt' }),
+          codeMirrorPlugin({ codeBlockLanguages: { txt: 'Plain Text', js: 'JavaScript', css: 'CSS' } }),
+          directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
+          frontmatterPlugin(),
+          diffSourcePlugin({ viewMode: 'rich-text', diffMarkdown: '' }),
+          toolbarPlugin({
+            toolbarContents: () => (
+              <>
+                <UndoRedo />
+                <Separator />
+                <BoldItalicUnderlineToggles />
+                <CodeToggle />
+                <Separator />
+                <BlockTypeSelect />
+                <Separator />
+                <CreateLink />
+                <InsertImage />
+                <Separator />
+                <ListsToggle />
+                <InsertTable />
+                <InsertThematicBreak />
+              </>
+            )
+          })
+        ]}
+        className="mdx-editor"
+      />
+    </div>
   );
 });
 
