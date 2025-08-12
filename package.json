@@ -9,11 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "api": "cd api && python -m venv venv && venv/bin/pip install -r requirements.txt && venv/bin/flask run --no-debugger",
-    "api:dev": "cd api && venv/bin/flask run --debug",
-
+    "api:dev": "cd api && venv/bin/flask run --debug"
   },
   "dependencies": {
     "@mdxeditor/editor": "^3.11.6",
+    "lucide-react": "^0.460.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^9.0.1"

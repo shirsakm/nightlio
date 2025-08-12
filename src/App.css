@@ -1,47 +1,61 @@
 #root {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem;
   text-align: center;
-  background: #ECEFF4;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(46, 52, 64, 0.15);
-  min-height: 90vh;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  min-height: 85vh;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .mood-grid {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  margin: 3rem 0;
 }
 
 .mood-button {
-  font-size: 3rem;
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  border: 3px solid transparent;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  background: #E5E9F0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mood-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(145deg, transparent, rgba(255, 255, 255, 0.3));
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .mood-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 16px rgba(46, 52, 64, 0.2);
-  background: #D8DEE9;
+  transform: translateY(-8px) scale(1.05);
+}
+
+.mood-button:hover::before {
+  opacity: 1;
 }
 
 .mood-button.selected {
-  border-color: #5E81AC;
-  background: #D8DEE9;
-  transform: scale(1.1);
-  box-shadow: 0 4px 16px rgba(94, 129, 172, 0.3);
+  transform: translateY(-8px) scale(1.05);
 }
 
 @media (max-width: 600px) {
@@ -63,44 +77,53 @@
 /* MDXEditor Custom Styles */
 .mdx-editor {
   min-height: 400px;
-  font-family: 'Roboto', system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .mdx-editor .mdxeditor-toolbar {
-  background: #E5E9F0;
-  border-bottom: 1px solid #D8DEE9;
-  padding: 8px 12px;
+  background: linear-gradient(145deg, #f8f9fa, #ffffff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 12px 16px;
 }
 
 .mdx-editor .mdxeditor-toolbar button {
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  color: #4C566A;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  color: #666;
+  padding: 8px;
 }
 
 .mdx-editor .mdxeditor-toolbar button:hover {
-  background: #D8DEE9;
-  color: #2E3440;
+  background: linear-gradient(145deg, #667eea, #764ba2);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .mdx-editor .mdxeditor-toolbar button[data-state="on"] {
-  background: #5E81AC;
-  color: #ECEFF4;
+  background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
 .mdx-editor .mdxeditor-rich-text-editor {
-  padding: 20px;
+  padding: 24px;
   min-height: 350px;
-  line-height: 1.6;
-  background: #ECEFF4;
+  line-height: 1.7;
+  background: white;
+  font-size: 16px;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor h1 {
-  color: #5E81AC;
-  font-size: 1.8rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2rem;
   margin-bottom: 1rem;
-  border-bottom: 2px solid #D8DEE9;
+  border-bottom: 2px solid #f0f0f0;
   padding-bottom: 0.5rem;
+  font-weight: 700;
 }
 
 .mdx-editor .mdxeditor-rich-text-editor h2 {

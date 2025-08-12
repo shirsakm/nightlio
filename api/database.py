@@ -36,24 +36,30 @@ class MoodDatabase:
             
             conn.commit()
     
-    def add_mood_entry(self, date: str, mood: int, content: str) -> int:
+    def add_mood_entry(self, date: str, mood: int, content: str, time: str = None) -> int:
         """Add a new mood entry and return the entry ID"""
         with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.execute('''
-                INSERT INTO mood_entries (date, mood, content)
-                VALUES (?, ?, ?)
-            ''', (date, mood, content))
+            if time:
+                cursor = conn.execute('''
+                    INSERT INTO mood_entries (date, mood, content, created_at)
+                    VALUES (?, ?, ?, ?)
+                ''', (date, mood, content, time))
+            else:
+                cursor = conn.execute('''
+                    INSERT INTO mood_entries (date, mood, content)
+                    VALUES (?, ?, ?)
+                ''', (date, mood, content))
             conn.commit()
             return cursor.lastrowid
     
     def get_all_mood_entries(self) -> List[Dict]:
-        """Get all mood entries ordered by date (newest first)"""
+        """Get all mood entries ordered by created_at (newest first)"""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute('''
                 SELECT id, date, mood, content, created_at, updated_at
                 FROM mood_entries
-                ORDER BY date DESC, created_at DESC
+                ORDER BY created_at DESC, date DESC
             ''')
             return [dict(row) for row in cursor.fetchall()]
     
@@ -65,7 +71,7 @@ class MoodDatabase:
                 SELECT id, date, mood, content, created_at, updated_at
                 FROM mood_entries
                 WHERE date BETWEEN ? AND ?
-                ORDER BY date DESC, created_at DESC
+                ORDER BY created_at DESC, date DESC
             ''', (start_date, end_date))
             return [dict(row) for row in cursor.fetchall()]
     
@@ -162,3 +168,74 @@ class MoodDatabase:
                 ORDER BY mood
             ''')
             return {row[0]: row[1] for row in cursor.fetchall()}
+    
+    def get_current_streak(self) -> int:
+        """Calculate the current consecutive days streak"""
+        with sqlite3.connect(self.db_path) as conn:
+            # Get distinct dates with entries, ordered by date descending
+            cursor = conn.execute('''
+                SELECT DISTINCT date
+                FROM mood_entries
+                ORDER BY date DESC
+            ''')
+            dates = [row[0] for row in cursor.fetchall()]
+            
+            if not dates:
+                return 0
+            
+            # Convert date strings to date objects for comparison
+            from datetime import datetime, timedelta
+            
+            try:
+                # Parse dates - handle different formats
+                parsed_dates = []
+                for date_str in dates:
+                    try:
+                        # Try MM/DD/YYYY format first
+                        parsed_date = datetime.strptime(date_str, '%m/%d/%Y').date()
+                        parsed_dates.append(parsed_date)
+                    except ValueError:
+                        try:
+                            # Try M/D/YYYY format
+                            parsed_date = datetime.strptime(date_str, '%m/%d/%Y').date()
+                            parsed_dates.append(parsed_date)
+                        except ValueError:
+                            try:
+                                # Try YYYY-MM-DD format
+                                parsed_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                                parsed_dates.append(parsed_date)
+                            except ValueError:
+                                # Skip invalid dates
+                                continue
+                
+                if not parsed_dates:
+                    return 0
+                
+                # Sort dates in descending order
+                parsed_dates.sort(reverse=True)
+                
+                today = datetime.now().date()
+                streak = 0
+                
+                # Check if there's an entry today or yesterday (to account for different timezones)
+                most_recent = parsed_dates[0]
+                days_since_last = (today - most_recent).days
+                
+                if days_since_last > 1:
+                    # No recent entries, streak is broken
+                    return 0
+                
+                # Count consecutive days
+                expected_date = most_recent
+                for date in parsed_dates:
+                    if date == expected_date:
+                        streak += 1
+                        expected_date = date - timedelta(days=1)
+                    else:
+                        break
+                
+                return streak
+                
+            except Exception:
+                # If there's any error in date parsing, return 0
+                return 0

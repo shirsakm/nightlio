@@ -22,6 +22,7 @@ def create_mood_entry():
         mood = data.get('mood')
         date = data.get('date')
         content = data.get('content')
+        time = data.get('time')  # Optional time field
 
         # Validate input
         if not all([mood, date, content]):
@@ -31,7 +32,7 @@ def create_mood_entry():
             return jsonify({'error': 'Mood must be an integer between 1 and 5'}), 400
 
         # Add to database
-        entry_id = db.add_mood_entry(date, mood, content)
+        entry_id = db.add_mood_entry(date, mood, content, time)
         
         return jsonify({
             'status': 'success',
@@ -116,10 +117,24 @@ def get_mood_statistics():
     try:
         stats = db.get_mood_statistics()
         mood_counts = db.get_mood_counts()
+        current_streak = db.get_current_streak()
         
         return jsonify({
             'statistics': stats,
-            'mood_distribution': mood_counts
+            'mood_distribution': mood_counts,
+            'current_streak': current_streak
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/streak', methods=['GET'])
+def get_current_streak():
+    try:
+        streak = db.get_current_streak()
+        return jsonify({
+            'current_streak': streak,
+            'message': f'Current streak: {streak} day{"s" if streak != 1 else ""}'
         })
 
     except Exception as e:
