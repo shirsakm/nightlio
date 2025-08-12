@@ -23,6 +23,7 @@ def create_mood_entry():
         date = data.get('date')
         content = data.get('content')
         time = data.get('time')  # Optional time field
+        selected_options = data.get('selected_options', [])  # Optional selected options
 
         # Validate input
         if not all([mood, date, content]):
@@ -32,7 +33,7 @@ def create_mood_entry():
             return jsonify({'error': 'Mood must be an integer between 1 and 5'}), 400
 
         # Add to database
-        entry_id = db.add_mood_entry(date, mood, content, time)
+        entry_id = db.add_mood_entry(date, mood, content, time, selected_options)
         
         return jsonify({
             'status': 'success',
@@ -136,6 +137,96 @@ def get_current_streak():
             'current_streak': streak,
             'message': f'Current streak: {streak} day{"s" if streak != 1 else ""}'
         })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/groups', methods=['GET'])
+def get_groups():
+    try:
+        groups = db.get_all_groups()
+        return jsonify(groups)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/groups', methods=['POST'])
+def create_group():
+    try:
+        data = request.json
+        name = data.get('name')
+        
+        if not name:
+            return jsonify({'error': 'Group name is required'}), 400
+        
+        group_id = db.create_group(name)
+        
+        return jsonify({
+            'status': 'success',
+            'group_id': group_id,
+            'message': 'Group created successfully'
+        }), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/groups/<int:group_id>/options', methods=['POST'])
+def create_group_option(group_id):
+    try:
+        data = request.json
+        name = data.get('name')
+        
+        if not name:
+            return jsonify({'error': 'Option name is required'}), 400
+        
+        option_id = db.create_group_option(group_id, name)
+        
+        return jsonify({
+            'status': 'success',
+            'option_id': option_id,
+            'message': 'Option created successfully'
+        }), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/groups/<int:group_id>', methods=['DELETE'])
+def delete_group(group_id):
+    try:
+        success = db.delete_group(group_id)
+        
+        if success:
+            return jsonify({
+                'status': 'success',
+                'message': 'Group deleted successfully'
+            })
+        else:
+            return jsonify({'error': 'Group not found'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/options/<int:option_id>', methods=['DELETE'])
+def delete_option():
+    try:
+        success = db.delete_group_option(option_id)
+        
+        if success:
+            return jsonify({
+                'status': 'success',
+                'message': 'Option deleted successfully'
+            })
+        else:
+            return jsonify({'error': 'Option not found'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/mood/<int:entry_id>/selections', methods=['GET'])
+def get_entry_selections(entry_id):
+    try:
+        selections = db.get_entry_selections(entry_id)
+        return jsonify(selections)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -28,6 +28,38 @@ class MoodDatabase:
                 )
             ''')
             
+            # Create groups table
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS groups (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL UNIQUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            
+            # Create group options table
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS group_options (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    group_id INTEGER NOT NULL,
+                    name TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
+                )
+            ''')
+            
+            # Create table to store selected options for each entry
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS entry_selections (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    entry_id INTEGER NOT NULL,
+                    option_id INTEGER NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (entry_id) REFERENCES mood_entries (id) ON DELETE CASCADE,
+                    FOREIGN KEY (option_id) REFERENCES group_options (id) ON DELETE CASCADE
+                )
+            ''')
+            
             # Create index for faster date queries
             conn.execute('''
                 CREATE INDEX IF NOT EXISTS idx_mood_entries_date 
@@ -35,8 +67,11 @@ class MoodDatabase:
             ''')
             
             conn.commit()
+            
+            # Insert default groups and options if they don't exist
+            self._insert_default_groups()
     
-    def add_mood_entry(self, date: str, mood: int, content: str, time: str = None) -> int:
+    def add_mood_entry(self, date: str, mood: int, content: str, time: str = None, selected_options: List[int] = None) -> int:
         """Add a new mood entry and return the entry ID"""
         with sqlite3.connect(self.db_path) as conn:
             if time:
@@ -49,8 +84,16 @@ class MoodDatabase:
                     INSERT INTO mood_entries (date, mood, content)
                     VALUES (?, ?, ?)
                 ''', (date, mood, content))
+            
+            entry_id = cursor.lastrowid
+            
+            # Add selected options if provided
+            if selected_options:
+                for option_id in selected_options:
+                    conn.execute('INSERT INTO entry_selections (entry_id, option_id) VALUES (?, ?)', (entry_id, option_id))
+            
             conn.commit()
-            return cursor.lastrowid
+            return entry_id
     
     def get_all_mood_entries(self) -> List[Dict]:
         """Get all mood entries ordered by created_at (newest first)"""
@@ -239,3 +282,101 @@ class MoodDatabase:
             except Exception:
                 # If there's any error in date parsing, return 0
                 return 0
+    
+    def _insert_default_groups(self):
+        """Insert default groups and options if they don't exist"""
+        default_groups = {
+            'Emotions': ['happy', 'excited', 'grateful', 'relaxed', 'content', 'tired', 'unsure', 'bored', 'anxious', 'angry', 'stressed', 'sad', 'desperate'],
+            'Sleep': ['well-rested', 'refreshed', 'tired', 'exhausted', 'restless', 'insomniac'],
+            'Productivity': ['focused', 'motivated', 'accomplished', 'busy', 'distracted', 'procrastinating', 'overwhelmed', 'lazy']
+        }
+        
+        with sqlite3.connect(self.db_path) as conn:
+            for group_name, options in default_groups.items():
+                # Check if group exists
+                cursor = conn.execute('SELECT id FROM groups WHERE name = ?', (group_name,))
+                group_row = cursor.fetchone()
+                
+                if not group_row:
+                    # Insert group
+                    cursor = conn.execute('INSERT INTO groups (name) VALUES (?)', (group_name,))
+                    group_id = cursor.lastrowid
+                    
+                    # Insert options
+                    for option in options:
+                        conn.execute('INSERT INTO group_options (group_id, name) VALUES (?, ?)', (group_id, option))
+            
+            conn.commit()
+    
+    def get_all_groups(self) -> List[Dict]:
+        """Get all groups with their options"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            
+            # Get all groups
+            cursor = conn.execute('SELECT id, name FROM groups ORDER BY name')
+            groups = []
+            
+            for group_row in cursor.fetchall():
+                group = dict(group_row)
+                
+                # Get options for this group
+                options_cursor = conn.execute('''
+                    SELECT id, name FROM group_options 
+                    WHERE group_id = ? 
+                    ORDER BY name
+                ''', (group['id'],))
+                
+                group['options'] = [dict(option_row) for option_row in options_cursor.fetchall()]
+                groups.append(group)
+            
+            return groups
+    
+    def create_group(self, name: str) -> int:
+        """Create a new group and return its ID"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute('INSERT INTO groups (name) VALUES (?)', (name,))
+            conn.commit()
+            return cursor.lastrowid
+    
+    def create_group_option(self, group_id: int, name: str) -> int:
+        """Create a new option for a group and return its ID"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute('INSERT INTO group_options (group_id, name) VALUES (?, ?)', (group_id, name))
+            conn.commit()
+            return cursor.lastrowid
+    
+    def delete_group(self, group_id: int) -> bool:
+        """Delete a group and all its options"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute('DELETE FROM groups WHERE id = ?', (group_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+    
+    def delete_group_option(self, option_id: int) -> bool:
+        """Delete a group option"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute('DELETE FROM group_options WHERE id = ?', (option_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+    
+    def add_entry_selections(self, entry_id: int, option_ids: List[int]):
+        """Add selected options for an entry"""
+        with sqlite3.connect(self.db_path) as conn:
+            for option_id in option_ids:
+                conn.execute('INSERT INTO entry_selections (entry_id, option_id) VALUES (?, ?)', (entry_id, option_id))
+            conn.commit()
+    
+    def get_entry_selections(self, entry_id: int) -> List[Dict]:
+        """Get selected options for an entry"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.execute('''
+                SELECT go.id, go.name, g.name as group_name
+                FROM entry_selections es
+                JOIN group_options go ON es.option_id = go.id
+                JOIN groups g ON go.group_id = g.id
+                WHERE es.entry_id = ?
+                ORDER BY g.name, go.name
+            ''', (entry_id,))
+            return [dict(row) for row in cursor.fetchall()]
