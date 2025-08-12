@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Frown, Meh, Smile, Laugh, Heart, Zap } from 'lucide-react';
+import { Frown, Meh, Smile, Laugh, Heart, Zap, BarChart3, Calendar, Home } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Cell } from 'recharts';
 import MDArea from './components/MarkdownArea.jsx';
 import './App.css';
 
@@ -9,9 +10,10 @@ function App() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
-  const [showHistory, setShowHistory] = useState(true);
+  const [currentView, setCurrentView] = useState('history'); // 'history', 'entry', 'stats'
   const [pastEntries, setPastEntries] = useState([]);
   const [currentStreak, setCurrentStreak] = useState(0);
+  const [statistics, setStatistics] = useState(null);
   const markdownRef = useRef();
 
   const moods = [
@@ -55,6 +57,17 @@ function App() {
     }
   };
 
+  const loadStatistics = async () => {
+    try {
+      const response = await fetch('/api/statistics');
+      const data = await response.json();
+      setStatistics(data);
+    } catch (error) {
+      console.error('Failed to load statistics:', error);
+      setStatistics(null);
+    }
+  };
+
   const getMoodIcon = (moodValue) => {
     const mood = moods.find(m => m.value === moodValue);
     if (!mood) return { icon: Meh, color: '#ffca28' };
@@ -74,6 +87,34 @@ function App() {
     }
     // Fallback to just the date
     return entry.date;
+  };
+
+  const getWeeklyMoodData = () => {
+    const today = new Date();
+    const weekData = [];
+    
+    // Create entry lookup by date
+    const entryLookup = {};
+    pastEntries.forEach(entry => {
+      entryLookup[entry.date] = entry;
+    });
+    
+    // Get last 7 days
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toLocaleDateString();
+      const entry = entryLookup[dateStr];
+      
+      weekData.push({
+        date: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        mood: entry ? entry.mood : null,
+        moodEmoji: entry ? getMoodIcon(entry.mood).icon : null,
+        hasEntry: !!entry
+      });
+    }
+    
+    return weekData;
   };
 
   return (
@@ -130,10 +171,68 @@ function App() {
           fontSize: '1rem',
           fontWeight: '300'
         }}>
-          {showHistory ? 'How are you feeling today?' : `Recording for ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`}
+          {currentView === 'history' ? 'How are you feeling today?' : 
+           currentView === 'entry' ? `Recording for ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}` :
+           'Your mood insights and patterns'}
         </p>
+        
+        {/* Navigation */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '0.5rem', 
+          justifyContent: 'center',
+          marginTop: '1rem'
+        }}>
+          <button
+            onClick={() => setCurrentView('history')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+              padding: '0.5rem 1rem',
+              background: currentView === 'history' 
+                ? 'linear-gradient(135deg, #667eea, #764ba2)' 
+                : 'transparent',
+              color: currentView === 'history' ? 'white' : '#667eea',
+              border: currentView === 'history' ? 'none' : '1px solid #667eea',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <Home size={16} />
+            Home
+          </button>
+          <button
+            onClick={() => {
+              setCurrentView('stats');
+              loadStatistics();
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+              padding: '0.5rem 1rem',
+              background: currentView === 'stats' 
+                ? 'linear-gradient(135deg, #667eea, #764ba2)' 
+                : 'transparent',
+              color: currentView === 'stats' ? 'white' : '#667eea',
+              border: currentView === 'stats' ? 'none' : '1px solid #667eea',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <BarChart3 size={16} />
+            Stats
+          </button>
+        </div>
       </div>
-      {showHistory ? (
+      {currentView === 'history' ? (
         <>
           {/* Mood Picker on History Page */}
           <div className="mood-grid">
@@ -144,7 +243,7 @@ function App() {
                   key={mood.value}
                   onClick={() => {
                     setSelectedMood(mood.value);
-                    setShowHistory(false);
+                    setCurrentView('entry');
                   }}
                   className="mood-button"
                   style={{
@@ -226,13 +325,13 @@ function App() {
             )}
           </div>
         </>
-      ) : (
+      ) : currentView === 'entry' ? (
         <>
           {/* New Entry Page */}
           <div style={{ marginBottom: '2rem' }}>
             <button
               onClick={() => {
-                setShowHistory(true);
+                setCurrentView('history');
                 setSelectedMood(null);
                 setSubmitMessage('');
               }}
@@ -316,7 +415,7 @@ function App() {
                     markdownRef.current?.getInstance()?.setMarkdown('# How was your day?\n\nWrite about your thoughts, feelings, and experiences...');
                     // Return to history after a short delay
                     setTimeout(() => {
-                      setShowHistory(true);
+                      setCurrentView('history');
                       setSelectedMood(null);
                       setSubmitMessage('');
                       loadHistory(); // Refresh history
@@ -358,6 +457,341 @@ function App() {
               </div>
             )}
           </div>
+        </>
+      ) : (
+        <>
+          {/* Statistics Page */}
+          {statistics ? (
+            <div style={{ textAlign: 'left' }}>
+              {/* Overview Cards */}
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '1rem',
+                marginBottom: '2rem'
+              }}>
+                <div style={{
+                  background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+                  borderRadius: '12px',
+                  padding: '1.5rem',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '2rem', fontWeight: '700', color: '#667eea' }}>
+                    {statistics.statistics.total_entries}
+                  </div>
+                  <div style={{ color: '#666', fontSize: '0.9rem' }}>Total Entries</div>
+                </div>
+                
+                <div style={{
+                  background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+                  borderRadius: '12px',
+                  padding: '1.5rem',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '2rem', fontWeight: '700', color: '#4ecdc4' }}>
+                    {statistics.statistics.average_mood?.toFixed(1) || '0.0'}
+                  </div>
+                  <div style={{ color: '#666', fontSize: '0.9rem' }}>Average Mood</div>
+                </div>
+                
+                <div style={{
+                  background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+                  borderRadius: '12px',
+                  padding: '1.5rem',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '2rem', fontWeight: '700', color: '#ff6b6b' }}>
+                    {statistics.current_streak}
+                  </div>
+                  <div style={{ color: '#666', fontSize: '0.9rem' }}>Current Streak</div>
+                </div>
+              </div>
+
+              {/* Weekly Mood Trend */}
+              <div style={{
+                background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+                borderRadius: '16px',
+                padding: '2rem',
+                marginBottom: '2rem',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)'
+              }}>
+                <h3 style={{ 
+                  margin: '0 0 1.5rem 0', 
+                  color: '#333',
+                  fontSize: '1.3rem',
+                  fontWeight: '600'
+                }}>
+                  Weekly Mood Trend
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={getWeeklyMoodData()}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#e0e0e0' }}
+                    />
+                    <YAxis 
+                      domain={[0.5, 5.5]}
+                      ticks={[1, 2, 3, 4, 5]}
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#e0e0e0' }}
+                      tickFormatter={(value) => {
+                        const moodLabels = { 1: 'T', 2: 'B', 3: 'O', 4: 'G', 5: 'A' };
+                        return moodLabels[value] || '';
+                      }}
+                    />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
+                      }}
+                      formatter={(value, name) => {
+                        if (value === null) return ['No entry', ''];
+                        const moodLabels = { 1: 'Terrible', 2: 'Bad', 3: 'Okay', 4: 'Good', 5: 'Amazing' };
+                        return [`${moodLabels[value]}`, ''];
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="mood" 
+                      stroke="#667eea" 
+                      strokeWidth={3}
+                      dot={{ fill: '#667eea', strokeWidth: 2, r: 6 }}
+                      connectNulls={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+                
+                {/* Icon Legend for Line Chart */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  gap: '1.5rem',
+                  marginTop: '1rem',
+                  flexWrap: 'wrap'
+                }}>
+                  {[
+                    { value: 1, icon: Frown, color: '#ff6b6b', label: 'Terrible' },
+                    { value: 2, icon: Frown, color: '#ffa726', label: 'Bad' },
+                    { value: 3, icon: Meh, color: '#ffca28', label: 'Okay' },
+                    { value: 4, icon: Smile, color: '#66bb6a', label: 'Good' },
+                    { value: 5, icon: Heart, color: '#42a5f5', label: 'Amazing' }
+                  ].map(mood => {
+                    const IconComponent = mood.icon;
+                    return (
+                      <div key={mood.value} style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '0.3rem',
+                        fontSize: '0.8rem',
+                        color: '#666'
+                      }}>
+                        <IconComponent size={16} style={{ color: mood.color }} />
+                        <span>{mood.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Mood Distribution Chart */}
+              <div style={{
+                background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+                borderRadius: '16px',
+                padding: '2rem',
+                marginBottom: '2rem',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)'
+              }}>
+                <h3 style={{ 
+                  margin: '0 0 1.5rem 0', 
+                  color: '#333',
+                  fontSize: '1.3rem',
+                  fontWeight: '600'
+                }}>
+                  Mood Distribution
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={(() => {
+                    const moodLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Amazing'];
+                    const moodColors = ['#ff6b6b', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
+                    const moodIcons = ['T', 'B', 'O', 'G', 'A']; // Short labels for now
+                    
+                    return [1, 2, 3, 4, 5].map(moodValue => ({
+                      mood: moodIcons[moodValue - 1],
+                      label: moodLabels[moodValue - 1],
+                      count: statistics.mood_distribution[moodValue] || 0,
+                      fill: moodColors[moodValue - 1]
+                    }));
+                  })()}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey="mood" 
+                      tick={{ fontSize: 16 }}
+                      axisLine={{ stroke: '#e0e0e0' }}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }}
+                      axisLine={{ stroke: '#e0e0e0' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
+                      }}
+                      formatter={(value, name, props) => [
+                        `${value} entries`,
+                        `${props.payload.label}`
+                      ]}
+                    />
+                    <Bar 
+                      dataKey="count" 
+                      radius={[4, 4, 0, 0]}
+                      label={{ 
+                        position: 'top', 
+                        fontSize: 12, 
+                        fontWeight: '600',
+                        fill: '#333'
+                      }}
+                    >
+                      {(() => {
+                        const moodColors = ['#ff6b6b', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
+                        return [1, 2, 3, 4, 5].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={moodColors[index]} />
+                        ));
+                      })()}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                
+                {/* Icon Legend for Bar Chart */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  gap: '1.5rem',
+                  marginTop: '1rem',
+                  flexWrap: 'wrap'
+                }}>
+                  {[
+                    { value: 1, icon: Frown, color: '#ff6b6b', label: 'Terrible' },
+                    { value: 2, icon: Frown, color: '#ffa726', label: 'Bad' },
+                    { value: 3, icon: Meh, color: '#ffca28', label: 'Okay' },
+                    { value: 4, icon: Smile, color: '#66bb6a', label: 'Good' },
+                    { value: 5, icon: Heart, color: '#42a5f5', label: 'Amazing' }
+                  ].map(mood => {
+                    const IconComponent = mood.icon;
+                    return (
+                      <div key={mood.value} style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '0.3rem',
+                        fontSize: '0.8rem',
+                        color: '#666'
+                      }}>
+                        <IconComponent size={16} style={{ color: mood.color }} />
+                        <span>{mood.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Calendar View */}
+              <div style={{
+                background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+                borderRadius: '16px',
+                padding: '2rem',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)'
+              }}>
+                <h3 style={{ 
+                  margin: '0 0 1.5rem 0', 
+                  color: '#333',
+                  fontSize: '1.3rem',
+                  fontWeight: '600'
+                }}>
+                  Mood Calendar
+                </h3>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(7, 1fr)',
+                  gap: '0.5rem',
+                  fontSize: '0.8rem'
+                }}>
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} style={{ 
+                      textAlign: 'center', 
+                      fontWeight: '600', 
+                      color: '#666',
+                      padding: '0.5rem'
+                    }}>
+                      {day}
+                    </div>
+                  ))}
+                  {(() => {
+                    const today = new Date();
+                    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    const startDate = new Date(firstDay);
+                    startDate.setDate(startDate.getDate() - firstDay.getDay());
+                    
+                    const days = [];
+                    const current = new Date(startDate);
+                    
+                    // Create entry lookup by date
+                    const entryLookup = {};
+                    pastEntries.forEach(entry => {
+                      entryLookup[entry.date] = entry;
+                    });
+                    
+                    while (current <= lastDay || current.getDay() !== 0) {
+                      const dateStr = current.toLocaleDateString();
+                      const entry = entryLookup[dateStr];
+                      const isCurrentMonth = current.getMonth() === today.getMonth();
+                      
+                      days.push(
+                        <div key={current.toISOString()} style={{
+                          aspectRatio: '1',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '8px',
+                          background: entry ? getMoodIcon(entry.mood).color + '20' : 'transparent',
+                          border: current.toDateString() === today.toDateString() ? '2px solid #667eea' : 'none',
+                          opacity: isCurrentMonth ? 1 : 0.3,
+                          fontSize: entry ? '1.2rem' : '0.9rem',
+                          fontWeight: entry ? '600' : '400',
+                          color: entry ? getMoodIcon(entry.mood).color : '#666'
+                        }}>
+                          {entry ? (
+                            (() => {
+                              const { icon: IconComponent } = getMoodIcon(entry.mood);
+                              return <IconComponent size={16} />;
+                            })()
+                          ) : (
+                            current.getDate()
+                          )}
+                        </div>
+                      );
+                      current.setDate(current.getDate() + 1);
+                    }
+                    
+                    return days;
+                  })()}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <div style={{ fontSize: '1.1rem', color: '#666' }}>Loading statistics...</div>
+            </div>
+          )}
         </>
       )}
     </>
