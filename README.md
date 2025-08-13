@@ -4,7 +4,7 @@
 
 Nightlio is a privacy-first mood tracking application that helps you understand your emotional patterns through daily journaling. Built for self-hosting, your data stays completely under your control.
 
-![Nightlio Screenshot](https://via.placeholder.com/800x400/667eea/ffffff?text=Nightlio+Screenshot)
+*Screenshots coming soon! The database has been populated with demo data for testing.*
 
 ## ✨ Features
 
@@ -42,7 +42,7 @@ Nightlio is a privacy-first mood tracking application that helps you understand 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/nightlio.git
+   git clone https://github.com/shirsakm/nightlio.git
    cd nightlio
    ```
 
@@ -74,16 +74,7 @@ Nightlio is a privacy-first mood tracking application that helps you understand 
 
 ## 🐳 Docker Deployment
 
-For easy deployment, use Docker:
-
-```bash
-# Build and run with Docker Compose
-docker-compose up -d
-
-# Or run directly with Docker
-docker build -t nightlio .
-docker run -p 5173:5173 -v ./data:/app/data nightlio
-```
+*Docker support coming soon! For now, use the manual installation method above.*
 
 ## 📱 Usage Guide
 
@@ -165,7 +156,7 @@ The application automatically creates the necessary database tables:
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Feel free to open issues or submit pull requests.
 
 ### Development Setup
 1. Fork the repository
@@ -188,19 +179,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Inspired by [Daylio](https://daylio.net/) for the mood tracking concept
 - Built with love for the self-hosting community
-- Thanks to all contributors and users who make this project better
 
 ## 📞 Support
 
-- **Documentation**: [Wiki](https://github.com/yourusername/nightlio/wiki)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/nightlio/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/nightlio/discussions)
+- **Documentation**: [GitHub Wiki](https://github.com/shirsakm/nightlio/wiki)
+- **Issues**: [GitHub Issues](https://github.com/shirsakm/nightlio/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/shirsakm/nightlio/discussions)
 
 ---
 
 <div align="center">
 
-**[⭐ Star this repo](https://github.com/yourusername/nightlio)** if you find it helpful!
+**[⭐ Star this repo](https://github.com/shirsakm/nightlio)** if you find it helpful!
 
 Made with ❤️ for better mental health awareness
 
