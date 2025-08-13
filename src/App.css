@@ -1,6 +1,307 @@
 #root {
-  max-width: 1280px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  min-height: 85vh;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.mood-grid {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 3rem 0;
+}
+
+.mood-button {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mood-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(145deg, transparent, rgba(255, 255, 255, 0.3));
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mood-button:hover {
+  transform: translateY(-8px) scale(1.05);
+}
+
+.mood-button:hover::before {
+  opacity: 1;
+}
+
+.mood-button.selected {
+  transform: translateY(-8px) scale(1.05);
+}
+
+@media (max-width: 600px) {
+  #root {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+  
+  .mood-button {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+  }
+}
+
+
+/* MDXEditor Custom Styles */
+.mdx-editor {
+  min-height: 400px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.mdx-editor .mdxeditor-toolbar {
+  background: linear-gradient(145deg, #f8f9fa, #ffffff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 12px 16px;
+}
+
+.mdx-editor .mdxeditor-toolbar button {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  color: #666;
+  padding: 8px;
+}
+
+.mdx-editor .mdxeditor-toolbar button:hover {
+  background: linear-gradient(145deg, #667eea, #764ba2);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.mdx-editor .mdxeditor-toolbar button[data-state="on"] {
+  background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.mdx-editor .mdxeditor-rich-text-editor {
+  padding: 24px;
+  min-height: 350px;
+  line-height: 1.7;
+  background: white;
+  font-size: 16px;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor h1 {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor h2 {
+  color: #434C5E;
+  font-size: 1.4rem;
+  margin: 1.5rem 0 1rem 0;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor h3 {
+  color: #4C566A;
+  font-size: 1.2rem;
+  margin: 1.2rem 0 0.8rem 0;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor p {
+  margin-bottom: 1rem;
+  color: #2E3440;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor ul,
+.mdx-editor .mdxeditor-rich-text-editor ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor li {
+  margin-bottom: 0.5rem;
+  color: #2E3440;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor blockquote {
+  border-left: 4px solid #5E81AC;
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: #E5E9F0;
+  font-style: italic;
+  color: #434C5E;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor code {
+  background: #D8DEE9;
+  color: #2E3440;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor pre {
+  background: #3B4252;
+  color: #ECEFF4;
+  border: 1px solid #434C5E;
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor a {
+  color: #5E81AC;
+  text-decoration: underline;
+}
+
+.mdx-editor .mdxeditor-rich-text-editor a:hover {
+  color: #81A1C1;
+}
+
+/* Focus styles */
+.mdx-editor .mdxeditor-rich-text-editor:focus-within {
+  outline: none;
+}
+
+/* Placeholder styling */
+.mdx-editor .mdxeditor-rich-text-editor:empty::before {
+  content: "Start writing your thoughts...";
+  color: #999;
+  font-style: italic;
+}
+
+/* Mobile responsiveness for editor */
+@media (max-width: 600px) {
+  .mdx-editor .mdxeditor-toolbar {
+    padding: 6px 8px;
+    flex-wrap: wrap;
+  }
+  
+  .mdx-editor .mdxeditor-toolbar button {
+    margin: 2px;
+  }
+  
+  .mdx-editor .mdxeditor-rich-text-editor {
+    padding: 15px;
+    min-height: 300px;
+  }
+  
+  .mdx-editor .mdxeditor-rich-text-editor h1 {
+    font-size: 1.5rem;
+  }
+}/* 
+History Markdown Styles */
+.history-markdown h1 {
+  color: #5E81AC;
+  font-size: 1.3rem;
+  margin: 0 0 0.8rem 0;
+  border-bottom: 1px solid #D8DEE9;
+  padding-bottom: 0.3rem;
+}
+
+.history-markdown h2 {
+  color: #434C5E;
+  font-size: 1.1rem;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.history-markdown h3 {
+  color: #4C566A;
+  font-size: 1rem;
+  margin: 0.8rem 0 0.4rem 0;
+}
+
+.history-markdown p {
+  margin: 0.5rem 0;
+  color: #2E3440;
+}
+
+.history-markdown ul,
+.history-markdown ol {
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+}
+
+.history-markdown li {
+  margin-bottom: 0.2rem;
+}
+
+.history-markdown blockquote {
+  border-left: 3px solid #5E81AC;
+  margin: 0.8rem 0;
+  padding: 0.5rem 1rem;
+  background: #E5E9F0;
+  font-style: italic;
+}
+
+.history-markdown code {
+  background: #D8DEE9;
+  color: #2E3440;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85em;
+}
+
+.history-markdown pre {
+  background: #3B4252;
+  color: #ECEFF4;
+  border: 1px solid #434C5E;
+  border-radius: 4px;
+  padding: 0.8rem;
+  overflow-x: auto;
+  margin: 0.8rem 0;
+}
+
+.history-markdown pre code {
+  background: none;
+  padding: 0;
+}
+
+.history-markdown a {
+  color: #5E81AC;
+  text-decoration: underline;
+}
+
+.history-markdown strong {
+  font-weight: 600;
+  color: #2E3440;
+}
+
+.history-markdown em {
+  font-style: italic;
+  color: #434C5E;
+}

@@ -30,4 +30,9 @@ instance/
 *.pyo
 *.pyd
 __pycache__/
-*.csv
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+data/

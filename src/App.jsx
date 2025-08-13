@@ -1,83 +1,83 @@
-import { useState, useEffect, useRef } from 'react';
-import MDArea from './components/MarkdownArea.jsx';
-import './App.css';
+import { useState } from "react";
+import Header from "./components/Header";
+import Navigation from "./components/Navigation";
+import HistoryView from "./views/HistoryView";
+import EntryView from "./views/EntryView";
+import StatisticsView from "./components/stats/StatisticsView";
+import { useMoodData } from "./hooks/useMoodData";
+import { useGroups } from "./hooks/useGroups";
+import { useStatistics } from "./hooks/useStatistics";
+import "./App.css";
 
 function App() {
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentView, setCurrentView] = useState("history");
   const [selectedMood, setSelectedMood] = useState(null);
-  const markdownRef = useRef();
+  
+  // Custom hooks
+  const { pastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
+  const { groups, createGroup, createGroupOption } = useGroups();
+  const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
-  const moods = [
-    { label: "😢", value: 1 },
-    { label: "😞", value: 2 },
-    { label: "😐", value: 3 },
-    { label: "😊", value: 4 },
-    { label: "😁", value: 5 },
-  ];
+  const handleMoodSelect = (moodValue) => {
+    setSelectedMood(moodValue);
+    setCurrentView("entry");
+  };
 
-  useEffect(() => {
-    fetch('/api/time')
-      .then(response => response.json())
-      .then(data => {
-        setCurrentTime(data.time);
-      })
-    }, []);
+  const handleBackToHistory = () => {
+    setCurrentView("history");
+    setSelectedMood(null);
+  };
+
+  const handleEntrySubmitted = () => {
+    setCurrentView("history");
+    setSelectedMood(null);
+    refreshHistory();
+  };
+
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+  };
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '5rem' }}>
-        <h1>
-          Nightlio
-        </h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <span>
-            Nightly Mood Tracker
-          </span>
-          <span>
-            Recording for {new Date(currentTime * 1000).toLocaleDateString()}
-          </span>
-        </div>
-      </div>
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-        {moods.map(mood => (
-          <button
-            key={mood.value}
-            onClick={() => setSelectedMood(mood.value)}
-            style={{
-              fontSize: '2rem',
-              background: selectedMood === mood.value ? '#eee' : 'transparent',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {mood.label}
-          </button>
-        ))}
-      </div>
-      <MDArea ref={markdownRef} />
-      <div style={{ marginTop: '5rem' }}>
-        <button
-          onClick={() => {
-            if (selectedMood) {
-              const markdownContent = markdownRef.current?.getMarkdown() || '';
-              fetch('/api/mood', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  mood: selectedMood,
-                  date: new Date(currentTime * 1000).toLocaleDateString(),
-                  content: markdownContent,
-                })
-              });
-            }
-          }}>
-          Submit
-        </button>
-      </div>
+      <Header currentView={currentView} currentStreak={currentStreak} />
+      
+      <Navigation 
+        currentView={currentView} 
+        onViewChange={handleViewChange}
+        onLoadStatistics={loadStatistics}
+      />
+
+      {currentView === "history" && (
+        <HistoryView
+          pastEntries={pastEntries}
+          loading={historyLoading}
+          error={historyError}
+          onMoodSelect={handleMoodSelect}
+        />
+      )}
+
+      {currentView === "entry" && (
+        <EntryView
+          selectedMood={selectedMood}
+          groups={groups}
+          onBack={handleBackToHistory}
+          onCreateGroup={createGroup}
+          onCreateOption={createGroupOption}
+          onEntrySubmitted={handleEntrySubmitted}
+        />
+      )}
+
+      {currentView === "stats" && (
+        <StatisticsView
+          statistics={statistics}
+          pastEntries={pastEntries}
+          loading={statsLoading}
+          error={statsError}
+        />
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
