@@ -12,6 +12,14 @@ class Config:
     
     # CORS configuration
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*').split(',')
+    
+    # Google OAuth configuration
+    GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+    
+    # JWT configuration
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or SECRET_KEY
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
 
 class DevelopmentConfig(Config):
     """Development configuration"""

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
 import Navigation from "./components/Navigation";
 import HistoryView from "./views/HistoryView";
@@ -9,7 +11,7 @@ import { useGroups } from "./hooks/useGroups";
 import { useStatistics } from "./hooks/useStatistics";
 import "./App.css";
 
-function App() {
+const AppContent = () => {
   const [currentView, setCurrentView] = useState("history");
   const [selectedMood, setSelectedMood] = useState(null);
   
@@ -77,6 +79,16 @@ function App() {
         />
       )}
     </>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <ProtectedRoute>
+        <AppContent />
+      </ProtectedRoute>
+    </AuthProvider>
   );
 }
 
