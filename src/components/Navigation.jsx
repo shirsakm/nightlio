@@ -13,6 +13,7 @@ const Navigation = ({ currentView, onViewChange, onLoadStatistics }) => {
         gap: '0.5rem',
         justifyContent: 'center',
         marginTop: '1rem',
+        marginBottom: '3rem',
       }}
     >
       <button

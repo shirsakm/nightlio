@@ -1,23 +1,35 @@
 .mood-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  display: flex;
+  justify-content: center;
   gap: 1rem;
   margin: 2rem 0;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 500px) {
+  .mood-grid {
+    flex-wrap: nowrap;
+  }
 }
 
 .mood-button {
-  aspect-ratio: 1;
+  width: 80px;
+  height: 80px;
   border: none;
-  border-radius: 20px;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 80px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 499px) {
+  .mood-button {
+    width: 70px;
+    height: 70px;
+  }
 }
 
 .mood-button:hover {
