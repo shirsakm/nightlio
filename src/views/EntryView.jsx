@@ -61,7 +61,7 @@ const EntryView = ({
   };
 
   return (
-    <>
+    <div style={{ marginTop: '2rem' }}>
       {/* Back Button */}
       <div style={{ marginBottom: '2rem' }}>
         <button
@@ -142,7 +142,7 @@ const EntryView = ({
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

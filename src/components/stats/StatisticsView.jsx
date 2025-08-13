@@ -30,7 +30,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
   const weeklyData = getWeeklyMoodData(pastEntries);
 
   return (
-    <div style={{ textAlign: 'left' }}>
+    <div style={{ textAlign: 'left', marginTop: '2rem' }}>
       {/* Overview Cards */}
       <div
         style={{
