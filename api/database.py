@@ -17,16 +17,36 @@ class MoodDatabase:
     def init_database(self):
         """Initialize the database with required tables"""
         with sqlite3.connect(self.db_path) as conn:
+            print("Initializing database tables...")
+            
+            # Create users table
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    google_id TEXT UNIQUE NOT NULL,
+                    email TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    avatar_url TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            print("✅ Users table created")
+            
+            # Create mood_entries table with user_id
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS mood_entries (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
                     date TEXT NOT NULL,
                     mood INTEGER NOT NULL CHECK (mood >= 1 AND mood <= 5),
                     content TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
                 )
             ''')
+            print("✅ Mood entries table created")
             
             # Create groups table
             conn.execute('''
@@ -36,6 +56,7 @@ class MoodDatabase:
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
+            print("✅ Groups table created")
             
             # Create group options table
             conn.execute('''
@@ -47,6 +68,7 @@ class MoodDatabase:
                     FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
                 )
             ''')
+            print("✅ Group options table created")
             
             # Create table to store selected options for each entry
             conn.execute('''
@@ -59,31 +81,34 @@ class MoodDatabase:
                     FOREIGN KEY (option_id) REFERENCES group_options (id) ON DELETE CASCADE
                 )
             ''')
+            print("✅ Entry selections table created")
             
             # Create index for faster date queries
             conn.execute('''
                 CREATE INDEX IF NOT EXISTS idx_mood_entries_date 
                 ON mood_entries(date)
             ''')
+            print("✅ Database indexes created")
             
             conn.commit()
+            print("✅ Database initialization complete")
             
             # Insert default groups and options if they don't exist
             self._insert_default_groups()
     
-    def add_mood_entry(self, date: str, mood: int, content: str, time: str = None, selected_options: List[int] = None) -> int:
+    def add_mood_entry(self, user_id: int, date: str, mood: int, content: str, time: str = None, selected_options: List[int] = None) -> int:
         """Add a new mood entry and return the entry ID"""
         with sqlite3.connect(self.db_path) as conn:
             if time:
                 cursor = conn.execute('''
-                    INSERT INTO mood_entries (date, mood, content, created_at)
-                    VALUES (?, ?, ?, ?)
-                ''', (date, mood, content, time))
+                    INSERT INTO mood_entries (user_id, date, mood, content, created_at)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (user_id, date, mood, content, time))
             else:
                 cursor = conn.execute('''
-                    INSERT INTO mood_entries (date, mood, content)
-                    VALUES (?, ?, ?)
-                ''', (date, mood, content))
+                    INSERT INTO mood_entries (user_id, date, mood, content)
+                    VALUES (?, ?, ?, ?)
+                ''', (user_id, date, mood, content))
             
             entry_id = cursor.lastrowid
             
@@ -95,43 +120,44 @@ class MoodDatabase:
             conn.commit()
             return entry_id
     
-    def get_all_mood_entries(self) -> List[Dict]:
-        """Get all mood entries ordered by created_at (newest first)"""
+    def get_all_mood_entries(self, user_id: int) -> List[Dict]:
+        """Get all mood entries for a user ordered by created_at (newest first)"""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute('''
                 SELECT id, date, mood, content, created_at, updated_at
                 FROM mood_entries
+                WHERE user_id = ?
                 ORDER BY created_at DESC, date DESC
-            ''')
+            ''', (user_id,))
             return [dict(row) for row in cursor.fetchall()]
     
-    def get_mood_entries_by_date_range(self, start_date: str, end_date: str) -> List[Dict]:
-        """Get mood entries within a date range"""
+    def get_mood_entries_by_date_range(self, user_id: int, start_date: str, end_date: str) -> List[Dict]:
+        """Get mood entries within a date range for a user"""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute('''
                 SELECT id, date, mood, content, created_at, updated_at
                 FROM mood_entries
-                WHERE date BETWEEN ? AND ?
+                WHERE user_id = ? AND date BETWEEN ? AND ?
                 ORDER BY created_at DESC, date DESC
-            ''', (start_date, end_date))
+            ''', (user_id, start_date, end_date))
             return [dict(row) for row in cursor.fetchall()]
     
-    def get_mood_entry_by_id(self, entry_id: int) -> Optional[Dict]:
-        """Get a specific mood entry by ID"""
+    def get_mood_entry_by_id(self, user_id: int, entry_id: int) -> Optional[Dict]:
+        """Get a specific mood entry by ID for a user"""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute('''
                 SELECT id, date, mood, content, created_at, updated_at
                 FROM mood_entries
-                WHERE id = ?
-            ''', (entry_id,))
+                WHERE id = ? AND user_id = ?
+            ''', (entry_id, user_id))
             row = cursor.fetchone()
             return dict(row) if row else None
     
-    def update_mood_entry(self, entry_id: int, mood: int = None, content: str = None) -> bool:
-        """Update an existing mood entry"""
+    def update_mood_entry(self, user_id: int, entry_id: int, mood: int = None, content: str = None) -> bool:
+        """Update an existing mood entry for a user"""
         updates = []
         params = []
         
@@ -147,28 +173,28 @@ class MoodDatabase:
             return False
         
         updates.append("updated_at = CURRENT_TIMESTAMP")
-        params.append(entry_id)
+        params.extend([entry_id, user_id])
         
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute(f'''
                 UPDATE mood_entries 
                 SET {", ".join(updates)}
-                WHERE id = ?
+                WHERE id = ? AND user_id = ?
             ''', params)
             conn.commit()
             return cursor.rowcount > 0
     
-    def delete_mood_entry(self, entry_id: int) -> bool:
-        """Delete a mood entry by ID"""
+    def delete_mood_entry(self, user_id: int, entry_id: int) -> bool:
+        """Delete a mood entry by ID for a user"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute('''
-                DELETE FROM mood_entries WHERE id = ?
-            ''', (entry_id,))
+                DELETE FROM mood_entries WHERE id = ? AND user_id = ?
+            ''', (entry_id, user_id))
             conn.commit()
             return cursor.rowcount > 0
     
-    def get_mood_statistics(self) -> Dict:
-        """Get mood statistics"""
+    def get_mood_statistics(self, user_id: int) -> Dict:
+        """Get mood statistics for a specific user"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute('''
                 SELECT 
@@ -179,7 +205,8 @@ class MoodDatabase:
                     MIN(date) as first_entry_date,
                     MAX(date) as last_entry_date
                 FROM mood_entries
-            ''')
+                WHERE user_id = ?
+            ''', (user_id,))
             row = cursor.fetchone()
             
             if row and row[0] > 0:  # total_entries > 0
@@ -201,26 +228,28 @@ class MoodDatabase:
                     'last_entry_date': None
                 }
     
-    def get_mood_counts(self) -> Dict[int, int]:
-        """Get count of each mood level"""
+    def get_mood_counts(self, user_id: int) -> Dict[int, int]:
+        """Get count of each mood level for a specific user"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute('''
                 SELECT mood, COUNT(*) as count
                 FROM mood_entries
+                WHERE user_id = ?
                 GROUP BY mood
                 ORDER BY mood
-            ''')
+            ''', (user_id,))
             return {row[0]: row[1] for row in cursor.fetchall()}
     
-    def get_current_streak(self) -> int:
-        """Calculate the current consecutive days streak"""
+    def get_current_streak(self, user_id: int) -> int:
+        """Calculate the current consecutive days streak for a specific user"""
         with sqlite3.connect(self.db_path) as conn:
             # Get distinct dates with entries, ordered by date descending
             cursor = conn.execute('''
                 SELECT DISTINCT date
                 FROM mood_entries
+                WHERE user_id = ?
                 ORDER BY date DESC
-            ''')
+            ''', (user_id,))
             dates = [row[0] for row in cursor.fetchall()]
             
             if not dates:
@@ -379,4 +408,48 @@ class MoodDatabase:
                 WHERE es.entry_id = ?
                 ORDER BY g.name, go.name
             ''', (entry_id,))
-            return [dict(row) for row in cursor.fetchall()]
+            return [dict(row) for row in cursor.fetchall()] 
+   # User management functions
+    def create_user(self, google_id: str, email: str, name: str, avatar_url: str = None) -> int:
+        """Create a new user and return user ID"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute('''
+                INSERT INTO users (google_id, email, name, avatar_url)
+                VALUES (?, ?, ?, ?)
+            ''', (google_id, email, name, avatar_url))
+            conn.commit()
+            return cursor.lastrowid
+    
+    def get_user_by_google_id(self, google_id: str) -> Optional[Dict]:
+        """Get user by Google ID"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.execute('''
+                SELECT id, google_id, email, name, avatar_url, created_at, last_login
+                FROM users
+                WHERE google_id = ?
+            ''', (google_id,))
+            row = cursor.fetchone()
+            return dict(row) if row else None
+    
+    def get_user_by_id(self, user_id: int) -> Optional[Dict]:
+        """Get user by ID"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.execute('''
+                SELECT id, google_id, email, name, avatar_url, created_at, last_login
+                FROM users
+                WHERE id = ?
+            ''', (user_id,))
+            row = cursor.fetchone()
+            return dict(row) if row else None
+    
+    def update_user_last_login(self, user_id: int):
+        """Update user's last login timestamp"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute('''
+                UPDATE users 
+                SET last_login = CURRENT_TIMESTAMP
+                WHERE id = ?
+            ''', (user_id,))
+            conn.commit()
