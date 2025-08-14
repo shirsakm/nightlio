@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
+import { Web3Provider } from "./contexts/Web3Context";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
 import Navigation from "./components/Navigation";
@@ -84,11 +85,13 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <ProtectedRoute>
-        <AppContent />
-      </ProtectedRoute>
-    </AuthProvider>
+    <Web3Provider>
+      <AuthProvider>
+        <ProtectedRoute>
+          <AppContent />
+        </ProtectedRoute>
+      </AuthProvider>
+    </Web3Provider>
   );
 }
 

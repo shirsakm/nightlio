@@ -1,5 +1,6 @@
-import { Zap, LogOut } from 'lucide-react';
+import { Zap, LogOut, Wallet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Header = ({ currentView, currentStreak }) => {
   const { user, logout } = useAuth();
@@ -66,9 +67,90 @@ const Header = ({ currentView, currentStreak }) => {
           )}
         </div>
 
-        {/* Right side - User Profile */}
+        {/* Right side - User Profile & Web3 */}
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* Web3 Connect Button */}
+            <ConnectButton.Custom>
+              {({
+                account,
+                chain,
+                openAccountModal,
+                openChainModal,
+                openConnectModal,
+                mounted,
+              }) => {
+                const ready = mounted;
+                const connected = ready && account && chain;
+
+                return (
+                  <div
+                    {...(!ready && {
+                      'aria-hidden': true,
+                      style: {
+                        opacity: 0,
+                        pointerEvents: 'none',
+                        userSelect: 'none',
+                      },
+                    })}
+                  >
+                    {(() => {
+                      if (!connected) {
+                        return (
+                          <button
+                            onClick={openConnectModal}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              padding: '0.4rem 0.8rem',
+                              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '20px',
+                              cursor: 'pointer',
+                              fontSize: '0.8rem',
+                              fontWeight: '500',
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            <Wallet size={14} />
+                            Connect Wallet
+                          </button>
+                        );
+                      }
+
+                      return (
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button
+                            onClick={openAccountModal}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              padding: '0.4rem 0.8rem',
+                              background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '20px',
+                              cursor: 'pointer',
+                              fontSize: '0.8rem',
+                              fontWeight: '500',
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            <Wallet size={14} />
+                            {account.displayName}
+                          </button>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                );
+              }}
+            </ConnectButton.Custom>
+
+            {/* User Profile */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {user.avatar_url && (
                 <img
@@ -90,6 +172,7 @@ const Header = ({ currentView, currentStreak }) => {
                 {user.name}
               </span>
             </div>
+            
             <button
               onClick={logout}
               style={{
