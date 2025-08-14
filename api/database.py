@@ -114,11 +114,11 @@ class MoodDatabase:
             ''')
             print("✅ Database indexes created")
             
-                conn.commit()
-                print("✅ Database initialization complete")
-                
-                # Insert default groups and options if they don't exist
-                self._insert_default_groups()
+            conn.commit()
+            print("✅ Database initialization complete")
+            
+            # Insert default groups and options if they don't exist
+            self._insert_default_groups()
                 
         except Exception as e:
             print(f"❌ Database initialization failed: {str(e)}")
