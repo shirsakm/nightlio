@@ -83,6 +83,22 @@ class MoodDatabase:
             ''')
             print("✅ Entry selections table created")
             
+            # Create achievements table
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS achievements (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    achievement_type TEXT NOT NULL,
+                    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    nft_minted BOOLEAN DEFAULT FALSE,
+                    nft_token_id INTEGER,
+                    nft_tx_hash TEXT,
+                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                    UNIQUE(user_id, achievement_type)
+                )
+            ''')
+            print("✅ Achievements table created")
+            
             # Create index for faster date queries
             conn.execute('''
                 CREATE INDEX IF NOT EXISTS idx_mood_entries_date 
@@ -453,3 +469,75 @@ class MoodDatabase:
                 WHERE id = ?
             ''', (user_id,))
             conn.commit()
+    
+    # Achievement management functions
+    def add_achievement(self, user_id: int, achievement_type: str) -> int:
+        """Add an achievement for a user (if not already earned)"""
+        with sqlite3.connect(self.db_path) as conn:
+            try:
+                cursor = conn.execute('''
+                    INSERT INTO achievements (user_id, achievement_type)
+                    VALUES (?, ?)
+                ''', (user_id, achievement_type))
+                conn.commit()
+                return cursor.lastrowid
+            except sqlite3.IntegrityError:
+                # Achievement already exists
+                return None
+    
+    def get_user_achievements(self, user_id: int) -> List[Dict]:
+        """Get all achievements for a user"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.execute('''
+                SELECT id, achievement_type, earned_at, nft_minted, nft_token_id, nft_tx_hash
+                FROM achievements
+                WHERE user_id = ?
+                ORDER BY earned_at DESC
+            ''', (user_id,))
+            return [dict(row) for row in cursor.fetchall()]
+    
+    def update_achievement_nft(self, achievement_id: int, token_id: int, tx_hash: str):
+        """Update achievement with NFT minting information"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute('''
+                UPDATE achievements 
+                SET nft_minted = TRUE, nft_token_id = ?, nft_tx_hash = ?
+                WHERE id = ?
+            ''', (token_id, tx_hash, achievement_id))
+            conn.commit()
+    
+    def check_achievements(self, user_id: int) -> List[str]:
+        """Check and award new achievements for a user"""
+        new_achievements = []
+        
+        with sqlite3.connect(self.db_path) as conn:
+            # Get user stats
+            cursor = conn.execute('''
+                SELECT COUNT(*) as total_entries
+                FROM mood_entries
+                WHERE user_id = ?
+            ''', (user_id,))
+            total_entries = cursor.fetchone()[0]
+            
+            # Get current streak
+            current_streak = self.get_current_streak(user_id)
+            
+            # Get stats views (we'll need to track this separately)
+            # For now, we'll skip this achievement
+            
+            # Check achievements
+            achievements_to_check = [
+                ('first_entry', total_entries >= 1),
+                ('week_warrior', current_streak >= 7),
+                ('consistency_king', current_streak >= 30),
+                ('mood_master', total_entries >= 100),
+            ]
+            
+            for achievement_type, condition in achievements_to_check:
+                if condition:
+                    achievement_id = self.add_achievement(user_id, achievement_type)
+                    if achievement_id:  # New achievement
+                        new_achievements.append(achievement_type)
+        
+        return new_achievements

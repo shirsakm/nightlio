@@ -7,15 +7,23 @@ class MoodService:
         self.db = db
 
     def create_mood_entry(self, user_id: int, date: str, mood: int, content: str, 
-                         time: str = None, selected_options: List[int] = None) -> int:
-        """Create a new mood entry"""
+                         time: str = None, selected_options: List[int] = None) -> Dict:
+        """Create a new mood entry and check for achievements"""
         if not (1 <= mood <= 5):
             raise ValueError("Mood must be between 1 and 5")
         
         if not content.strip():
             raise ValueError("Content cannot be empty")
             
-        return self.db.add_mood_entry(user_id, date, mood, content, time, selected_options)
+        entry_id = self.db.add_mood_entry(user_id, date, mood, content, time, selected_options)
+        
+        # Check for new achievements
+        new_achievements = self.db.check_achievements(user_id)
+        
+        return {
+            'entry_id': entry_id,
+            'new_achievements': new_achievements
+        }
 
     def get_all_entries(self, user_id: int) -> List[Dict]:
         """Get all mood entries for a user"""
