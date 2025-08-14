@@ -21,11 +21,12 @@ def create_mood_routes(mood_service: MoodService):
             if not all([mood, date, content]):
                 return jsonify({'error': 'Missing required fields'}), 400
 
-            entry_id = mood_service.create_mood_entry(user_id, date, mood, content, time, selected_options)
+            result = mood_service.create_mood_entry(user_id, date, mood, content, time, selected_options)
             
             return jsonify({
                 'status': 'success',
-                'entry_id': entry_id,
+                'entry_id': result['entry_id'],
+                'new_achievements': result['new_achievements'],
                 'message': 'Mood entry created successfully'
             }), 201
 
