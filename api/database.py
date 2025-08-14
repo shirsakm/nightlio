@@ -12,12 +12,20 @@ class MoodDatabase:
             db_path = os.path.join(data_dir, 'nightlio.db')
         
         self.db_path = db_path
+        
+        # Ensure directory exists for the database file
+        db_dir = os.path.dirname(self.db_path)
+        if db_dir:  # Only create directory if path has a directory component
+            os.makedirs(db_dir, exist_ok=True)
+        
         self.init_database()
     
     def init_database(self):
         """Initialize the database with required tables"""
-        with sqlite3.connect(self.db_path) as conn:
-            print("Initializing database tables...")
+        try:
+            print(f"Initializing database at: {self.db_path}")
+            with sqlite3.connect(self.db_path) as conn:
+                print("Database connection successful. Creating tables...")
             
             # Create users table
             conn.execute('''
@@ -106,11 +114,18 @@ class MoodDatabase:
             ''')
             print("✅ Database indexes created")
             
-            conn.commit()
-            print("✅ Database initialization complete")
-            
-            # Insert default groups and options if they don't exist
-            self._insert_default_groups()
+                conn.commit()
+                print("✅ Database initialization complete")
+                
+                # Insert default groups and options if they don't exist
+                self._insert_default_groups()
+                
+        except Exception as e:
+            print(f"❌ Database initialization failed: {str(e)}")
+            print(f"Database path: {self.db_path}")
+            print(f"Database directory exists: {os.path.exists(os.path.dirname(self.db_path))}")
+            print(f"Database directory writable: {os.access(os.path.dirname(self.db_path), os.W_OK)}")
+            raise
     
     def add_mood_entry(self, user_id: int, date: str, mood: int, content: str, time: str = None, selected_options: List[int] = None) -> int:
         """Add a new mood entry and return the entry ID"""

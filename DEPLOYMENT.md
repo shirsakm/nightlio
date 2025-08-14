@@ -81,13 +81,13 @@ Your current Vercel + Railway setup is:
 
 ## Cost Breakdown (Monthly)
 
-| Service | Free Tier | Paid Tier |
-|---------|-----------|-----------|
-| Vercel | 100GB bandwidth | $20/month |
-| Railway | 500 hours | $5/month |
-| Render | 750 hours | $7/month |
-| EC2 | 750 hours (1st year) | ~$8/month |
-| Supabase | 500MB DB | $25/month |
+| Service  | Free Tier            | Paid Tier |
+| -------- | -------------------- | --------- |
+| Vercel   | 100GB bandwidth      | $20/month |
+| Railway  | 500 hours            | $5/month  |
+| Render   | 750 hours            | $7/month  |
+| EC2      | 750 hours (1st year) | ~$8/month |
+| Supabase | 500MB DB             | $25/month |
 
 ## Security Checklist for Production
 
