@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? process.env.VITE_API_URL || 'https://your-app-name.up.railway.app'
+  : 'http://localhost:5000';
 
 class ApiService {
   constructor() {
@@ -21,9 +23,9 @@ class ApiService {
 
     if (this.token) {
       config.headers.Authorization = `Bearer ${this.token}`;
-      console.log('API Request with token:', this.token.substring(0, 20) + '...');
+      // console.log('API Request with token:', this.token.substring(0, 20) + '...');
     } else {
-      console.log('API Request WITHOUT token');
+      // console.log('API Request WITHOUT token');
     }
 
     try {

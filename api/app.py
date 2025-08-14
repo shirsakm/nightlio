@@ -18,6 +18,7 @@ from routes.auth_routes import create_auth_routes
 from routes.misc_routes import create_misc_routes
 from routes.achievement_routes import create_achievement_routes
 from utils.error_handlers import setup_error_handlers
+from utils.security_headers import add_security_headers
 
 def create_app(config_name='default'):
     """Application factory pattern"""
@@ -30,6 +31,9 @@ def create_app(config_name='default'):
 
     # Setup error handlers
     setup_error_handlers(app)
+    
+    # Add security headers
+    add_security_headers(app)
 
     # Initialize database
     db = MoodDatabase(app.config.get('DATABASE_PATH'))
@@ -56,7 +60,20 @@ def create_app(config_name='default'):
     return app
 
 if __name__ == '__main__':
-    app = create_app('development')
+    import os
+    
+    # Get environment from Railway or default to development
+    env = os.getenv('RAILWAY_ENVIRONMENT', 'development')
+    app = create_app(env)
+    
     print("Starting Flask app...")
+    print(f"Environment: {env}")
     print(f"Google Client ID loaded: {app.config.get('GOOGLE_CLIENT_ID', 'NOT FOUND')}")
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    
+    # Use Railway's PORT or default to 5000
+    port = int(os.getenv('PORT', 5000))
+    
+    if env == 'production':
+        app.run(host='0.0.0.0', port=port, debug=False)
+    else:
+        app.run(debug=True, host='127.0.0.1', port=port)
