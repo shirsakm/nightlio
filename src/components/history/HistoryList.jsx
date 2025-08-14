@@ -1,6 +1,6 @@
 import HistoryEntry from './HistoryEntry';
 
-const HistoryList = ({ entries, loading, error }) => {
+const HistoryList = ({ entries, loading, error, onDelete }) => {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
@@ -28,7 +28,11 @@ const HistoryList = ({ entries, loading, error }) => {
   return (
     <div style={{ textAlign: 'left', marginTop: '2rem' }}>
       {entries.map(entry => (
-        <HistoryEntry key={entry.id || entry.date} entry={entry} />
+        <HistoryEntry 
+          key={entry.id || entry.date} 
+          entry={entry} 
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );

@@ -1,5 +1,5 @@
 // Contract addresses and ABIs
-export const NIGHTLIO_ACHIEVEMENTS_ADDRESS = '0xc9e1e06191a1e9bd049e609ccba34357e8909c5e';
+export const NIGHTLIO_ACHIEVEMENTS_ADDRESS = '0xc5e7088b30226524c34a3467660af2927f82ef5b';
 
 // Simplified ABI - only the functions we need
 export const NIGHTLIO_ACHIEVEMENTS_ABI = [
@@ -60,4 +60,16 @@ export const ACHIEVEMENT_TYPES = {
   CONSISTENCY_KING: 2,
   DATA_LOVER: 3,
   MOOD_MASTER: 4
+};
+
+// Helper function to convert backend achievement types to contract types
+export const getAchievementTypeNumber = (backendType) => {
+  const mapping = {
+    'first_entry': 0,
+    'week_warrior': 1,
+    'consistency_king': 2,
+    'data_lover': 3,
+    'mood_master': 4
+  };
+  return mapping[backendType];
 };

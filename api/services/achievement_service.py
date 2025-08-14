@@ -10,31 +10,31 @@ class AchievementService:
             'first_entry': {
                 'name': 'First Entry',
                 'description': 'Log your first mood entry',
-                'icon': '🔥',
+                'icon': 'Zap',
                 'rarity': 'common'
             },
             'week_warrior': {
                 'name': 'Week Warrior', 
                 'description': 'Maintain a 7-day streak',
-                'icon': '⚡',
+                'icon': 'Flame',
                 'rarity': 'uncommon'
             },
             'consistency_king': {
                 'name': 'Consistency King',
                 'description': 'Maintain a 30-day streak', 
-                'icon': '🎯',
+                'icon': 'Target',
                 'rarity': 'rare'
             },
             'data_lover': {
                 'name': 'Data Lover',
                 'description': 'View statistics 10 times',
-                'icon': '📊', 
+                'icon': 'BarChart3', 
                 'rarity': 'uncommon'
             },
             'mood_master': {
                 'name': 'Mood Master',
                 'description': 'Log 100 total entries',
-                'icon': '🌟',
+                'icon': 'Crown',
                 'rarity': 'legendary'
             }
         }

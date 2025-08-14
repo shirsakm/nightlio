@@ -1,9 +1,12 @@
 import { Zap, LogOut, Wallet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 
 const Header = ({ currentView, currentStreak }) => {
   const { user, logout } = useAuth();
+  const { address, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
   const getSubtitle = () => {
     switch (currentView) {
       case 'history':
@@ -15,6 +18,8 @@ const Header = ({ currentView, currentStreak }) => {
         )}`;
       case 'stats':
         return 'Your mood insights and patterns';
+      case 'achievements':
+        return 'Unlock achievements and mint them as NFTs on Sepolia testnet';
       default:
         return 'Your daily mood companion';
     }
@@ -71,84 +76,49 @@ const Header = ({ currentView, currentStreak }) => {
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {/* Web3 Connect Button */}
-            <ConnectButton.Custom>
-              {({
-                account,
-                chain,
-                openAccountModal,
-                openChainModal,
-                openConnectModal,
-                mounted,
-              }) => {
-                const ready = mounted;
-                const connected = ready && account && chain;
-
-                return (
-                  <div
-                    {...(!ready && {
-                      'aria-hidden': true,
-                      style: {
-                        opacity: 0,
-                        pointerEvents: 'none',
-                        userSelect: 'none',
-                      },
-                    })}
-                  >
-                    {(() => {
-                      if (!connected) {
-                        return (
-                          <button
-                            onClick={openConnectModal}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.3rem',
-                              padding: '0.4rem 0.8rem',
-                              background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '20px',
-                              cursor: 'pointer',
-                              fontSize: '0.8rem',
-                              fontWeight: '500',
-                              transition: 'all 0.3s ease'
-                            }}
-                          >
-                            <Wallet size={14} />
-                            Connect Wallet
-                          </button>
-                        );
-                      }
-
-                      return (
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <button
-                            onClick={openAccountModal}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.3rem',
-                              padding: '0.4rem 0.8rem',
-                              background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '20px',
-                              cursor: 'pointer',
-                              fontSize: '0.8rem',
-                              fontWeight: '500',
-                              transition: 'all 0.3s ease'
-                            }}
-                          >
-                            <Wallet size={14} />
-                            {account.displayName}
-                          </button>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                );
-              }}
-            </ConnectButton.Custom>
+            {!isConnected ? (
+              <button
+                onClick={() => connect({ connector: connectors[0] })}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  padding: '0.4rem 0.8rem',
+                  background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem',
+                  fontWeight: '500',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <Wallet size={14} />
+                Connect Wallet
+              </button>
+            ) : (
+              <button
+                onClick={() => disconnect()}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  padding: '0.4rem 0.8rem',
+                  background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem',
+                  fontWeight: '500',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <Wallet size={14} />
+                {address?.slice(0, 6)}...{address?.slice(-4)}
+              </button>
+            )}
 
             {/* User Profile */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
