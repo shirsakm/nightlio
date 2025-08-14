@@ -36,7 +36,7 @@ const EntryView = ({
       const markdownContent = markdownRef.current?.getMarkdown() || '';
       const now = new Date();
       
-      await apiService.createMoodEntry({
+      const response = await apiService.createMoodEntry({
         mood: selectedMood,
         date: now.toLocaleDateString(),
         time: now.toISOString(),
@@ -44,7 +44,13 @@ const EntryView = ({
         selected_options: selectedOptions,
       });
 
-      setSubmitMessage('Entry saved successfully! 🎉');
+      // Check for new achievements
+      if (response.new_achievements && response.new_achievements.length > 0) {
+        const achievementNames = response.new_achievements.join(', ');
+        setSubmitMessage(`Entry saved! 🎉 New achievement unlocked: ${achievementNames}`);
+      } else {
+        setSubmitMessage('Entry saved successfully! 🎉');
+      }
       
       // Reset the editor
       markdownRef.current?.getInstance()?.setMarkdown('# How was your day?\n\nWrite about your thoughts, feelings, and experiences...');

@@ -119,6 +119,27 @@ class ApiService {
   async getEntrySelections(entryId) {
     return this.request(`/api/mood/${entryId}/selections`);
   }
+
+  // Achievement endpoints
+  async getUserAchievements() {
+    return this.request('/api/achievements');
+  }
+
+  async checkAchievements() {
+    return this.request('/api/achievements/check', {
+      method: 'POST',
+    });
+  }
+
+  async mintAchievementNFT(achievementId, tokenId, txHash) {
+    return this.request(`/api/achievements/${achievementId}/mint`, {
+      method: 'POST',
+      body: JSON.stringify({
+        token_id: tokenId,
+        tx_hash: txHash,
+      }),
+    });
+  }
 }
 
 const apiService = new ApiService();
