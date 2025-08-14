@@ -30,6 +30,9 @@ class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
     TESTING = False
+    
+    # Use Railway's writable directory for database
+    DATABASE_PATH = os.environ.get('DATABASE_PATH') or '/tmp/nightlio.db'
 
 class TestingConfig(Config):
     """Testing configuration"""
