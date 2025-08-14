@@ -27,11 +27,11 @@ export const AuthProvider = ({ children }) => {
 
   const verifyToken = async () => {
     try {
-      console.log('Verifying token:', token?.substring(0, 20) + '...');
+      // console.log('Verifying token:', token?.substring(0, 20) + '...');
       const userData = await apiService.verifyToken(token);
       setUser(userData.user);
       apiService.setAuthToken(token);
-      console.log('Token verification successful');
+      // console.log('Token verification successful');
     } catch (error) {
       console.error('Token verification failed:', error);
       logout();

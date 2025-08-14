@@ -43,21 +43,28 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
     return (
       <div style={{ 
         padding: '1.5rem',
-        borderRadius: '12px',
+        borderRadius: '16px',
         background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
         textAlign: 'center',
-        maxWidth: '300px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '320px',
+        maxWidth: '450px',
         margin: '0 auto',
         color: '#666'
       }}>
         <div style={{ 
-          fontSize: '2rem', 
-          marginBottom: '0.5rem' 
+          fontSize: '3rem', 
+          marginBottom: '1rem',
+          opacity: 0.7
         }}>⏳</div>
         <div style={{ 
           color: '#666',
-          fontSize: '0.9rem'
+          fontSize: '0.9rem',
+          fontWeight: '500'
         }}>
           Checking NFT status...
         </div>
@@ -77,24 +84,25 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
   return (
     <div style={{
       padding: '1.5rem',
-      borderRadius: '12px',
+      borderRadius: '16px',
       background: isUnlocked 
         ? 'linear-gradient(145deg, #ffffff, #f8f9fa)'
         : 'linear-gradient(145deg, #f5f5f5, #e8e8e8)',
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
       textAlign: 'center',
-      height: '100%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      width: '100%',
-      minHeight: '280px',
+      minHeight: '320px',
+      maxWidth: '450px',
+      margin: '0 auto',
       opacity: isUnlocked ? 1 : 0.6,
-      filter: isUnlocked ? 'none' : 'grayscale(50%)'
+      filter: isUnlocked ? 'none' : 'grayscale(50%)',
+      transition: 'all 0.3s ease'
     }}>
       {/* Icon */}
       <div style={{ 
-        marginBottom: '1rem',
+        marginBottom: '1.5rem',
         display: 'flex',
         justifyContent: 'center'
       }}>
@@ -103,34 +111,42 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
             ? 'linear-gradient(135deg, #667eea, #764ba2)'
             : 'linear-gradient(135deg, #999, #777)',
           borderRadius: '50%',
-          padding: '0.75rem',
+          padding: '1rem',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          boxShadow: '0 4px 15px rgba(102, 126, 234, 0.2)'
         }}>
-          <IconComponent size={24} color="white" />
+          <IconComponent size={28} color="white" />
         </div>
       </div>
       
       {/* Content */}
-      <div style={{ flex: 1 }}>
-        <h3 style={{ 
-          color: isUnlocked ? '#333' : '#777', 
-          margin: '0 0 0.5rem 0',
-          fontSize: '1.1rem',
-          fontWeight: '700'
-        }}>
-          {achievement.name}
-        </h3>
-        
-        <p style={{ 
-          color: isUnlocked ? '#666' : '#999', 
-          margin: '0 0 1rem 0',
-          fontSize: '0.85rem',
-          lineHeight: '1.3'
-        }}>
-          {achievement.description}
-        </p>
+      <div style={{ 
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
+      }}>
+        <div>
+          <h3 style={{ 
+            color: isUnlocked ? '#333' : '#777', 
+            margin: '0 0 0.75rem 0',
+            fontSize: '1.2rem',
+            fontWeight: '700'
+          }}>
+            {achievement.name}
+          </h3>
+          
+          <p style={{ 
+            color: isUnlocked ? '#666' : '#999', 
+            margin: '0 0 1.5rem 0',
+            fontSize: '0.9rem',
+            lineHeight: '1.4'
+          }}>
+            {achievement.description}
+          </p>
+        </div>
 
         {/* Rarity Badge */}
         <div style={{
@@ -138,13 +154,14 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
                      achievement.rarity === 'rare' ? '#9b59b6' :
                      achievement.rarity === 'uncommon' ? '#3498db' : '#95a5a6',
           color: 'white',
-          padding: '0.3rem 0.8rem',
-          borderRadius: '20px',
-          fontSize: '0.7rem',
+          padding: '0.4rem 1rem',
+          borderRadius: '25px',
+          fontSize: '0.75rem',
           fontWeight: '700',
           display: 'inline-block',
-          marginBottom: '1rem',
-          letterSpacing: '0.5px'
+          marginBottom: '1.5rem',
+          letterSpacing: '0.5px',
+          alignSelf: 'center'
         }}>
           {achievement.rarity.toUpperCase()}
         </div>
