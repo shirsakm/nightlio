@@ -1,5 +1,5 @@
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.VITE_API_URL || 'https://your-app-name.up.railway.app'
+  ? process.env.VITE_API_URL || 'https://nightlio-production.up.railway.app'
   : 'http://localhost:5000';
 
 class ApiService {
