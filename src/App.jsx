@@ -7,6 +7,7 @@ import Navigation from "./components/Navigation";
 import HistoryView from "./views/HistoryView";
 import EntryView from "./views/EntryView";
 import StatisticsView from "./components/stats/StatisticsView";
+import AchievementsView from "./views/AchievementsView";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
 import { useStatistics } from "./hooks/useStatistics";
@@ -78,6 +79,10 @@ const AppContent = () => {
           loading={statsLoading}
           error={statsError}
         />
+      )}
+
+      {currentView === "achievements" && (
+        <AchievementsView />
       )}
     </>
   );
