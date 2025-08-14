@@ -72,6 +72,8 @@ if __name__ == '__main__':
     
     # Use Railway's PORT or default to 5000
     port = int(os.getenv('PORT', 5000))
+    print(f"Starting server on port: {port}")
+    print(f"Host: {'0.0.0.0' if env == 'production' else '127.0.0.1'}")
     
     if env == 'production':
         app.run(host='0.0.0.0', port=port, debug=False)
