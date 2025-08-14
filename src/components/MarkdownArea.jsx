@@ -52,6 +52,22 @@ const MyComponent = forwardRef((props, ref) => {
       background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
       boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)'
     }}>
+      <style>
+        {`
+          .mdx-editor .prose {
+            text-align: left !important;
+          }
+          .mdx-editor .prose * {
+            text-align: left !important;
+          }
+          .mdx-editor [data-editor-type="root"] {
+            text-align: left !important;
+          }
+          .mdx-editor [contenteditable] {
+            text-align: left !important;
+          }
+        `}
+      </style>
       <MDXEditor
         ref={editorRef}
         markdown={`# How was your day?

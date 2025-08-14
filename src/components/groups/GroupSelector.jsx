@@ -3,18 +3,6 @@ const GroupSelector = ({ groups, selectedOptions, onOptionToggle }) => {
 
   return (
     <div style={{ marginBottom: '2rem' }}>
-      <h2 style={{
-        color: '#333',
-        fontSize: '1.3rem',
-        fontWeight: '700',
-        marginBottom: '1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}>
-        🏷️ Categories
-      </h2>
-      
       {groups.map(group => (
         <div
           key={group.id}

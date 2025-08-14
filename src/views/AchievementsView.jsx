@@ -101,13 +101,25 @@ const AchievementsView = () => {
       )}
 
       {/* Achievements Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '2rem',
-        alignItems: 'start',
-        justifyItems: 'center'
-      }}>
+      <style>
+        {`
+          .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            align-items: stretch;
+            max-width: 800px;
+            margin: 0 auto;
+          }
+          
+          @media (max-width: 768px) {
+            .achievements-grid {
+              grid-template-columns: 1fr;
+            }
+          }
+        `}
+      </style>
+      <div className="achievements-grid">
         {/* All possible achievements */}
         {getAllAchievements().map((achievement, index) => {
           const unlockedAchievement = achievements.find(a => a.achievement_type === achievement.achievement_type);

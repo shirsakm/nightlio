@@ -14,13 +14,13 @@ export const useNFT = () => {
 
   // Check if user has a specific achievement NFT
   const useHasAchievement = (achievementType) => {
-    const typeNumber = getAchievementTypeNumber(achievementType);
+    const typeNumber = achievementType ? getAchievementTypeNumber(achievementType) : null;
     return useReadContract({
       address: NIGHTLIO_ACHIEVEMENTS_ADDRESS,
       abi: NIGHTLIO_ACHIEVEMENTS_ABI,
       functionName: 'hasAchievement',
       args: [address, typeNumber],
-      enabled: !!address && typeNumber !== undefined,
+      enabled: !!address && !!achievementType && typeNumber !== undefined,
     });
   };
 
