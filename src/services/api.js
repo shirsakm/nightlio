@@ -21,6 +21,9 @@ class ApiService {
 
     if (this.token) {
       config.headers.Authorization = `Bearer ${this.token}`;
+      console.log('API Request with token:', this.token.substring(0, 20) + '...');
+    } else {
+      console.log('API Request WITHOUT token');
     }
 
     try {

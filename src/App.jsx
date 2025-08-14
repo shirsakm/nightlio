@@ -18,7 +18,7 @@ const AppContent = () => {
   const [selectedMood, setSelectedMood] = useState(null);
   
   // Custom hooks
-  const { pastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
+  const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
   const { groups, createGroup, createGroupOption } = useGroups();
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
@@ -36,6 +36,11 @@ const AppContent = () => {
     setCurrentView("history");
     setSelectedMood(null);
     refreshHistory();
+  };
+
+  const handleEntryDeleted = (deletedEntryId) => {
+    // Remove the deleted entry from the local state
+    setPastEntries(prev => prev.filter(entry => entry.id !== deletedEntryId));
   };
 
   const handleViewChange = (view) => {
@@ -58,6 +63,7 @@ const AppContent = () => {
           loading={historyLoading}
           error={historyError}
           onMoodSelect={handleMoodSelect}
+          onDelete={handleEntryDeleted}
         />
       )}
 

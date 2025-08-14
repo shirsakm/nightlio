@@ -1,10 +1,7 @@
 import { createContext, useContext } from 'react';
 import { WagmiProvider } from 'wagmi';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { config } from '../config/wagmi';
-
-import '@rainbow-me/rainbowkit/styles.css';
 
 const Web3Context = createContext();
 
@@ -27,9 +24,7 @@ export const Web3Provider = ({ children }) => {
     <Web3Context.Provider value={value}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-            {children}
-          </RainbowKitProvider>
+          {children}
         </QueryClientProvider>
       </WagmiProvider>
     </Web3Context.Provider>

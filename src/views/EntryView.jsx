@@ -46,8 +46,20 @@ const EntryView = ({
 
       // Check for new achievements
       if (response.new_achievements && response.new_achievements.length > 0) {
-        const achievementNames = response.new_achievements.join(', ');
-        setSubmitMessage(`Entry saved! 🎉 New achievement unlocked: ${achievementNames}`);
+        // Map achievement types to readable names
+        const achievementNames = {
+          'first_entry': 'First Entry',
+          'week_warrior': 'Week Warrior',
+          'consistency_king': 'Consistency King',
+          'data_lover': 'Data Lover',
+          'mood_master': 'Mood Master'
+        };
+        
+        const readableNames = response.new_achievements
+          .map(type => achievementNames[type] || type)
+          .join(', ');
+        
+        setSubmitMessage(`Entry saved! 🎉 New achievement unlocked: ${readableNames}`);
       } else {
         setSubmitMessage('Entry saved successfully! 🎉');
       }
@@ -137,15 +149,51 @@ const EntryView = ({
         {submitMessage && (
           <div
             style={{
-              marginTop: '1rem',
-              padding: '0.5rem',
-              color: submitMessage.includes('success') ? '#4ecdc4' : '#ff6b6b',
-              fontWeight: '500',
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: 'white',
+              padding: '2rem',
+              borderRadius: '16px',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              zIndex: 1000,
               textAlign: 'center',
+              minWidth: '300px',
+              backdropFilter: 'blur(20px)'
             }}
           >
-            {submitMessage}
+            <div style={{
+              fontSize: '3rem',
+              marginBottom: '1rem'
+            }}>
+              🎉
+            </div>
+            <div style={{
+              color: submitMessage.includes('achievement') ? '#4ecdc4' : '#333',
+              fontWeight: '600',
+              fontSize: '1.1rem',
+              lineHeight: '1.4'
+            }}>
+              {submitMessage}
+            </div>
           </div>
+        )}
+        
+        {/* Backdrop */}
+        {submitMessage && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 999
+            }}
+          />
         )}
       </div>
     </div>

@@ -42,41 +42,42 @@ contract NightlioAchievements is ERC721, Ownable {
         achievements[AchievementType.FIRST_ENTRY] = Achievement(
             "First Entry",
             "Log your first mood entry",
-            "https://your-domain.com/nft/first-entry.json",
+            "", // Not used - metadata generated in tokenURI
             "Common"
         );
         
         achievements[AchievementType.WEEK_WARRIOR] = Achievement(
             "Week Warrior", 
             "Maintain a 7-day streak",
-            "https://your-domain.com/nft/week-warrior.json",
+            "", // Not used - metadata generated in tokenURI
             "Uncommon"
         );
         
         achievements[AchievementType.CONSISTENCY_KING] = Achievement(
             "Consistency King",
             "Maintain a 30-day streak",
-            "https://your-domain.com/nft/consistency-king.json", 
+            "", // Not used - metadata generated in tokenURI
             "Rare"
         );
         
         achievements[AchievementType.DATA_LOVER] = Achievement(
             "Data Lover",
             "View statistics 10 times",
-            "https://your-domain.com/nft/data-lover.json",
+            "", // Not used - metadata generated in tokenURI
             "Uncommon"
         );
         
         achievements[AchievementType.MOOD_MASTER] = Achievement(
             "Mood Master",
             "Log 100 total entries", 
-            "https://your-domain.com/nft/mood-master.json",
+            "", // Not used - metadata generated in tokenURI
             "Legendary"
         );
     }
     
-    function mintAchievement(address to, AchievementType achievementType) public onlyOwner {
+    function mintAchievement(address to, AchievementType achievementType) public {
         require(userAchievements[to][achievementType] == 0, "Achievement already minted for this user");
+        require(to == msg.sender, "Can only mint for yourself"); // Security: users can only mint for themselves
         
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
