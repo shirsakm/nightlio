@@ -13,9 +13,9 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
     console.error('Write error from wagmi:', writeError);
   }
   
-  // Check if user already has this achievement NFT (only if unlocked)
+  // Check if user already has this achievement NFT (only if unlocked and connected)
   const { data: hasNFT, isLoading: checkingNFT } = useHasAchievement(
-    isUnlocked ? achievement.achievement_type : null
+    isUnlocked && isConnected ? achievement.achievement_type : null
   );
 
   const handleMint = async () => {
@@ -42,12 +42,25 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
   if (checkingNFT) {
     return (
       <div style={{ 
-        padding: '1rem', 
-        border: '1px solid #ddd', 
-        borderRadius: '8px',
-        textAlign: 'center'
+        padding: '1.5rem',
+        borderRadius: '12px',
+        background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+        textAlign: 'center',
+        maxWidth: '300px',
+        margin: '0 auto',
+        color: '#666'
       }}>
-        Checking NFT status...
+        <div style={{ 
+          fontSize: '2rem', 
+          marginBottom: '0.5rem' 
+        }}>⏳</div>
+        <div style={{ 
+          color: '#666',
+          fontSize: '0.9rem'
+        }}>
+          Checking NFT status...
+        </div>
       </div>
     );
   }
@@ -74,8 +87,8 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      maxWidth: '300px',
-      margin: '0 auto',
+      width: '100%',
+      minHeight: '280px',
       opacity: isUnlocked ? 1 : 0.6,
       filter: isUnlocked ? 'none' : 'grayscale(50%)'
     }}>

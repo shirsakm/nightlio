@@ -55,20 +55,27 @@ const HistoryEntry = ({ entry, onDelete }) => {
             background: isDeleting ? '#ccc' : '#ff6b6b',
             color: 'white',
             border: 'none',
-            borderRadius: '50%',
-            width: '32px',
-            height: '32px',
+            borderRadius: '8px',
+            width: '36px',
+            height: '36px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: isDeleting ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
-            opacity: 0.8,
+            opacity: 0.9,
+            boxShadow: '0 2px 8px rgba(255, 107, 107, 0.3)',
           }}
-          onMouseEnter={(e) => e.target.style.opacity = '1'}
-          onMouseLeave={(e) => e.target.style.opacity = '0.8'}
+          onMouseEnter={(e) => {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.opacity = '0.9';
+            e.target.style.transform = 'scale(1)';
+          }}
         >
-          <Trash2 size={16} />
+          <Trash2 size={18} strokeWidth={2} />
         </button>
       )}
 
