@@ -98,14 +98,14 @@ const LoginPage = () => {
   }, []);
 
   const handleGoogleResponse = async (response) => {
-    console.log("Google response received:", response);
+    // console.log("Google response received:", response); // REMOVED - contains sensitive data
     setIsLoading(true);
     setError("");
 
     try {
-      console.log("Attempting login with credential...");
+      // console.log("Attempting login with credential..."); // REMOVED - not needed
       const result = await login(response.credential);
-      console.log("Login result:", result);
+      // console.log("Login result:", result); // REMOVED - may contain sensitive data
 
       if (!result.success) {
         setError(result.error || "Login failed. Please try again.");
