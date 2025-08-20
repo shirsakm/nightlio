@@ -47,3 +47,20 @@ class UserService:
             avatar_url=avatar_url,
         )
         return user
+
+    # Self-host local user provisioning
+    def ensure_local_user(self, default_user_id: str) -> Dict:
+        """Ensure a self-host single-user exists and return it.
+
+        We reuse the google_id column to avoid schema changes: the synthetic id
+        is stored as google_id with provider fixed to 'google'-style storage.
+        """
+        # Store synthetic id in google_id for compatibility
+        user = self.db.get_user_by_google_id(default_user_id)
+        if user:
+            self.db.update_user_last_login(user['id'])
+            return user
+        # Email column is NOT NULL in current schema; provide a synthetic email
+        synthetic_email = f"{default_user_id}@localhost"
+        user_id = self.db.create_user(default_user_id, email=synthetic_email, name=default_user_id, avatar_url=None)
+        return self.db.get_user_by_id(user_id)

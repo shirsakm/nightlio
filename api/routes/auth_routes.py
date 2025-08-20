@@ -5,6 +5,8 @@ import requests
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from services.user_service import UserService
+from utils.rate_limiter import rate_limit
+from config import get_config
 
 def create_auth_routes(user_service: UserService):
     auth_bp = Blueprint('auth', __name__)
@@ -89,6 +91,45 @@ def create_auth_routes(user_service: UserService):
         except Exception as e:
             current_app.logger.error(f"Token verification error: {str(e)}")
             return jsonify({'error': 'Token verification failed'}), 500
+
+    @auth_bp.route('/auth/local/login', methods=['POST'])
+    @rate_limit(max_requests=30, window_minutes=1)
+    def local_login():
+        """Local self-host login: ensure a single default user and issue JWT."""
+        try:
+            cfg = get_config()
+            default_user_id = cfg.DEFAULT_SELF_HOST_ID
+
+            user = user_service.ensure_local_user(default_user_id)
+
+            # Prefer typed JWT secret; fallback to legacy config
+            jwt_secret = cfg.JWT_SECRET or current_app.config.get('JWT_SECRET_KEY')
+            if not jwt_secret:
+                return jsonify({'error': 'JWT not configured'}), 500
+
+            from jose import jwt as jose_jwt
+            from datetime import datetime, timedelta
+
+            payload = {
+                'user_id': user['id'],
+                'exp': datetime.utcnow() + timedelta(seconds=current_app.config['JWT_ACCESS_TOKEN_EXPIRES']),
+                'iat': datetime.utcnow()
+            }
+
+            token = jose_jwt.encode(payload, jwt_secret, algorithm='HS256')
+
+            return jsonify({
+                'token': token,
+                'user': {
+                    'id': user['id'],
+                    'name': user['name'],
+                    'email': user.get('email'),
+                    'avatar_url': user.get('avatar_url')
+                }
+            }), 200
+        except Exception as e:
+            current_app.logger.error(f"Local login error: {e}")
+            return jsonify({'error': 'Authentication failed'}), 500
 
     def verify_google_token(token: str) -> dict:
         """Verify Google OAuth token and return user info"""
