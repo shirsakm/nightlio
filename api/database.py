@@ -126,6 +126,18 @@ class MoodDatabase:
             print(f"Database directory exists: {os.path.exists(os.path.dirname(self.db_path))}")
             print(f"Database directory writable: {os.access(os.path.dirname(self.db_path), os.W_OK)}")
             raise
+
+    def _connect(self) -> sqlite3.Connection:
+        """Create a SQLite connection with safe defaults.
+
+        - Enables foreign keys.
+        """
+        conn = sqlite3.connect(self.db_path)
+        try:
+            conn.execute('PRAGMA foreign_keys=ON')
+        except Exception:
+            pass
+        return conn
     
     def add_mood_entry(self, user_id: int, date: str, mood: int, content: str, time: str = None, selected_options: List[int] = None) -> int:
         """Add a new mood entry and return the entry ID"""
@@ -440,50 +452,109 @@ class MoodDatabase:
                 ORDER BY g.name, go.name
             ''', (entry_id,))
             return [dict(row) for row in cursor.fetchall()] 
-   # User management functions
+    # User management functions
     def create_user(self, google_id: str, email: str, name: str, avatar_url: str = None) -> int:
         """Create a new user and return user ID"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.execute('''
+        with self._connect() as conn:
+            cursor = conn.execute(
+                '''
                 INSERT INTO users (google_id, email, name, avatar_url)
                 VALUES (?, ?, ?, ?)
-            ''', (google_id, email, name, avatar_url))
+                ''',
+                (google_id, email, name, avatar_url)
+            )
             conn.commit()
             return cursor.lastrowid
     
     def get_user_by_google_id(self, google_id: str) -> Optional[Dict]:
         """Get user by Google ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
-            cursor = conn.execute('''
+            cursor = conn.execute(
+                '''
                 SELECT id, google_id, email, name, avatar_url, created_at, last_login
                 FROM users
                 WHERE google_id = ?
-            ''', (google_id,))
+                ''',
+                (google_id,)
+            )
             row = cursor.fetchone()
             return dict(row) if row else None
     
     def get_user_by_id(self, user_id: int) -> Optional[Dict]:
         """Get user by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
-            cursor = conn.execute('''
+            cursor = conn.execute(
+                '''
                 SELECT id, google_id, email, name, avatar_url, created_at, last_login
                 FROM users
                 WHERE id = ?
-            ''', (user_id,))
+                ''',
+                (user_id,)
+            )
             row = cursor.fetchone()
             return dict(row) if row else None
     
     def update_user_last_login(self, user_id: int):
         """Update user's last login timestamp"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute('''
                 UPDATE users 
                 SET last_login = CURRENT_TIMESTAMP
                 WHERE id = ?
             ''', (user_id,))
             conn.commit()
+
+    def upsert_user_by_google_id(self, google_id: str, email: Optional[str], name: Optional[str], avatar_url: Optional[str] = None) -> Dict:
+        """Idempotently insert or update a user by google_id and return the row.
+
+        Uses a single transaction with BEGIN IMMEDIATE and ON CONFLICT upsert to be race-safe.
+        """
+        with self._connect() as conn:
+            conn.row_factory = sqlite3.Row
+            # Lock for write to avoid race conditions on the unique index
+            conn.execute('BEGIN IMMEDIATE')
+            try:
+                try:
+                    cursor = conn.execute(
+                        '''
+                        INSERT INTO users (google_id, email, name, avatar_url)
+                        VALUES (?, ?, ?, ?)
+                        ON CONFLICT(google_id) DO UPDATE SET
+                          email=COALESCE(excluded.email, users.email),
+                          name=COALESCE(excluded.name, users.name),
+                          avatar_url=COALESCE(excluded.avatar_url, users.avatar_url),
+                          last_login=CURRENT_TIMESTAMP
+                        RETURNING id, google_id, email, name, avatar_url, created_at, last_login
+                        ''',
+                        (google_id, email, name, avatar_url)
+                    )
+                    row = cursor.fetchone()
+                except sqlite3.OperationalError:
+                    # Fallback for older SQLite without RETURNING
+                    conn.execute(
+                        '''
+                        INSERT INTO users (google_id, email, name, avatar_url)
+                        VALUES (?, ?, ?, ?)
+                        ON CONFLICT(google_id) DO UPDATE SET
+                          email=COALESCE(excluded.email, users.email),
+                          name=COALESCE(excluded.name, users.name),
+                          avatar_url=COALESCE(excluded.avatar_url, users.avatar_url),
+                          last_login=CURRENT_TIMESTAMP
+                        ''',
+                        (google_id, email, name, avatar_url)
+                    )
+                    row = conn.execute(
+                        'SELECT id, google_id, email, name, avatar_url, created_at, last_login FROM users WHERE google_id = ?',
+                        (google_id,)
+                    ).fetchone()
+
+                conn.commit()
+                return dict(row) if row else None
+            except Exception:
+                conn.rollback()
+                raise
     
     # Achievement management functions
     def add_achievement(self, user_id: int, achievement_type: str) -> int:

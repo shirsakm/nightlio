@@ -70,7 +70,8 @@ def google_callback():
         return jsonify({"error": "User service unavailable"}), 500
 
     # Reuse the existing method for now; a dedicated handler will be added later
-    user = user_service.get_or_create_user(google_id=provider_user_id, email=email, name=name, avatar_url=avatar)
+    # Use idempotent upsert path
+    user = user_service.handle_oauth_login('google', provider_user_id, email, name, avatar)
 
     # Issue JWT using existing app config (legacy)
     try:

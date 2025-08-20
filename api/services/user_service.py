@@ -26,3 +26,24 @@ class UserService:
     def update_last_login(self, user_id: int):
         """Update user's last login timestamp"""
         self.db.update_user_last_login(user_id)
+
+    # New OAuth handler with idempotent upsert
+    def handle_oauth_login(self, provider: str, provider_user_id: str, email: Optional[str], name: Optional[str], avatar_url: Optional[str] = None) -> Dict:
+        """Insert/update a user based on OAuth identity and return the user dict.
+
+        For now, this repo stores google identities in a google_id column.
+        We upsert by google_id to remain backward-compatible.
+
+        Returns a dict with at least: id, email, name, avatar_url.
+        """
+        if provider != 'google':
+            # Future-proof: only google supported in current schema
+            raise ValueError('Unsupported provider')
+
+        user = self.db.upsert_user_by_google_id(
+            google_id=provider_user_id,
+            email=email,
+            name=name,
+            avatar_url=avatar_url,
+        )
+        return user
