@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
 
 # Editor directories and files
 .vscode/*
@@ -36,3 +37,6 @@ __pycache__/
 *.sqlite
 *.sqlite3
 data/
+
+# Pytest
+*.pytest_cache/

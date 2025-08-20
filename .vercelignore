@@ -1,0 +1,14 @@
+# Ignore backend files for Vercel deployment
+api/
+*.py
+*.pyc
+__pycache__/
+requirements.txt
+Procfile
+railway.json
+
+# Ignore other non-frontend files
+data/
+contracts/
+*.md
+.env.example

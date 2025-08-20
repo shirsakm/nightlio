@@ -1,35 +1,57 @@
+import re
 from typing import Any, Dict, List
-from datetime import datetime
 
-def validate_mood_value(mood: Any) -> bool:
-    """Validate that mood is an integer between 1 and 5"""
-    return isinstance(mood, int) and 1 <= mood <= 5
+def validate_mood_entry(data: Dict[str, Any]) -> List[str]:
+    """Validate mood entry data"""
+    errors = []
+    
+    # Validate mood value
+    mood = data.get('mood')
+    if not isinstance(mood, int) or not (1 <= mood <= 5):
+        errors.append('Mood must be an integer between 1 and 5')
+    
+    # Validate content
+    content = data.get('content', '').strip()
+    if not content:
+        errors.append('Content cannot be empty')
+    elif len(content) > 10000:  # 10KB limit
+        errors.append('Content too long (max 10,000 characters)')
+    
+    # Validate date format
+    date = data.get('date', '')
+    if not re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', date):
+        errors.append('Invalid date format (expected MM/DD/YYYY)')
+    
+    # Validate selected options
+    selected_options = data.get('selected_options', [])
+    if not isinstance(selected_options, list):
+        errors.append('Selected options must be a list')
+    elif len(selected_options) > 50:  # Reasonable limit
+        errors.append('Too many selected options (max 50)')
+    
+    return errors
 
-def validate_required_fields(data: Dict, required_fields: List[str]) -> List[str]:
-    """Validate that all required fields are present and not empty"""
-    missing_fields = []
-    for field in required_fields:
-        if field not in data or not data[field]:
-            missing_fields.append(field)
-    return missing_fields
+def validate_group_data(data: Dict[str, Any]) -> List[str]:
+    """Validate group creation data"""
+    errors = []
+    
+    name = data.get('name', '').strip()
+    if not name:
+        errors.append('Group name cannot be empty')
+    elif len(name) > 100:
+        errors.append('Group name too long (max 100 characters)')
+    elif not re.match(r'^[a-zA-Z0-9\s\-_]+$', name):
+        errors.append('Group name contains invalid characters')
+    
+    return errors
 
-def validate_date_format(date_str: str) -> bool:
-    """Validate date string format"""
-    try:
-        # Try common date formats
-        formats = ['%m/%d/%Y', '%Y-%m-%d', '%d/%m/%Y']
-        for fmt in formats:
-            try:
-                datetime.strptime(date_str, fmt)
-                return True
-            except ValueError:
-                continue
-        return False
-    except:
-        return False
-
-def sanitize_string(text: str) -> str:
-    """Basic string sanitization"""
-    if not isinstance(text, str):
-        return ""
-    return text.strip()[:10000]  # Limit length to prevent abuse
+def sanitize_string(value: str, max_length: int = 1000) -> str:
+    """Sanitize string input"""
+    if not isinstance(value, str):
+        return ''
+    
+    # Remove null bytes and control characters
+    sanitized = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', value)
+    
+    # Trim whitespace and limit length
+    return sanitized.strip()[:max_length]

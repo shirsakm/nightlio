@@ -1,20 +1,25 @@
 import { useState } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import { Web3Provider } from "./contexts/Web3Context";
+import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
 import Navigation from "./components/Navigation";
 import HistoryView from "./views/HistoryView";
 import EntryView from "./views/EntryView";
 import StatisticsView from "./components/stats/StatisticsView";
+import AchievementsView from "./views/AchievementsView";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
 import { useStatistics } from "./hooks/useStatistics";
 import "./App.css";
 
-function App() {
+const AppContent = () => {
   const [currentView, setCurrentView] = useState("history");
   const [selectedMood, setSelectedMood] = useState(null);
   
   // Custom hooks
-  const { pastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
+  const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
   const { groups, createGroup, createGroupOption } = useGroups();
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
@@ -32,6 +37,11 @@ function App() {
     setCurrentView("history");
     setSelectedMood(null);
     refreshHistory();
+  };
+
+  const handleEntryDeleted = (deletedEntryId) => {
+    // Remove the deleted entry from the local state
+    setPastEntries(prev => prev.filter(entry => entry.id !== deletedEntryId));
   };
 
   const handleViewChange = (view) => {
@@ -54,6 +64,7 @@ function App() {
           loading={historyLoading}
           error={historyError}
           onMoodSelect={handleMoodSelect}
+          onDelete={handleEntryDeleted}
         />
       )}
 
@@ -76,7 +87,36 @@ function App() {
           error={statsError}
         />
       )}
+
+      {currentView === "achievements" && (
+        <AchievementsView />
+      )}
     </>
+  );
+};
+
+const RootProviders = ({ children }) => {
+  const { config, loading } = useConfig();
+  if (loading) return null;
+  const content = (
+    <AuthProvider>
+      <ProtectedRoute>
+        {children}
+      </ProtectedRoute>
+    </AuthProvider>
+  );
+  return config.enable_web3 ? (
+    <Web3Provider>{content}</Web3Provider>
+  ) : content;
+};
+
+function App() {
+  return (
+    <ConfigProvider>
+      <RootProviders>
+        <AppContent />
+      </RootProviders>
+    </ConfigProvider>
   );
 }
 

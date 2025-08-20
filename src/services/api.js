@@ -1,6 +1,20 @@
-const API_BASE_URL = '/api';
+// Prefer Vite envs; allow overriding API base via VITE_API_URL in any mode
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL
+    : ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV)
+        ? 'http://localhost:5000'
+        : 'https://nightlio-production.up.railway.app');
 
 class ApiService {
+  constructor() {
+    this.token = null;
+  }
+
+  setAuthToken(token) {
+    this.token = token;
+  }
+
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const config = {
@@ -11,103 +25,142 @@ class ApiService {
       ...options,
     };
 
+    if (this.token) {
+      config.headers.Authorization = `Bearer ${this.token}`;
+      // console.log('API Request with token:', this.token.substring(0, 20) + '...');
+    } else {
+      // console.log('API Request WITHOUT token');
+    }
+
     try {
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
-      console.error(`API request failed: ${endpoint}`, error);
+      console.error('API request failed:', error);
       throw error;
     }
   }
 
-  // Mood entries
-  async getMoodEntries(startDate, endDate) {
-    const params = new URLSearchParams();
-    if (startDate) params.append('start_date', startDate);
-    if (endDate) params.append('end_date', endDate);
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return this.request(`/moods${query}`);
+  // Public config
+  async getPublicConfig() {
+    return this.request('/api/config');
   }
 
-  async createMoodEntry(data) {
-    return this.request('/mood', {
+  // Authentication endpoints
+  async googleAuth(googleToken) {
+    return this.request('/api/auth/google', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({ token: googleToken }),
     });
   }
 
-  async getMoodEntry(id) {
-    return this.request(`/mood/${id}`);
+  async localLogin() {
+    return this.request('/api/auth/local/login', {
+      method: 'POST',
+    });
   }
 
-  async updateMoodEntry(id, data) {
-    return this.request(`/mood/${id}`, {
+  async verifyToken(token) {
+    return this.request('/api/auth/verify', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  // Mood entries endpoints
+  async getMoodEntries() {
+    return this.request('/api/moods');
+  }
+
+  async createMoodEntry(entryData) {
+    return this.request('/api/mood', {
+      method: 'POST',
+      body: JSON.stringify(entryData),
+    });
+  }
+
+  async updateMoodEntry(entryId, entryData) {
+    return this.request(`/api/mood/${entryId}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify(entryData),
     });
   }
 
-  async deleteMoodEntry(id) {
-    return this.request(`/mood/${id}`, {
+  async deleteMoodEntry(entryId) {
+    return this.request(`/api/mood/${entryId}`, {
       method: 'DELETE',
     });
   }
 
-  // Groups
-  async getGroups() {
-    return this.request('/groups');
-  }
-
-  async createGroup(name) {
-    return this.request('/groups', {
-      method: 'POST',
-      body: JSON.stringify({ name }),
-    });
-  }
-
-  async deleteGroup(id) {
-    return this.request(`/groups/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async createGroupOption(groupId, name) {
-    return this.request(`/groups/${groupId}/options`, {
-      method: 'POST',
-      body: JSON.stringify({ name }),
-    });
-  }
-
-  async deleteGroupOption(optionId) {
-    return this.request(`/options/${optionId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Entry selections
-  async getEntrySelections(entryId) {
-    return this.request(`/mood/${entryId}/selections`);
-  }
-
-  // Statistics
+  // Statistics endpoints
   async getStatistics() {
-    return this.request('/statistics');
+    return this.request('/api/statistics');
   }
 
+  // Streak endpoint
   async getCurrentStreak() {
-    return this.request('/streak');
+    return this.request('/api/streak');
   }
 
-  // Time
-  async getCurrentTime() {
-    return this.request('/time');
+  // Groups endpoints
+  async getGroups() {
+    return this.request('/api/groups');
+  }
+
+  async createGroup(groupData) {
+    return this.request('/api/groups', {
+      method: 'POST',
+      body: JSON.stringify(groupData),
+    });
+  }
+
+  async createGroupOption(groupId, optionData) {
+    return this.request(`/api/groups/${groupId}/options`, {
+      method: 'POST',
+      body: JSON.stringify(optionData),
+    });
+  }
+
+  async deleteGroup(groupId) {
+    return this.request(`/api/groups/${groupId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Entry selections endpoint
+  async getEntrySelections(entryId) {
+    return this.request(`/api/mood/${entryId}/selections`);
+  }
+
+  // Achievement endpoints
+  async getUserAchievements() {
+    return this.request('/api/achievements');
+  }
+
+  async checkAchievements() {
+    return this.request('/api/achievements/check', {
+      method: 'POST',
+    });
+  }
+
+  async mintAchievementNFT(achievementId, tokenId, txHash) {
+    return this.request(`/api/achievements/${achievementId}/mint`, {
+      method: 'POST',
+      body: JSON.stringify({
+        token_id: tokenId,
+        tx_hash: txHash,
+      }),
+    });
   }
 }
 
-export default new ApiService();
+const apiService = new ApiService();
+export default apiService;

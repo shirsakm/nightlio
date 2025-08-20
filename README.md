@@ -127,12 +127,19 @@ SECRET_KEY=your-secret-key-here
 CORS_ORIGINS=http://localhost:5173,https://yourdomain.com
 ```
 
+
+If you plan to enable Google OAuth or Web3 features, also install the optional dependencies:
+```bash
+pip install -r api/requirements-optional.txt
+```
+
 ### Database Schema
 The application automatically creates the necessary database tables:
 - `mood_entries` - Your daily journal entries
 - `groups` - Custom categories
 - `group_options` - Specific options within categories
 - `entry_selections` - Links between entries and selected options
+
 
 ## 📊 API Reference
 
@@ -149,10 +156,39 @@ The application automatically creates the necessary database tables:
 - `POST /api/groups/<id>/options` - Add option to category
 - `DELETE /api/groups/<id>` - Delete category
 
+
+### Self-hosting and Environment Config
+
+1. Copy the example environment and adjust values:
+```bash
+cp .env.example .env
+```
+
+2. Defaults run in self-host mode with Google OAuth and Web3 disabled. Key variables:
+- ENABLE_GOOGLE_OAUTH=0
+- GOOGLE_CLIENT_ID=
+- GOOGLE_CLIENT_SECRET=
+- GOOGLE_CALLBACK_URL=
+- ENABLE_WEB3=0
+- WEB3_RPC_URL=
+- WEB3_CONTRACT_ADDRESS=
+- JWT_SECRET=  (set a strong value before deploying)
+- DEFAULT_SELF_HOST_ID=selfhost_default_user
+
+3. Frontend config (optional): copy `.env.local` if needed and set `VITE_API_URL` (defaults to http://localhost:5000). If enabling Google OAuth, set `VITE_GOOGLE_CLIENT_ID`.
+
+4. Enabling optional features:
+- Google OAuth: set ENABLE_GOOGLE_OAUTH=1 and provide GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL. Ensure the frontend has VITE_GOOGLE_CLIENT_ID. Install optional deps if not already: `pip install -r api/requirements-optional.txt`.
+- Web3: set ENABLE_WEB3=1 and provide WEB3_RPC_URL and WEB3_CONTRACT_ADDRESS. Install optional deps if not already: `pip install -r api/requirements-optional.txt`.
+
+The app will run with or without optional dependencies based on these flags. When disabled, related code paths are not imported.
+
+## Usage
 ### Analytics
 - `GET /api/statistics` - Get mood statistics
 - `GET /api/streak` - Get current streak
 - `GET /api/mood/<id>/selections` - Get entry selections
+
 
 ## 🤝 Contributing
 

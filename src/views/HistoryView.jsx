@@ -1,11 +1,16 @@
 import MoodPicker from '../components/mood/MoodPicker';
 import HistoryList from '../components/history/HistoryList';
 
-const HistoryView = ({ pastEntries, loading, error, onMoodSelect }) => {
+const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete }) => {
   return (
     <>
       <MoodPicker onMoodSelect={onMoodSelect} />
-      <HistoryList entries={pastEntries} loading={loading} error={error} />
+      <HistoryList 
+        entries={pastEntries} 
+        loading={loading} 
+        error={error} 
+        onDelete={onDelete}
+      />
     </>
   );
 };

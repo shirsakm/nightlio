@@ -41,6 +41,7 @@ export const useMoodData = () => {
 
   return {
     pastEntries,
+    setPastEntries,
     loading,
     error,
     refreshHistory: loadHistory,
