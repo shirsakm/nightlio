@@ -1,12 +1,63 @@
 import { Zap, LogOut, Wallet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useConfig } from '../contexts/ConfigContext';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 
-const Header = ({ currentView, currentStreak }) => {
-  const { user, logout } = useAuth();
+const Web3Controls = () => {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
+
+  return (
+    !isConnected ? (
+      <button
+        onClick={() => connect({ connector: connectors[0] })}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.3rem',
+          padding: '0.4rem 0.8rem',
+          background: 'linear-gradient(135deg, #667eea, #764ba2)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '20px',
+          cursor: 'pointer',
+          fontSize: '0.8rem',
+          fontWeight: '500',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        <Wallet size={14} />
+        Connect Wallet
+      </button>
+    ) : (
+      <button
+        onClick={() => disconnect()}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.3rem',
+          padding: '0.4rem 0.8rem',
+          background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '20px',
+          cursor: 'pointer',
+          fontSize: '0.8rem',
+          fontWeight: '500',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        <Wallet size={14} />
+        {address?.slice(0, 6)}...{address?.slice(-4)}
+      </button>
+    )
+  );
+};
+
+const Header = ({ currentView, currentStreak }) => {
+  const { user, logout } = useAuth();
+  const { config } = useConfig();
   const getSubtitle = () => {
     switch (currentView) {
       case 'history':
@@ -72,53 +123,11 @@ const Header = ({ currentView, currentStreak }) => {
           )}
         </div>
 
-        {/* Right side - User Profile & Web3 */}
+    {/* Right side - User Profile & optional Web3 */}
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Web3 Connect Button */}
-            {!isConnected ? (
-              <button
-                onClick={() => connect({ connector: connectors[0] })}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                  padding: '0.4rem 0.8rem',
-                  background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                  fontSize: '0.8rem',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <Wallet size={14} />
-                Connect Wallet
-              </button>
-            ) : (
-              <button
-                onClick={() => disconnect()}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                  padding: '0.4rem 0.8rem',
-                  background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                  fontSize: '0.8rem',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <Wallet size={14} />
-                {address?.slice(0, 6)}...{address?.slice(-4)}
-              </button>
-            )}
+      {/* Web3 controls only if enabled */}
+      {config?.enable_web3 ? <Web3Controls /> : null}
 
             {/* User Profile */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

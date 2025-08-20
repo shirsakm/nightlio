@@ -1,6 +1,10 @@
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.VITE_API_URL || 'https://nightlio-production.up.railway.app'
-  : 'http://localhost:5000';
+// Prefer Vite envs; allow overriding API base via VITE_API_URL in any mode
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL
+    : ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV)
+        ? 'http://localhost:5000'
+        : 'https://nightlio-production.up.railway.app');
 
 class ApiService {
   constructor() {
@@ -43,11 +47,22 @@ class ApiService {
     }
   }
 
+  // Public config
+  async getPublicConfig() {
+    return this.request('/api/config');
+  }
+
   // Authentication endpoints
   async googleAuth(googleToken) {
     return this.request('/api/auth/google', {
       method: 'POST',
       body: JSON.stringify({ token: googleToken }),
+    });
+  }
+
+  async localLogin() {
+    return this.request('/api/auth/local/login', {
+      method: 'POST',
     });
   }
 

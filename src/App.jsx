@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Web3Provider } from "./contexts/Web3Context";
+import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
 import Navigation from "./components/Navigation";
@@ -94,15 +95,28 @@ const AppContent = () => {
   );
 };
 
+const RootProviders = ({ children }) => {
+  const { config, loading } = useConfig();
+  if (loading) return null;
+  const content = (
+    <AuthProvider>
+      <ProtectedRoute>
+        {children}
+      </ProtectedRoute>
+    </AuthProvider>
+  );
+  return config.enable_web3 ? (
+    <Web3Provider>{content}</Web3Provider>
+  ) : content;
+};
+
 function App() {
   return (
-    <Web3Provider>
-      <AuthProvider>
-        <ProtectedRoute>
-          <AppContent />
-        </ProtectedRoute>
-      </AuthProvider>
-    </Web3Provider>
+    <ConfigProvider>
+      <RootProviders>
+        <AppContent />
+      </RootProviders>
+    </ConfigProvider>
   );
 }
 

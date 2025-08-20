@@ -5,10 +5,16 @@ Railway startup script for Nightlio API
 import os
 import sys
 
-# Add the current directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Ensure project root is on sys.path so `import api.app` works when cwd=api/
+api_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(api_dir)
+if project_root not in sys.path:
+  sys.path.insert(0, project_root)
 
-from app import create_app
+try:
+  from api.app import create_app
+except Exception:
+  from app import create_app
 
 if __name__ == '__main__':
     # Get environment

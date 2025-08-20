@@ -93,7 +93,7 @@ def google_callback():
 
 def _get_runtime_config():
     # Importing here avoids import cycles at module import time
-    from config import get_config, config_to_public_dict
+    from api.config import get_config, config_to_public_dict
     cfg = get_config()
     public = config_to_public_dict(cfg)
     # Merge select private fields required for OAuth flow (not exposed to client)

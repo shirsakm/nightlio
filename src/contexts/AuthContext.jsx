@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import apiService from '../services/api';
+import { useConfig } from './ConfigContext';
 
 const AuthContext = createContext();
 
@@ -12,29 +13,54 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  const { config, loading: configLoading } = useConfig();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('nightlio_token'));
 
   useEffect(() => {
-    // Check if user is already logged in
+    if (configLoading) return; // wait for config
     if (token) {
       verifyToken();
+    } else if (!config.enable_google_oauth) {
+      // In self-host mode, auto-login to local account on first visit
+      localLogin();
     } else {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, configLoading, config.enable_google_oauth]);
 
   const verifyToken = async () => {
     try {
-      // console.log('Verifying token:', token?.substring(0, 20) + '...');
       const userData = await apiService.verifyToken(token);
       setUser(userData.user);
       apiService.setAuthToken(token);
-      // console.log('Token verification successful');
     } catch (error) {
-      console.error('Token verification failed:', error);
+      // If verify fails, clear token and in self-host mode immediately local-login
       logout();
+      if (!config.enable_google_oauth) {
+        await localLogin();
+        return;
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const localLogin = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.localLogin();
+      const { token: jwtToken, user: userData } = response;
+      if (jwtToken) {
+        localStorage.setItem('nightlio_token', jwtToken);
+        setToken(jwtToken);
+        setUser(userData);
+        apiService.setAuthToken(jwtToken);
+      }
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }
@@ -44,18 +70,13 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await apiService.googleAuth(googleToken);
-      
       const { token: jwtToken, user: userData } = response;
-      
-      // Store token and user data
       localStorage.setItem('nightlio_token', jwtToken);
       setToken(jwtToken);
       setUser(userData);
       apiService.setAuthToken(jwtToken);
-      
       return { success: true };
     } catch (error) {
-      console.error('Login failed:', error);
       return { success: false, error: error.message };
     } finally {
       setLoading(false);

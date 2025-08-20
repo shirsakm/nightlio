@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Lock } from "lucide-react";
+import { useConfig } from "../../contexts/ConfigContext";
 
 const GOOGLE_CLIENT_ID =
   import.meta.env.VITE_GOOGLE_CLIENT_ID || "your-google-client-id";
 
 const LoginPage = () => {
   const { login } = useAuth();
+  const { config } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -36,9 +38,10 @@ const LoginPage = () => {
   }, []);
 
   useEffect(() => {
+    if (!config.enable_google_oauth) return; // skip loading Google in self-host mode
+
     // Check if Google script is already loaded
     if (window.google) {
-      console.log("Google already loaded, initializing...");
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleResponse,
@@ -51,7 +54,6 @@ const LoginPage = () => {
       'script[src="https://accounts.google.com/gsi/client"]'
     );
     if (existingScript) {
-      console.log("Google script already exists, waiting for load...");
       existingScript.onload = () => {
         if (window.google) {
           window.google.accounts.id.initialize({
@@ -64,7 +66,6 @@ const LoginPage = () => {
     }
 
     // Load Google Identity Services
-    console.log("Loading Google Identity Services script...");
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
@@ -72,20 +73,15 @@ const LoginPage = () => {
     document.body.appendChild(script);
 
     script.onload = () => {
-      console.log("Google script loaded successfully");
       if (window.google) {
-        console.log("Initializing Google Identity Services...");
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: handleGoogleResponse,
         });
-
-        // Google loaded successfully
       }
     };
 
     script.onerror = () => {
-      console.error("Failed to load Google Identity Services script");
       setError(
         "Failed to load Google services. Please check your internet connection."
       );
@@ -95,23 +91,18 @@ const LoginPage = () => {
     return () => {
       // Script stays in DOM for reuse
     };
-  }, []);
+  }, [config.enable_google_oauth]);
 
   const handleGoogleResponse = async (response) => {
-    // console.log("Google response received:", response); // REMOVED - contains sensitive data
     setIsLoading(true);
     setError("");
 
     try {
-      // console.log("Attempting login with credential..."); // REMOVED - not needed
       const result = await login(response.credential);
-      // console.log("Login result:", result); // REMOVED - may contain sensitive data
-
       if (!result.success) {
         setError(result.error || "Login failed. Please try again.");
       }
     } catch (error) {
-      console.error("Login error:", error);
       setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -119,12 +110,11 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = () => {
+    if (!config.enable_google_oauth) return; // disabled
     if (window.google) {
       try {
-        // Use the working prompt method
         window.google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Create a temporary button and click it programmatically
             const tempDiv = document.createElement('div');
             tempDiv.style.position = 'absolute';
             tempDiv.style.left = '-9999px';
@@ -135,7 +125,6 @@ const LoginPage = () => {
               size: 'large'
             });
             
-            // Try to trigger the button
             setTimeout(() => {
               const googleBtn = tempDiv.querySelector('div[role="button"]');
               if (googleBtn) {
@@ -152,6 +141,8 @@ const LoginPage = () => {
       setError("Google services not loaded. Please refresh the page.");
     }
   };
+
+  const isSelfHost = !config.enable_google_oauth;
 
   return (
     <div
@@ -179,10 +170,9 @@ const LoginPage = () => {
           border: "1px solid rgba(255, 255, 255, 0.2)",
           textAlign: "center",
           width: "500px",
-          transform: "translateY(0)", // Ensure proper centering
+          transform: "translateY(0)",
         }}
       >
-        {/* Logo */}
         <div style={{ marginBottom: "2rem" }}>
           <h1
             style={{
@@ -218,7 +208,6 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Login Form */}
         <div style={{ marginBottom: "2rem" }}>
           <h2
             style={{
@@ -228,7 +217,7 @@ const LoginPage = () => {
               margin: "0 0 1rem 0",
             }}
           >
-            Welcome Back
+            {isSelfHost ? 'Welcome' : 'Welcome Back'}
           </h2>
           <p
             style={{
@@ -237,8 +226,9 @@ const LoginPage = () => {
               margin: "0 0 2rem 0",
             }}
           >
-            Sign in with your Google account to continue your mood tracking
-            journey
+            {isSelfHost
+              ? 'Self-host mode is enabled. Click continue to use Nightlio locally.'
+              : 'Sign in with your Google account to continue your mood tracking journey'}
           </p>
 
           {error && (
@@ -256,107 +246,131 @@ const LoginPage = () => {
             </div>
           )}
 
-          {/* Google Sign-in Button */}
-          <button
-            onClick={handleGoogleLogin}
-            disabled={isLoading}
-            style={{
-              width: "100%",
-              padding: "1rem",
-              background: isLoading
-                ? "#ccc"
-                : "linear-gradient(135deg, #667eea, #764ba2)",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              fontSize: "1rem",
-              fontWeight: "600",
-              cursor: isLoading ? "not-allowed" : "pointer",
-              transition: "all 0.3s ease",
-              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.5rem",
-            }}
-          >
-            {isLoading ? (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                style={{
-                  animation: "spin 1s linear infinite"
-                }}
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeDasharray="31.416"
-                  strokeDashoffset="31.416"
+          {isSelfHost ? (
+            <a
+              href="/" // the app will auto local-login on mount via AuthProvider
+              onClick={(e) => { e.preventDefault(); window.location.reload(); }}
+              style={{
+                width: "100%",
+                display: 'inline-block',
+                padding: "1rem",
+                background: isLoading
+                  ? "#ccc"
+                  : "linear-gradient(135deg, #667eea, #764ba2)",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                textAlign: 'center',
+                textDecoration: 'none',
+                transition: "all 0.3s ease",
+                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+              }}
+            >
+              Continue
+            </a>
+          ) : (
+            <button
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                background: isLoading
+                  ? "#ccc"
+                  : "linear-gradient(135deg, #667eea, #764ba2)",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                fontSize: "1rem",
+                fontWeight: "600",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                transition: "all 0.3s ease",
+                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+              }}
+            >
+              {isLoading ? (
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
                   style={{
-                    animation: "dash 2s ease-in-out infinite"
+                    animation: "spin 1s linear infinite"
                   }}
-                />
-              </svg>
-            ) : (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  fill="white"
-                />
-                <path
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  fill="white"
-                />
-                <path
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12 1 13.78 1.43 15.45 2.18 16.93l2.85-2.22.81-.62z"
-                  fill="white"
-                />
-                <path
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  fill="white"
-                />
-              </svg>
-            )}
-            {isLoading ? "Signing in..." : "Continue with Google"}
-            
-            {/* CSS animations */}
-            <style>
-              {`
-                @keyframes spin {
-                  from { transform: rotate(0deg); }
-                  to { transform: rotate(360deg); }
-                }
-                @keyframes dash {
-                  0% {
-                    stroke-dasharray: 1, 150;
-                    stroke-dashoffset: 0;
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeDasharray="31.416"
+                    strokeDashoffset="31.416"
+                    style={{
+                      animation: "dash 2s ease-in-out infinite"
+                    }}
+                  />
+                </svg>
+              ) : (
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="white"
+                  />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="white"
+                  />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12 1 13.78 1.43 15.45 2.18 16.93l2.85-2.22.81-.62z"
+                    fill="white"
+                  />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="white"
+                  />
+                </svg>
+              )}
+              {isLoading ? "Signing in..." : "Continue with Google"}
+              
+              <style>
+                {`
+                  @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
                   }
-                  50% {
-                    stroke-dasharray: 90, 150;
-                    stroke-dashoffset: -35;
+                  @keyframes dash {
+                    0% {
+                      stroke-dasharray: 1, 150;
+                      stroke-dashoffset: 0;
+                    }
+                    50% {
+                      stroke-dasharray: 90, 150;
+                      stroke-dashoffset: -35;
+                    }
+                    100% {
+                      stroke-dasharray: 90, 150;
+                      stroke-dashoffset: -124;
+                    }
                   }
-                  100% {
-                    stroke-dasharray: 90, 150;
-                    stroke-dashoffset: -124;
-                  }
-                }
-              `}
-            </style>
-          </button>
+                `}
+              </style>
+            </button>
+          )}
         </div>
 
-        {/* Privacy Note */}
         <div
           style={{
             fontSize: "0.8rem",
@@ -366,8 +380,9 @@ const LoginPage = () => {
         >
           <p style={{ margin: "0", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
             <Lock size={14} color="#999" />
-            Your data is private and secure. We only use your Google account
-            for authentication.
+            {isSelfHost
+              ? 'Local-only mode. No external auth is used.'
+              : 'Your data is private and secure. We only use your Google account for authentication.'}
           </p>
         </div>
       </div>
