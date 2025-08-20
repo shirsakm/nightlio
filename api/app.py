@@ -16,6 +16,7 @@ from routes.mood_routes import create_mood_routes
 from routes.group_routes import create_group_routes
 from routes.auth_routes import create_auth_routes
 from routes.misc_routes import create_misc_routes
+from routes.config_routes import create_config_routes
 from routes.achievement_routes import create_achievement_routes
 from utils.error_handlers import setup_error_handlers
 from utils.security_headers import add_security_headers
@@ -23,6 +24,7 @@ from utils.security_headers import add_security_headers
 def create_app(config_name='default'):
     """Application factory pattern"""
     from config import config
+    from config import get_config
     
     app = Flask(__name__)
     app.config.from_object(config[config_name])
@@ -50,6 +52,28 @@ def create_app(config_name='default'):
     app.register_blueprint(create_group_routes(group_service), url_prefix='/api')
     app.register_blueprint(create_achievement_routes(achievement_service), url_prefix='/api')
     app.register_blueprint(create_misc_routes(), url_prefix='/api')
+    app.register_blueprint(create_config_routes(), url_prefix='/api')
+
+    # Conditional feature registration (lazy imports)
+    cfg = get_config()
+
+    if cfg.ENABLE_GOOGLE_OAUTH:
+        try:
+            # Registered only when enabled; module can lazy-import heavy deps.
+            from auth.oauth import oauth_bp  # type: ignore
+            app.register_blueprint(oauth_bp, url_prefix='/api')
+        except Exception as e:
+            if app.debug:
+                print(f"[warn] ENABLE_GOOGLE_OAUTH is true but oauth blueprint not available: {e}")
+
+    if cfg.ENABLE_WEB3:
+        try:
+            # Optional Web3 routes (added in a later prompt).
+            from routes.web3_routes import web3_bp  # type: ignore
+            app.register_blueprint(web3_bp, url_prefix='/api')
+        except Exception as e:
+            if app.debug:
+                print(f"[warn] ENABLE_WEB3 is true but web3 blueprint not available: {e}")
 
     # Debug: Print all registered routes
     if app.debug:
