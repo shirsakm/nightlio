@@ -1,0 +1,10 @@
+# Optional dependencies for Nightlio features
+# Install only when enabling Google OAuth or Web3
+
+# Google OAuth
+authlib
+google-auth
+google-auth-oauthlib
+
+# Web3
+web3
