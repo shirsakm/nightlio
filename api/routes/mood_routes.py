@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from services.mood_service import MoodService
-from utils.auth_middleware import require_auth, get_current_user_id
+from api.services.mood_service import MoodService
+from api.utils.auth_middleware import require_auth, get_current_user_id
 
 def create_mood_routes(mood_service: MoodService):
     mood_bp = Blueprint('mood', __name__)

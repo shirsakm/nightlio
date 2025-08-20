@@ -26,9 +26,8 @@ class MoodDatabase:
             print(f"Initializing database at: {self.db_path}")
             with sqlite3.connect(self.db_path) as conn:
                 print("Database connection successful. Creating tables...")
-            
-            # Create users table
-            conn.execute('''
+                # Create users table
+                conn.execute('''
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     google_id TEXT UNIQUE NOT NULL,
@@ -39,10 +38,10 @@ class MoodDatabase:
                     last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
-            print("✅ Users table created")
-            
-            # Create mood_entries table with user_id
-            conn.execute('''
+                print("✅ Users table created")
+                
+                # Create mood_entries table with user_id
+                conn.execute('''
                 CREATE TABLE IF NOT EXISTS mood_entries (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
@@ -54,20 +53,20 @@ class MoodDatabase:
                     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
                 )
             ''')
-            print("✅ Mood entries table created")
-            
-            # Create groups table
-            conn.execute('''
+                print("✅ Mood entries table created")
+                
+                # Create groups table
+                conn.execute('''
                 CREATE TABLE IF NOT EXISTS groups (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
-            print("✅ Groups table created")
-            
-            # Create group options table
-            conn.execute('''
+                print("✅ Groups table created")
+                
+                # Create group options table
+                conn.execute('''
                 CREATE TABLE IF NOT EXISTS group_options (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     group_id INTEGER NOT NULL,
@@ -76,10 +75,10 @@ class MoodDatabase:
                     FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
                 )
             ''')
-            print("✅ Group options table created")
-            
-            # Create table to store selected options for each entry
-            conn.execute('''
+                print("✅ Group options table created")
+                
+                # Create table to store selected options for each entry
+                conn.execute('''
                 CREATE TABLE IF NOT EXISTS entry_selections (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     entry_id INTEGER NOT NULL,
@@ -89,10 +88,10 @@ class MoodDatabase:
                     FOREIGN KEY (option_id) REFERENCES group_options (id) ON DELETE CASCADE
                 )
             ''')
-            print("✅ Entry selections table created")
-            
-            # Create achievements table
-            conn.execute('''
+                print("✅ Entry selections table created")
+                
+                # Create achievements table
+                conn.execute('''
                 CREATE TABLE IF NOT EXISTS achievements (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
@@ -105,20 +104,19 @@ class MoodDatabase:
                     UNIQUE(user_id, achievement_type)
                 )
             ''')
-            print("✅ Achievements table created")
-            
-            # Create index for faster date queries
-            conn.execute('''
+                print("✅ Achievements table created")
+                
+                # Create index for faster date queries
+                conn.execute('''
                 CREATE INDEX IF NOT EXISTS idx_mood_entries_date 
                 ON mood_entries(date)
             ''')
-            print("✅ Database indexes created")
-            
-            conn.commit()
-            print("✅ Database initialization complete")
-            
-            # Insert default groups and options if they don't exist
-            self._insert_default_groups()
+                print("✅ Database indexes created")
+                conn.commit()
+                print("✅ Database initialization complete")
+                
+                # Insert default groups and options if they don't exist
+                self._insert_default_groups()
                 
         except Exception as e:
             print(f"❌ Database initialization failed: {str(e)}")

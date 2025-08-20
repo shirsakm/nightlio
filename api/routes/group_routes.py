@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.group_service import GroupService
+from api.services.group_service import GroupService
 
 def create_group_routes(group_service: GroupService):
     group_bp = Blueprint('group', __name__)

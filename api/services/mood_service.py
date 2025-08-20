@@ -1,6 +1,6 @@
 from typing import List, Optional, Dict
-from database import MoodDatabase
-from models.mood_entry import MoodEntry
+from api.database import MoodDatabase
+from api.models.mood_entry import MoodEntry
 
 class MoodService:
     def __init__(self, db: MoodDatabase):

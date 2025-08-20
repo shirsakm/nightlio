@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify
 
-# Import from local package; avoid absolute 'api.' to work in app context.
-from config import get_config, config_to_public_dict
+from api.config import get_config, config_to_public_dict
 
 
 def create_config_routes():

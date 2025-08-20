@@ -4,9 +4,9 @@ from authlib.common.errors import AuthlibBaseError
 import requests
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
-from services.user_service import UserService
-from utils.rate_limiter import rate_limit
-from config import get_config
+from api.services.user_service import UserService
+from api.utils.rate_limiter import rate_limit
+from api.config import get_config
 
 def create_auth_routes(user_service: UserService):
     auth_bp = Blueprint('auth', __name__)

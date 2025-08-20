@@ -1,5 +1,5 @@
 from typing import Optional, Dict
-from database import MoodDatabase
+from api.database import MoodDatabase
 
 class UserService:
     def __init__(self, db: MoodDatabase):

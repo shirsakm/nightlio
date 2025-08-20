@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from services.achievement_service import AchievementService
-from utils.auth_middleware import require_auth, get_current_user_id
+from api.services.achievement_service import AchievementService
+from api.utils.auth_middleware import require_auth, get_current_user_id
 
 def create_achievement_routes(achievement_service: AchievementService):
     achievement_bp = Blueprint('achievement', __name__)

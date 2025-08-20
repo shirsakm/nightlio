@@ -60,7 +60,8 @@ class TestingConfig(Config):
     """Testing configuration"""
     DEBUG = True
     TESTING = True
-    DATABASE_PATH = ':memory:'  # Use in-memory database for tests
+    # Use a file-backed SQLite DB so multiple connections see the same data
+    DATABASE_PATH = '/tmp/nightlio_test.db'
 
 
 # Configuration mapping (legacy app factory still uses this).

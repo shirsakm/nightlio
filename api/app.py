@@ -7,19 +7,19 @@ from pathlib import Path
 env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(env_path)
 
-from database import MoodDatabase
-from services.mood_service import MoodService
-from services.group_service import GroupService
-from services.user_service import UserService
-from services.achievement_service import AchievementService
-from routes.mood_routes import create_mood_routes
-from routes.group_routes import create_group_routes
-from routes.auth_routes import create_auth_routes
-from routes.misc_routes import create_misc_routes
-from routes.config_routes import create_config_routes
-from routes.achievement_routes import create_achievement_routes
-from utils.error_handlers import setup_error_handlers
-from utils.security_headers import add_security_headers
+from api.database import MoodDatabase
+from api.services.mood_service import MoodService
+from api.services.group_service import GroupService
+from api.services.user_service import UserService
+from api.services.achievement_service import AchievementService
+from api.routes.mood_routes import create_mood_routes
+from api.routes.group_routes import create_group_routes
+from api.routes.auth_routes import create_auth_routes
+from api.routes.misc_routes import create_misc_routes
+from api.routes.config_routes import create_config_routes
+from api.routes.achievement_routes import create_achievement_routes
+from api.utils.error_handlers import setup_error_handlers
+from api.utils.security_headers import add_security_headers
 
 def create_app(config_name='default'):
     """Application factory pattern"""

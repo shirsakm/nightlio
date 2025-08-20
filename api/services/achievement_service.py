@@ -1,5 +1,5 @@
 from typing import List, Dict
-from database import MoodDatabase
+from api.database import MoodDatabase
 
 class AchievementService:
     def __init__(self, db: MoodDatabase):
