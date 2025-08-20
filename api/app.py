@@ -54,6 +54,14 @@ def create_app(config_name='default'):
     app.register_blueprint(create_misc_routes(), url_prefix='/api')
     app.register_blueprint(create_config_routes(), url_prefix='/api')
 
+    # Expose services for optional blueprints (e.g., OAuth) to reuse
+    try:
+        if not hasattr(app, 'extensions') or app.extensions is None:  # type: ignore[attr-defined]
+            app.extensions = {}  # type: ignore[attr-defined]
+        app.extensions['user_service'] = user_service  # type: ignore[attr-defined]
+    except Exception:
+        pass
+
     # Conditional feature registration (lazy imports)
     cfg = get_config()
 
