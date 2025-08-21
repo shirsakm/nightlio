@@ -1,0 +1,105 @@
+# Production Docker Compose for Nightlio
+# Use this for production deployments with better security and performance
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: nightlio-api-prod
+    restart: unless-stopped
+    environment:
+      - RAILWAY_ENVIRONMENT=production
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=https://yourdomain.com
+      - ENABLE_GOOGLE_OAUTH=${ENABLE_GOOGLE_OAUTH:-0}
+      - ENABLE_WEB3=${ENABLE_WEB3:-0}
+      - DEFAULT_SELF_HOST_ID=${DEFAULT_SELF_HOST_ID:-selfhost_default_user}
+      - DATABASE_PATH=/app/data/nightlio.db
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-}
+      - WEB3_RPC_URL=${WEB3_RPC_URL:-}
+      - WEB3_CONTRACT_ADDRESS=${WEB3_CONTRACT_ADDRESS:-}
+      - PORT=5000
+    volumes:
+      - nightlio_data:/app/data
+    networks:
+      - nightlio-network
+    # Only expose to internal network in production
+    expose:
+      - "5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/api/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=/api
+    container_name: nightlio-frontend-prod
+    restart: unless-stopped
+    # Only expose to internal network in production
+    expose:
+      - "80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - nightlio-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+  # Reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    container_name: nightlio-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro  # Mount SSL certificates here
+    depends_on:
+      - frontend
+      - api
+    networks:
+      - nightlio-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+networks:
+  nightlio-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  nightlio_data:
+    driver: local

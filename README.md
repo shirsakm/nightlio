@@ -72,9 +72,27 @@ Nightlio is a privacy-first mood tracking application that helps you understand 
 5. **Open your browser**
    Navigate to `http://localhost:5173` and start journaling!
 
-## 🐳 Docker Deployment
+## 🐳 Docker Deployment (Recommended)
 
-*Docker support coming soon! For now, use the manual installation method above.*
+The easiest way to run Nightlio is with Docker:
+
+```bash
+# Clone and start
+git clone https://github.com/shirsakm/nightlio.git
+cd nightlio
+cp .env.docker .env
+# Edit .env to set your SECRET_KEY and JWT_SECRET
+docker-compose up -d
+```
+
+Access at `http://localhost:5173` - that's it! 
+
+**Port Information:**
+- **Frontend (Docker)**: `http://localhost:5173` 
+- **API**: `http://localhost:5000`
+- **Development (no Docker)**: Frontend also runs on `http://localhost:5173` (Vite default)
+
+📖 **[Full Docker Guide](DOCKER.md)** - Complete setup, configuration, and troubleshooting
 
 ## 📱 Usage Guide
 
@@ -98,6 +116,35 @@ Nightlio is a privacy-first mood tracking application that helps you understand 
 
 ### Frontend
 - **React 19** - Modern UI framework
+- **Vite** - Fast build tool and dev server
+- **Recharts** - Beautiful, responsive charts
+- **Lucide React** - Clean, consistent icons
+
+### Backend
+- **Flask** - Lightweight Python web framework
+- **SQLite** - Zero-configuration database
+- **JWT** - Secure authentication tokens
+- **Python 3.8+** - Modern Python features
+
+### Infrastructure
+- **Docker** - Containerized deployment
+- **Nginx** - High-performance web server
+- **Docker Compose** - Multi-container orchestration
+
+## 📁 Docker Files
+
+The project includes comprehensive Docker support:
+
+- `docker-compose.yml` - Development/basic deployment
+- `docker-compose.prod.yml` - Production deployment with reverse proxy
+- `Dockerfile` - Frontend container (React + Nginx)
+- `api/Dockerfile` - Backend container (Flask + Python)
+- `setup.sh` - Automated setup script
+- `test.sh` - Deployment verification script
+- `DOCKER.md` - Comprehensive Docker guide
+- `DEPLOYMENT.md` - Production deployment guide
+
+## 🤝 Contributing
 - **Vite** - Fast build tool and dev server
 - **MDXEditor** - Rich markdown editing experience
 - **Recharts** - Beautiful, responsive charts

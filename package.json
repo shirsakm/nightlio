@@ -1,15 +1,41 @@
 {
   "name": "nightlio",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "description": "A beautiful, self-hosted daily mood tracker and journal",
+  "author": "shirsakm",
+  "license": "MIT",
+  "homepage": "https://github.com/shirsakm/nightlio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shirsakm/nightlio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shirsakm/nightlio/issues"
+  },
+  "keywords": [
+    "mood-tracker",
+    "journal",
+    "self-hosted",
+    "privacy",
+    "react",
+    "flask",
+    "docker"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "api": "cd api && python3 -m venv venv && venv/bin/pip install -r requirements.txt && venv/bin/flask run --no-debugger",
-    "api:dev": "cd api && venv/bin/python start.py"
+    "api:dev": "cd api && venv/bin/python start.py",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "setup": "./setup.sh",
+    "test": "./test.sh"
   },
   "dependencies": {
     "@mdxeditor/editor": "^3.11.6",
