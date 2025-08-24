@@ -1,280 +1,272 @@
 # 🌙 Nightlio
 
-> **A beautiful, self-hosted daily mood tracker and journal**
+Privacy‑first mood tracker and daily journal, designed for effortless self‑hosting. Your data, your server, your rules.
 
-Nightlio is a privacy-first mood tracking application that helps you understand your emotional patterns through daily journaling. Built for self-hosting, your data stays completely under your control.
+This README provides a comprehensive, feature‑complete overview of Nightlio: what it can do, how it works, and how to run it.
 
-*Screenshots coming soon! The database has been populated with demo data for testing.*
+—
 
-## ✨ Features
+## ✨ Feature Catalog (exhaustive)
 
-### 🎯 **Core Functionality**
-- **5-Level Mood Tracking**: Simple, intuitive mood selection with beautiful icons
-- **Rich Text Journaling**: Write detailed entries with markdown support
-- **Custom Categories**: Create personalized tags (Activities, Sleep, Productivity, etc.)
-- **Streak Tracking**: Build consistent journaling habits with streak counters
+### 1) Journaling & Mood Tracking
+- 5‑Level mood scale (1–5)
+- Rich text note per entry (content)
+- Optional time stamp per entry
+- Tag entries with selectable options (from custom groups)
+- Full CRUD for entries
+   - Create: POST /api/mood (mood, date, content, optional time, optional selected_options[])
+   - Read: GET /api/moods (all or by date range), GET /api/mood/:id
+   - Update: PUT /api/mood/:id (mood and/or content)
+   - Delete: DELETE /api/mood/:id
+- Per‑user scoping enforced by JWT auth
 
-### 📊 **Analytics & Insights**
-- **Weekly Mood Trends**: Visualize your emotional patterns over time
-- **Mood Distribution Charts**: See which moods are most common
-- **Interactive Calendar**: Monthly view with mood indicators
-- **Statistics Dashboard**: Track total entries, averages, and streaks
+### 2) Categories (Groups) & Options
+- Built‑in defaults on first run:
+   - Emotions: happy, excited, grateful, relaxed, content, tired, unsure, bored, anxious, angry, stressed, sad, desperate
+   - Sleep: well‑rested, refreshed, tired, exhausted, restless, insomniac
+   - Productivity: focused, motivated, accomplished, busy, distracted, procrastinating, overwhelmed, lazy
+- Manage categories and options via API:
+   - List groups with options: GET /api/groups
+   - Create group: POST /api/groups
+   - Create option: POST /api/groups/:group_id/options
+   - Delete group: DELETE /api/groups/:group_id
+   - Delete option: DELETE /api/options/:option_id
+- Link options to entries (selected_options on create)
+- Retrieve options selected for an entry: GET /api/mood/:id/selections
 
-### 🎨 **User Experience**
-- **Modern UI**: Clean, responsive design that works on all devices
-- **Dark/Light Themes**: Comfortable viewing in any lighting
-- **Fast & Lightweight**: Built with performance in mind
-- **Offline Ready**: Works without internet connection
+### 3) Analytics & Insights
+- Mood statistics per user: GET /api/statistics
+   - total_entries, average_mood, lowest_mood, highest_mood, first_entry_date, last_entry_date
+- Mood distribution counts: returned under mood_distribution
+- Streak tracking: GET /api/streak and exposed in statistics
+   - Robust date parsing for multiple formats (MM/DD/YYYY, YYYY‑MM‑DD)
 
-### 🔒 **Privacy & Control**
-- **Self-Hosted**: Your data never leaves your server
-- **No Tracking**: Zero analytics, cookies, or external dependencies
-- **Local Storage**: SQLite database stored on your machine
-- **Export Ready**: Easy data backup and migration
+### 4) Achievements (Gamification)
+- Auto‑awarded achievements (defined in code):
+   - first_entry: First mood entry
+   - week_warrior: 7‑day streak
+   - consistency_king: 30‑day streak
+   - data_lover: View statistics 10 times
+   - mood_master: 100 total entries
+- Endpoints:
+   - Get user achievements: GET /api/achievements
+   - Force check & award: POST /api/achievements/check (returns new achievements)
+   - Record NFT mint details: POST /api/achievements/:id/mint (token_id, tx_hash)
 
-## 🚀 Quick Start
+### 5) Authentication
+- Self‑host “local login” (no password; single default user)
+   - POST /api/auth/local/login returns JWT + default user
+   - Rate‑limited (30 req/min) to mitigate abuse
+- Google OAuth (optional)
+   - POST /api/auth/google with Google ID token
+   - On success: upsert user and return JWT
+- Verify token: POST /api/auth/verify (returns user)
+- JWT‑based Authorization for protected endpoints
 
-### Prerequisites
-- **Node.js** 16+ (for the frontend)
-- **Python** 3.8+ (for the backend)
+### 6) Web3 (Optional)
+- Health check: GET /api/web3/health (quick, non‑blocking)
+- Achievement NFTs: record minted token/tx via achievements mint endpoint (Web3 ops happen off‑chain or client‑side; backend stores result)
+- Feature can be toggled off with config (no hard dependency when disabled)
 
-### Installation
+### 7) Configuration & Health
+- Public config: GET /api/config (used by frontend to enable/disable features)
+- Health root: GET /api/ (status, message, timestamp)
+- Server time: GET /api/time
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/shirsakm/nightlio.git
-   cd nightlio
-   ```
+### 8) Self‑Hosting & Privacy
+- SQLite database on disk (no external DB by default)
+- No analytics/trackers
+- Docker images for frontend (Nginx) and backend (Flask)
+- Nginx proxies /api/* to backend container
 
-2. **Install frontend dependencies**
-   ```bash
-   npm install
-   ```
+—
 
-3. **Set up the backend**
-   ```bash
-   cd api
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   cd ..
-   ```
+## 🧭 Architecture Overview
 
-4. **Start the application**
-   ```bash
-   # Terminal 1: Start the API
-   npm run api:dev
-   
-   # Terminal 2: Start the frontend
-   npm run dev
-   ```
+- Frontend: React 19 + Vite, served by Nginx in Docker
+- Backend: Flask (Python) serving JSON API
+- Database: SQLite with schema auto‑migration at startup
+- Auth: JWT; Google OAuth optional; Local self‑host login
+- Optional: Web3 health check and achievement NFT metadata storage
 
-5. **Open your browser**
-   Navigate to `http://localhost:5173` and start journaling!
+—
 
-## 🐳 Docker Deployment (Recommended)
-
-The easiest way to run Nightlio is with Docker:
+## 🐳 Docker Quickstart (recommended)
 
 ```bash
-# Clone and start
 git clone https://github.com/shirsakm/nightlio.git
 cd nightlio
 cp .env.docker .env
-# Edit .env to set your SECRET_KEY and JWT_SECRET
-docker-compose up -d
+# IMPORTANT: set at least SECRET_KEY and JWT_SECRET in .env
+docker compose up -d
 ```
 
-Access at `http://localhost:5173` - that's it! 
+Access:
+- Frontend: http://localhost:5173
+- API: http://localhost:5000
 
-**Port Information:**
-- **Frontend (Docker)**: `http://localhost:5173` 
-- **API**: `http://localhost:5000`
-- **Development (no Docker)**: Frontend also runs on `http://localhost:5173` (Vite default)
+Notes:
+- Default config enables “self‑host mode”: local login endpoint provides a single default user and a JWT.
+- Google OAuth and Web3 are disabled by default.
 
-📖 **[Full Docker Guide](DOCKER.md)** - Complete setup, configuration, and troubleshooting
+—
 
-## 📱 Usage Guide
+## 🔧 Configuration (env)
 
-### Creating Your First Entry
-1. Select your current mood using the emoji buttons
-2. Choose relevant categories (optional)
-3. Write about your day in the rich text editor
-4. Click "Save Entry" to store your journal entry
+Server (API):
 
-### Viewing Your Progress
-- **Home**: See your mood history and create new entries
-- **Stats**: Analyze your mood patterns with charts and insights
-- **Calendar**: Visual overview of your mood journey
-
-### Managing Categories
-- Create custom categories like "Work", "Health", "Relationships"
-- Add specific options within each category
-- Tag your entries for better organization and insights
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **React 19** - Modern UI framework
-- **Vite** - Fast build tool and dev server
-- **Recharts** - Beautiful, responsive charts
-- **Lucide React** - Clean, consistent icons
-
-### Backend
-- **Flask** - Lightweight Python web framework
-- **SQLite** - Zero-configuration database
-- **JWT** - Secure authentication tokens
-- **Python 3.8+** - Modern Python features
-
-### Infrastructure
-- **Docker** - Containerized deployment
-- **Nginx** - High-performance web server
-- **Docker Compose** - Multi-container orchestration
-
-## 📁 Docker Files
-
-The project includes comprehensive Docker support:
-
-- `docker-compose.yml` - Development/basic deployment
-- `docker-compose.prod.yml` - Production deployment with reverse proxy
-- `Dockerfile` - Frontend container (React + Nginx)
-- `api/Dockerfile` - Backend container (Flask + Python)
-- `setup.sh` - Automated setup script
-- `test.sh` - Deployment verification script
-- `DOCKER.md` - Comprehensive Docker guide
-- `DEPLOYMENT.md` - Production deployment guide
-
-## 🤝 Contributing
-- **Vite** - Fast build tool and dev server
-- **MDXEditor** - Rich markdown editing experience
-- **Recharts** - Beautiful, responsive charts
-- **Lucide React** - Consistent icon system
-
-### Backend
-- **Flask** - Lightweight Python web framework
-- **SQLite** - Reliable, serverless database
-- **Flask-CORS** - Cross-origin resource sharing
-- **Application Factory** - Scalable Flask architecture
-
-### Infrastructure
-- **Docker** - Containerized deployment
-- **Nginx** - Reverse proxy and static file serving
-- **Let's Encrypt** - Free SSL certificates
-
-## 🔧 Configuration
-
-### Environment Variables
-```bash
-# API Configuration
+```
+# Core
 FLASK_ENV=production
+SECRET_KEY=change-me
+JWT_SECRET=change-me
 DATABASE_PATH=/app/data/nightlio.db
-SECRET_KEY=your-secret-key-here
 
-# CORS Settings
+# Feature flags
+ENABLE_GOOGLE_OAUTH=0
+ENABLE_WEB3=0
+
+# Google OAuth (if enabled)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=
+
+# Self-host default
+DEFAULT_SELF_HOST_ID=selfhost_default_user
+
+# CORS
 CORS_ORIGINS=http://localhost:5173,https://yourdomain.com
 ```
 
+Frontend (Vite):
 
-If you plan to enable Google OAuth or Web3 features, also install the optional dependencies:
+```
+# Only for dev; in Docker we use relative /api
+VITE_API_URL=http://localhost:5000
+
+# For Google OAuth (if enabled)
+VITE_GOOGLE_CLIENT_ID=
+```
+
+Optional deps (if enabling Google OAuth/Web3):
+
 ```bash
 pip install -r api/requirements-optional.txt
 ```
 
-### Database Schema
-The application automatically creates the necessary database tables:
-- `mood_entries` - Your daily journal entries
-- `groups` - Custom categories
-- `group_options` - Specific options within categories
-- `entry_selections` - Links between entries and selected options
+—
 
+## 📊 API Reference (detailed)
 
-## 📊 API Reference
+Auth
+- POST /api/auth/local/login → 200 { token, user }
+- POST /api/auth/google { token } → 200 { token, user }
+- POST /api/auth/verify (Authorization: Bearer <jwt>) → 200 { user }
 
-### Mood Entries
-- `POST /api/mood` - Create new mood entry
-- `GET /api/moods` - Get all mood entries
-- `GET /api/mood/<id>` - Get specific entry
-- `PUT /api/mood/<id>` - Update entry
-- `DELETE /api/mood/<id>` - Delete entry
+Config & Misc
+- GET /api/config → { enable_google_oauth, enable_web3 }
+- GET /api/ → health payload
+- GET /api/time → { time }
 
-### Categories & Options
-- `GET /api/groups` - Get all categories
-- `POST /api/groups` - Create new category
-- `POST /api/groups/<id>/options` - Add option to category
-- `DELETE /api/groups/<id>` - Delete category
+Moods
+- POST /api/mood { date, mood(1‑5), content, time?, selected_options?: number[] } → 201 { entry_id, new_achievements[] }
+- GET /api/moods[?start_date=YYYY‑MM‑DD&end_date=YYYY‑MM‑DD] → list of entries
+- GET /api/mood/:id → entry
+- PUT /api/mood/:id { mood?, content? } → success
+- DELETE /api/mood/:id → success
+- GET /api/mood/:id/selections → options linked to the entry
+- GET /api/statistics → { statistics, mood_distribution, current_streak }
+- GET /api/streak → { current_streak, message }
 
+Groups & Options
+- GET /api/groups → [{ id, name, options: [{ id, name }] }]
+- POST /api/groups { name } → { group_id }
+- POST /api/groups/:group_id/options { name } → { option_id }
+- DELETE /api/groups/:group_id → success
+- DELETE /api/options/:option_id → success
 
-### Self-hosting and Environment Config
+Achievements
+- GET /api/achievements → user achievements (with metadata)
+- POST /api/achievements/check → { new_achievements, count }
+- POST /api/achievements/:id/mint { token_id, tx_hash } → success
 
-1. Copy the example environment and adjust values:
+Web3 (optional)
+- GET /api/web3/health → { connected: boolean }
+
+All protected endpoints require Authorization: Bearer <jwt> unless otherwise noted.
+
+—
+
+## 🗃️ Data Model
+
+Tables (SQLite):
+- users: id, google_id (unique), email, name, avatar_url, created_at, last_login
+- mood_entries: id, user_id(FK), date, mood(1‑5), content, created_at, updated_at
+- groups: id, name(unique), created_at
+- group_options: id, group_id(FK), name, created_at
+- entry_selections: id, entry_id(FK), option_id(FK), created_at
+- achievements: id, user_id(FK), achievement_type, earned_at, nft_minted, nft_token_id, nft_tx_hash
+
+Indexes:
+- idx_mood_entries_date on mood_entries(date)
+
+—
+
+## 🧪 Development (no Docker)
+
+Prereqs: Node.js 18+, Python 3.11+ (project tested on modern versions)
+
 ```bash
-cp .env.example .env
+# Frontend
+npm install
+
+# Backend
+cd api
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cd ..
+
+# Run
+npm run api:dev   # starts Flask API
+npm run dev       # starts Vite dev server
 ```
 
-2. Defaults run in self-host mode with Google OAuth and Web3 disabled. Key variables:
-- ENABLE_GOOGLE_OAUTH=0
-- GOOGLE_CLIENT_ID=
-- GOOGLE_CLIENT_SECRET=
-- GOOGLE_CALLBACK_URL=
-- ENABLE_WEB3=0
-- WEB3_RPC_URL=
-- WEB3_CONTRACT_ADDRESS=
-- JWT_SECRET=  (set a strong value before deploying)
-- DEFAULT_SELF_HOST_ID=selfhost_default_user
+Open http://localhost:5173
 
-3. Frontend config (optional): copy `.env.local` if needed and set `VITE_API_URL` (defaults to http://localhost:5000). If enabling Google OAuth, set `VITE_GOOGLE_CLIENT_ID`.
+Tests (Python):
 
-4. Enabling optional features:
-- Google OAuth: set ENABLE_GOOGLE_OAUTH=1 and provide GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL. Ensure the frontend has VITE_GOOGLE_CLIENT_ID. Install optional deps if not already: `pip install -r api/requirements-optional.txt`.
-- Web3: set ENABLE_WEB3=1 and provide WEB3_RPC_URL and WEB3_CONTRACT_ADDRESS. Install optional deps if not already: `pip install -r api/requirements-optional.txt`.
+```bash
+cd api
+pytest -q
+```
 
-The app will run with or without optional dependencies based on these flags. When disabled, related code paths are not imported.
+—
 
-## Usage
-### Analytics
-- `GET /api/statistics` - Get mood statistics
-- `GET /api/streak` - Get current streak
-- `GET /api/mood/<id>/selections` - Get entry selections
+## 🔐 Security & Privacy
+- JWT tokens for authenticated API calls
+- Rate limiting on local login endpoint
+- CORS configurable via env
+- No telemetry or third‑party trackers
+- SQLite data stored locally; back up the data/ directory
 
+—
+
+## 🛠️ Stack
+- Frontend: React 19, Vite, Lucide icons, Recharts (charts)
+- Backend: Flask, Authlib/Jose (JWT), SQLite
+- Infra: Docker, Nginx, Docker Compose
+
+—
 
 ## 🤝 Contributing
+PRs welcome. Please add tests for API changes and keep the README/API sections in sync.
 
-We welcome contributions! Feel free to open issues or submit pull requests.
-
-### Development Setup
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes and test thoroughly
-4. Commit your changes: `git commit -m 'Add amazing feature'`
-5. Push to the branch: `git push origin feature/amazing-feature`
-6. Open a Pull Request
-
-### Code Style
-- **Frontend**: ESLint + Prettier configuration
-- **Backend**: Black formatter + flake8 linting
-- **Commits**: Conventional commit messages
+—
 
 ## 📄 License
+MIT — see [LICENSE](LICENSE).
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+—
 
-## 🙏 Acknowledgments
-
-- Inspired by [Daylio](https://daylio.net/) for the mood tracking concept
-- Built with love for the self-hosting community
-
-## 📞 Support
-
-- **Documentation**: [GitHub Wiki](https://github.com/shirsakm/nightlio/wiki)
-- **Issues**: [GitHub Issues](https://github.com/shirsakm/nightlio/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/shirsakm/nightlio/discussions)
-
----
-
-<div align="center">
-
-**[⭐ Star this repo](https://github.com/shirsakm/nightlio)** if you find it helpful!
-
-Made with ❤️ for better mental health awareness
-
-</div>
+If this project helps you, consider starring it. Stay well 💙
