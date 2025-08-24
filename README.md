@@ -3,7 +3,6 @@
 **Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
 
 ![Screenshots](https://placehold.co/800x400?text=Nightlio+Dashboard+Screenshot)
----
 
 ### Why Nightlio?
 
@@ -21,7 +20,7 @@ Nightlio is the result: a feature-complete, open-source alternative that you can
 * **🎮 Gamified Achievements:** Stay consistent with built-in achievements that unlock as you build your journaling habit.
 * **🌐 Optional Web3 Integration:** As a proof-of-concept, you can mint your achievements as NFTs on the Sepolia testnet to create a unique, on-chain record of your progress.
 
----
+<div align="center">🌙</div>
 
 ## 🐳 Docker Quickstart (Recommended)
 
@@ -29,7 +28,7 @@ Get your own Nightlio instance running in under 5 minutes.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/shirsakm/nightlio.git
+git clone [https://github.com/shirsakm/nightlio.git](https://github.com/shirsakm/nightlio.git)
 cd nightlio
 
 # 2. Create your configuration file
@@ -50,7 +49,7 @@ Your instance is now live!
 
 **Note:** By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
 
----
+<div align="center">🌙</div>
 
 ## 🔧 Configuration (`.env`)
 
@@ -73,7 +72,7 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
 # CORS - Add your frontend's domain if deploying publicly
-CORS_ORIGINS=http://localhost:5173,https://your.domain.com
+CORS_ORIGINS=http://localhost:5173,[https://your.domain.com](https://your.domain.com)
 ```
 
 #### Frontend (Vite)
@@ -85,7 +84,7 @@ VITE_API_URL=http://localhost:5000
 VITE_GOOGLE_CLIENT_ID=
 ```
 
----
+<div align="center">🌙</div>
 
 ## 🛠️ For Developers
 
@@ -152,15 +151,14 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header.
 * `achievements`: id, user_id(FK), achievement_type, earned_at, ...
 </details>
 
----
+<div align="center">🌙</div>
 
 ### 🔐 Security & Privacy
+
 * **Data Ownership:** Your data is stored in a local SQLite file. You can back it up, move it, or delete it at any time.
 * **No Telemetry:** This application does not collect any usage data or send information to third-party services.
 * **Secure Authentication:** API endpoints are protected using JSON Web Tokens (JWT).
 * **Configurable CORS:** Restrict API access to trusted domains via environment variables.
-
----
 
 ### 🤝 Contributing
 
@@ -170,6 +168,6 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
+<div align="center">🌙</div>
 
 If this project helps you, please consider starring the repository. Stay well 💙
