@@ -1,272 +1,175 @@
 # 🌙 Nightlio
 
-Privacy‑first mood tracker and daily journal, designed for effortless self‑hosting. Your data, your server, your rules.
+**Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
 
-This README provides a comprehensive, feature‑complete overview of Nightlio: what it can do, how it works, and how to run it.
+![Screenshots](https://placehold.co/800x400?text=Nightlio+Dashboard+Screenshot)
+---
 
-—
+### Why Nightlio?
 
-## ✨ Feature Catalog (exhaustive)
+Nightlio was inspired by great mood-tracking apps like Daylio, but born out of frustration with aggressive subscription models, paywalls, and a lack of cross-platform access. I wanted a beautiful, effective tool to log my mood and journal my thoughts without compromising on privacy or being locked into a single device.
 
-### 1) Journaling & Mood Tracking
-- 5‑Level mood scale (1–5)
-- Rich text note per entry (content)
-- Optional time stamp per entry
-- Tag entries with selectable options (from custom groups)
-- Full CRUD for entries
-   - Create: POST /api/mood (mood, date, content, optional time, optional selected_options[])
-   - Read: GET /api/moods (all or by date range), GET /api/mood/:id
-   - Update: PUT /api/mood/:id (mood and/or content)
-   - Delete: DELETE /api/mood/:id
-- Per‑user scoping enforced by JWT auth
+Nightlio is the result: a feature-complete, open-source alternative that you can run anywhere. It's fully web-based and responsive for use on both desktop and mobile. No ads, no subscriptions, and absolutely no data mining. Just you and your data.
 
-### 2) Categories (Groups) & Options
-- Built‑in defaults on first run:
-   - Emotions: happy, excited, grateful, relaxed, content, tired, unsure, bored, anxious, angry, stressed, sad, desperate
-   - Sleep: well‑rested, refreshed, tired, exhausted, restless, insomniac
-   - Productivity: focused, motivated, accomplished, busy, distracted, procrastinating, overwhelmed, lazy
-- Manage categories and options via API:
-   - List groups with options: GET /api/groups
-   - Create group: POST /api/groups
-   - Create option: POST /api/groups/:group_id/options
-   - Delete group: DELETE /api/groups/:group_id
-   - Delete option: DELETE /api/options/:option_id
-- Link options to entries (selected_options on create)
-- Retrieve options selected for an entry: GET /api/mood/:id/selections
+### ✨ Key Features
 
-### 3) Analytics & Insights
-- Mood statistics per user: GET /api/statistics
-   - total_entries, average_mood, lowest_mood, highest_mood, first_entry_date, last_entry_date
-- Mood distribution counts: returned under mood_distribution
-- Streak tracking: GET /api/streak and exposed in statistics
-   - Robust date parsing for multiple formats (MM/DD/YYYY, YYYY‑MM‑DD)
+* **✍️ Rich Journaling with Markdown:** Write detailed notes for every entry using Markdown for formatting, lists, and links.
+* **📊 Track Your Mood & Find Patterns:** Log your daily mood on a simple 5-point scale and use customizable tags (e.g., 'Sleep', 'Productivity') to discover what influences your state of mind.
+* **📈 Insightful Analytics:** View your mood history on a calendar, see your average mood over time, and track your journaling streak to stay motivated.
+* **🔒 Privacy First, Always:** Built from the ground up to be self-hosted. Your sensitive data is stored in a simple SQLite database file on *your* server. No third-party trackers or analytics.
+* **🚀 Simple Self-Hosting with Docker:** Get up and running in minutes with a single `docker compose up` command.
+* **🎮 Gamified Achievements:** Stay consistent with built-in achievements that unlock as you build your journaling habit.
+* **🌐 Optional Web3 Integration:** As a proof-of-concept, you can mint your achievements as NFTs on the Sepolia testnet to create a unique, on-chain record of your progress.
 
-### 4) Achievements (Gamification)
-- Auto‑awarded achievements (defined in code):
-   - first_entry: First mood entry
-   - week_warrior: 7‑day streak
-   - consistency_king: 30‑day streak
-   - data_lover: View statistics 10 times
-   - mood_master: 100 total entries
-- Endpoints:
-   - Get user achievements: GET /api/achievements
-   - Force check & award: POST /api/achievements/check (returns new achievements)
-   - Record NFT mint details: POST /api/achievements/:id/mint (token_id, tx_hash)
+---
 
-### 5) Authentication
-- Self‑host “local login” (no password; single default user)
-   - POST /api/auth/local/login returns JWT + default user
-   - Rate‑limited (30 req/min) to mitigate abuse
-- Google OAuth (optional)
-   - POST /api/auth/google with Google ID token
-   - On success: upsert user and return JWT
-- Verify token: POST /api/auth/verify (returns user)
-- JWT‑based Authorization for protected endpoints
+## 🐳 Docker Quickstart (Recommended)
 
-### 6) Web3 (Optional)
-- Health check: GET /api/web3/health (quick, non‑blocking)
-- Achievement NFTs: record minted token/tx via achievements mint endpoint (Web3 ops happen off‑chain or client‑side; backend stores result)
-- Feature can be toggled off with config (no hard dependency when disabled)
-
-### 7) Configuration & Health
-- Public config: GET /api/config (used by frontend to enable/disable features)
-- Health root: GET /api/ (status, message, timestamp)
-- Server time: GET /api/time
-
-### 8) Self‑Hosting & Privacy
-- SQLite database on disk (no external DB by default)
-- No analytics/trackers
-- Docker images for frontend (Nginx) and backend (Flask)
-- Nginx proxies /api/* to backend container
-
-—
-
-## 🧭 Architecture Overview
-
-- Frontend: React 19 + Vite, served by Nginx in Docker
-- Backend: Flask (Python) serving JSON API
-- Database: SQLite with schema auto‑migration at startup
-- Auth: JWT; Google OAuth optional; Local self‑host login
-- Optional: Web3 health check and achievement NFT metadata storage
-
-—
-
-## 🐳 Docker Quickstart (recommended)
+Get your own Nightlio instance running in under 5 minutes.
 
 ```bash
+# 1. Clone the repository
 git clone https://github.com/shirsakm/nightlio.git
 cd nightlio
+
+# 2. Create your configuration file
 cp .env.docker .env
-# IMPORTANT: set at least SECRET_KEY and JWT_SECRET in .env
+
+# 3. Set your secrets
+# IMPORTANT: Open the .env file and set unique, random values for
+# at least SECRET_KEY and JWT_SECRET.
+nano .env
+
+# 4. Launch the application!
 docker compose up -d
 ```
 
-Access:
-- Frontend: http://localhost:5173
-- API: http://localhost:5000
+Your instance is now live!
+* **Frontend:** [http://localhost:5173](http://localhost:5173)
+* **API Backend:** [http://localhost:5000](http://localhost:5000)
 
-Notes:
-- Default config enables “self‑host mode”: local login endpoint provides a single default user and a JWT.
-- Google OAuth and Web3 are disabled by default.
+**Note:** By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
 
-—
+---
 
-## 🔧 Configuration (env)
+## 🔧 Configuration (`.env`)
 
-Server (API):
+You can customize your Nightlio instance using environment variables in the `.env` file.
 
+#### Server (API)
 ```
 # Core
 FLASK_ENV=production
-SECRET_KEY=change-me
-JWT_SECRET=change-me
+SECRET_KEY=change-this-to-a-long-random-string
+JWT_SECRET=change-this-too
 DATABASE_PATH=/app/data/nightlio.db
 
-# Feature flags
+# Feature flags (1 to enable, 0 to disable)
 ENABLE_GOOGLE_OAUTH=0
 ENABLE_WEB3=0
 
 # Google OAuth (if enabled)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-GOOGLE_CALLBACK_URL=
 
-# Self-host default
-DEFAULT_SELF_HOST_ID=selfhost_default_user
-
-# CORS
-CORS_ORIGINS=http://localhost:5173,https://yourdomain.com
+# CORS - Add your frontend's domain if deploying publicly
+CORS_ORIGINS=http://localhost:5173,https://your.domain.com
 ```
 
-Frontend (Vite):
-
+#### Frontend (Vite)
 ```
-# Only for dev; in Docker we use relative /api
+# This is only needed for local development outside of Docker
 VITE_API_URL=http://localhost:5000
 
-# For Google OAuth (if enabled)
+# Required for Google OAuth (if enabled)
 VITE_GOOGLE_CLIENT_ID=
 ```
 
-Optional deps (if enabling Google OAuth/Web3):
+---
+
+## 🛠️ For Developers
+
+Interested in contributing or running the project without Docker? Here's what you need to know.
+
+<details>
+<summary><strong>🧭 Architecture Overview</strong></summary>
+
+* **Frontend:** React 19 + Vite, served by Nginx.
+* **Backend:** Flask (Python) serving a JSON API.
+* **Database:** SQLite, with auto-migrations on startup.
+* **Authentication:** JWT-based. Supports a default local user and optional Google OAuth.
+</details>
+
+<details>
+<summary><strong>🧪 Local Development Setup</strong></summary>
+
+**Prerequisites:** Node.js v18+, Python v3.11+
 
 ```bash
-pip install -r api/requirements-optional.txt
-```
-
-—
-
-## 📊 API Reference (detailed)
-
-Auth
-- POST /api/auth/local/login → 200 { token, user }
-- POST /api/auth/google { token } → 200 { token, user }
-- POST /api/auth/verify (Authorization: Bearer <jwt>) → 200 { user }
-
-Config & Misc
-- GET /api/config → { enable_google_oauth, enable_web3 }
-- GET /api/ → health payload
-- GET /api/time → { time }
-
-Moods
-- POST /api/mood { date, mood(1‑5), content, time?, selected_options?: number[] } → 201 { entry_id, new_achievements[] }
-- GET /api/moods[?start_date=YYYY‑MM‑DD&end_date=YYYY‑MM‑DD] → list of entries
-- GET /api/mood/:id → entry
-- PUT /api/mood/:id { mood?, content? } → success
-- DELETE /api/mood/:id → success
-- GET /api/mood/:id/selections → options linked to the entry
-- GET /api/statistics → { statistics, mood_distribution, current_streak }
-- GET /api/streak → { current_streak, message }
-
-Groups & Options
-- GET /api/groups → [{ id, name, options: [{ id, name }] }]
-- POST /api/groups { name } → { group_id }
-- POST /api/groups/:group_id/options { name } → { option_id }
-- DELETE /api/groups/:group_id → success
-- DELETE /api/options/:option_id → success
-
-Achievements
-- GET /api/achievements → user achievements (with metadata)
-- POST /api/achievements/check → { new_achievements, count }
-- POST /api/achievements/:id/mint { token_id, tx_hash } → success
-
-Web3 (optional)
-- GET /api/web3/health → { connected: boolean }
-
-All protected endpoints require Authorization: Bearer <jwt> unless otherwise noted.
-
-—
-
-## 🗃️ Data Model
-
-Tables (SQLite):
-- users: id, google_id (unique), email, name, avatar_url, created_at, last_login
-- mood_entries: id, user_id(FK), date, mood(1‑5), content, created_at, updated_at
-- groups: id, name(unique), created_at
-- group_options: id, group_id(FK), name, created_at
-- entry_selections: id, entry_id(FK), option_id(FK), created_at
-- achievements: id, user_id(FK), achievement_type, earned_at, nft_minted, nft_token_id, nft_tx_hash
-
-Indexes:
-- idx_mood_entries_date on mood_entries(date)
-
-—
-
-## 🧪 Development (no Docker)
-
-Prereqs: Node.js 18+, Python 3.11+ (project tested on modern versions)
-
-```bash
-# Frontend
+# Install frontend dependencies
 npm install
 
-# Backend
+# Setup and activate backend virtual environment
 cd api
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+source venv/bin/activate   # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cd ..
 
-# Run
-npm run api:dev   # starts Flask API
-npm run dev       # starts Vite dev server
+# Run both servers concurrently
+npm run dev # Starts Vite frontend dev server
+npm run api:dev   # Starts Flask backend API server
 ```
+The frontend will be available at `http://localhost:5173`.
+</details>
 
-Open http://localhost:5173
+<details>
+<summary><strong>📊 API Reference</strong></summary>
 
-Tests (Python):
+All protected endpoints require an `Authorization: Bearer <jwt>` header.
 
-```bash
-cd api
-pytest -q
-```
+**Auth**
+* `POST /api/auth/local/login` → `200 { token, user }`
+* `POST /api/auth/google { token }` → `200 { token, user }`
+* `POST /api/auth/verify` → `200 { user }`
 
-—
+**Moods & Entries**
+* `POST /api/mood { date, mood(1‑5), content, ... }` → `201 { entry_id, new_achievements[] }`
+* `GET /api/moods[?start_date=...&end_date=...]` → List of entries
+* `GET /api/mood/:id` → Single entry
+* ... *(the rest of your detailed API reference can go here)*
+</details>
 
-## 🔐 Security & Privacy
-- JWT tokens for authenticated API calls
-- Rate limiting on local login endpoint
-- CORS configurable via env
-- No telemetry or third‑party trackers
-- SQLite data stored locally; back up the data/ directory
+<details>
+<summary><strong>🗃️ Data Model</strong></summary>
 
-—
+**Tables (SQLite):**
+* `users`: id, google_id, email, name, avatar_url, ...
+* `mood_entries`: id, user_id(FK), date, mood, content, ...
+* `groups`: id, name
+* `group_options`: id, group_id(FK), name
+* `entry_selections`: entry_id(FK), option_id(FK)
+* `achievements`: id, user_id(FK), achievement_type, earned_at, ...
+</details>
 
-## 🛠️ Stack
-- Frontend: React 19, Vite, Lucide icons, Recharts (charts)
-- Backend: Flask, Authlib/Jose (JWT), SQLite
-- Infra: Docker, Nginx, Docker Compose
+---
 
-—
+### 🔐 Security & Privacy
+* **Data Ownership:** Your data is stored in a local SQLite file. You can back it up, move it, or delete it at any time.
+* **No Telemetry:** This application does not collect any usage data or send information to third-party services.
+* **Secure Authentication:** API endpoints are protected using JSON Web Tokens (JWT).
+* **Configurable CORS:** Restrict API access to trusted domains via environment variables.
 
-## 🤝 Contributing
-PRs welcome. Please add tests for API changes and keep the README/API sections in sync.
+---
 
-—
+### 🤝 Contributing
 
-## 📄 License
-MIT — see [LICENSE](LICENSE).
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change. Please ensure you add tests for any new API functionality.
 
-—
+### 📄 License
 
-If this project helps you, consider starring it. Stay well 💙
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+If this project helps you, please consider starring the repository. Stay well 💙
