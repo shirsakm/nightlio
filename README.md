@@ -125,18 +125,43 @@ The frontend will be available at `http://localhost:5173`.
 <details>
 <summary><strong>📊 API Reference</strong></summary>
 
-All protected endpoints require an `Authorization: Bearer <jwt>` header.
+All protected endpoints require an `Authorization: Bearer <jwt>` header unless otherwise noted.
 
 **Auth**
-* `POST /api/auth/local/login` → `200 { token, user }`
-* `POST /api/auth/google { token }` → `200 { token, user }`
-* `POST /api/auth/verify` → `200 { user }`
+* `POST /api/auth/local/login` → 200 { token, user }
+* `POST /api/auth/google { token }` → 200 { token, user }
+* `POST /api/auth/verify` → 200 { user }
 
-**Moods & Entries**
-* `POST /api/mood { date, mood(1‑5), content, ... }` → `201 { entry_id, new_achievements[] }`
-* `GET /api/moods[?start_date=...&end_date=...]` → List of entries
-* `GET /api/mood/:id` → Single entry
-* ... *(the rest of your detailed API reference can go here)*
+**Config & Misc**
+* `GET /api/config` → { enable_google_oauth, enable_web3 }
+* `GET /api/` → health payload
+* `GET /api/time` → { time }
+
+**Moods**
+* `POST /api/mood { date, mood(1-5), content, time?, selected_options?: number[] }` → 201 { entry_id, new_achievements[] }
+* `GET /api/moods[?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD]` → list of entries
+* `GET /api/mood/:id` → entry
+* `PUT /api/mood/:id { mood?, content? }` → success
+* `DELETE /api/mood/:id` → success
+* `GET /api/mood/:id/selections` → options linked to the entry
+* `GET /api/statistics` → { statistics, mood_distribution, current_streak }
+* `GET /api/streak` → { current_streak, message }
+
+**Groups & Options**
+* `GET /api/groups` → [{ id, name, options: [{ id, name }] }]
+* `POST /api/groups { name }` → { group_id }
+* `POST /api/groups/:group_id/options { name }` → { option_id }
+* `DELETE /api/groups/:group_id` → success
+* `DELETE /api/options/:option_id` → success
+
+**Achievements**
+* `GET /api/achievements` → user achievements (with metadata)
+* `POST /api/achievements/check` → { new_achievements, count }
+* `POST /api/achievements/:id/mint { token_id, tx_hash }` → success
+
+**Web3 (optional)**
+* `GET /api/web3/health` → { connected: boolean }
+
 </details>
 
 <details>
