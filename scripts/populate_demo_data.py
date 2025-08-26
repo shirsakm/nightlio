@@ -196,6 +196,15 @@ Still buzzing with excitement. Music has such a powerful way of lifting your spi
     
     print("🌙 Creating demo data for Nightlio...")
     
+    # Get the existing self-host user by google_id
+    self_host_user = db.get_user_by_google_id('selfhost_default_user')
+    if not self_host_user:
+        print("❌ Self-host user not found. Please run the self-host seed script first.")
+        return
+    
+    demo_user_id = self_host_user['id']
+    print(f"✅ Using existing self-host user with ID: {demo_user_id}")
+    
     # Get all available options from database
     groups = db.get_all_groups()
     option_lookup = {}
@@ -218,6 +227,7 @@ Still buzzing with excitement. Music has such a powerful way of lifting your spi
         
         # Create the entry
         entry_id = db.add_mood_entry(
+            user_id=demo_user_id,
             date=date_str,
             mood=entry_data['mood'],
             content=entry_data['content'],
@@ -231,11 +241,11 @@ Still buzzing with excitement. Music has such a powerful way of lifting your spi
     print("📸 Your database is now ready for screenshots!")
     
     # Show some stats
-    stats = db.get_mood_statistics()
+    stats = db.get_mood_statistics(demo_user_id)
     print(f"\n📊 Current stats:")
     print(f"   Total entries: {stats['total_entries']}")
     print(f"   Average mood: {stats['average_mood']:.1f}")
-    print(f"   Current streak: {db.get_current_streak()}")
+    print(f"   Current streak: {db.get_current_streak(demo_user_id)}")
 
 if __name__ == "__main__":
     create_demo_data()
