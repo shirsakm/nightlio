@@ -19,7 +19,7 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
 
   if (error) {
     return (
-      <div style={{ textAlign: 'center', color: '#ff6b6b', padding: '2rem' }}>
+      <div style={{ textAlign: 'center', color: 'var(--accent-600)', padding: '2rem' }}>
         {error}
       </div>
     );
@@ -27,7 +27,7 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
 
   if (entries.length === 0) {
     return (
-      <div style={{ textAlign: 'center', color: '#4C566A', padding: '2rem' }}>
+      <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
         <p style={{ marginBottom: 12 }}>No entries yet.</p>
         <button
           onClick={() => window.dispatchEvent(new CustomEvent('nightlio:new-entry'))}

@@ -97,7 +97,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
           <span
             style={{
               fontWeight: '600',
-              color: '#667eea',
+              color: 'var(--accent-600)',
               fontSize: '1.1rem',
             }}
           >
@@ -107,7 +107,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
             <span
               style={{
                 fontSize: '0.9rem',
-                color: '#999',
+                color: 'var(--text-muted)',
                 fontWeight: '400',
               }}
             >
@@ -145,7 +145,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
       
       <div
         style={{
-          color: '#2E3440',
+          color: 'var(--text)',
           lineHeight: '1.6',
           textAlign: 'left',
         }}

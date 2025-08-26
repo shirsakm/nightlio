@@ -7,28 +7,22 @@ const getSystemTheme = () => (window.matchMedia && window.matchMedia('(prefers-c
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     try {
-      return localStorage.getItem('nightlio:theme') || 'system';
+      return localStorage.getItem('nightlio:theme') || 'light';
     } catch {
-      return 'system';
+      return 'light';
     }
   });
 
   useEffect(() => {
-    const effective = theme === 'system' ? getSystemTheme() : theme;
+    const effective = theme;
     document.documentElement.setAttribute('data-theme', effective);
     try { localStorage.setItem('nightlio:theme', theme); } catch {}
-    if (theme === 'system') {
-      const mql = window.matchMedia('(prefers-color-scheme: dark)');
-      const listener = () => document.documentElement.setAttribute('data-theme', getSystemTheme());
-      mql.addEventListener?.('change', listener);
-      return () => mql.removeEventListener?.('change', listener);
-    }
   }, [theme]);
 
   const value = useMemo(() => ({
     theme,
     setTheme,
-    cycle: () => setTheme((t) => (t === 'light' ? 'dark' : t === 'dark' ? 'system' : 'light')),
+    cycle: () => setTheme((t) => (t === 'light' ? 'dark' : 'light')),
   }), [theme]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

@@ -1,4 +1,4 @@
-import { Zap, LogOut } from 'lucide-react';
+import { Flame, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -27,7 +27,18 @@ const Header = ({ currentView, currentStreak }) => {
 
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
   return (
-    <div style={{ marginBottom: '1rem' }}>
+    <div style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 40,
+      background: 'var(--surface)',
+      paddingBottom: '0.5rem',
+      marginBottom: '0.75rem',
+      borderBottom: '1px solid var(--border)',
+      paddingLeft: 'var(--space-4)',
+      paddingRight: 'var(--space-4)',
+      paddingTop: 'var(--space-2)'
+    }}>
       <div
         style={{
           display: 'flex',
@@ -36,47 +47,38 @@ const Header = ({ currentView, currentStreak }) => {
           marginBottom: '0.25rem',
         }}
       >
-        {/* Left side - Logo and Streak */}
+        {/* Left side - Streak */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-  <h1
-    style={{
-      color: 'var(--text)',
-      margin: '0',
-    fontSize: isMobile ? '2rem' : '2.5rem',
-    fontWeight: '800',
-      letterSpacing: '-0.02em',
-    }}
-      >
-            Nightlio
-          </h1>
           {currentStreak > 0 && (
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-        background: 'var(--accent-50)',
-        color: 'var(--accent-700)',
+                gap: '0.5rem',
+                background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
+                color: '#FFFFFF',
                 padding: '0.4rem 0.8rem',
-        borderRadius: 'var(--radius-pill)',
-        border: '1px solid var(--accent-100)',
-        fontSize: '0.85rem',
+                borderRadius: 'var(--radius-pill)',
+                border: '1px solid rgba(251, 191, 36, 0.3)',
+                fontSize: '0.8rem',
                 fontWeight: '600',
-        boxShadow: 'var(--shadow-sm)',
+                boxShadow: '0 4px 12px rgba(251, 191, 36, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                letterSpacing: '0.025em',
               }}
             >
-              <Zap size={16} />
-              <span>{currentStreak}</span>
+              <Flame size={14} strokeWidth={2} />
+              <span>{currentStreak} Day Streak</span>
             </div>
           )}
-        </div>
-
-    {/* Right side - User Profile and primary action (desktop) */}
+        </div>    {/* Right side - User Profile and primary action (desktop) */}
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               onClick={cycle}
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 padding: '0.4rem 0.8rem',
                 background: 'transparent',
                 border: '1px solid var(--border)',
@@ -84,10 +86,17 @@ const Header = ({ currentView, currentStreak }) => {
                 cursor: 'pointer',
                 fontSize: '0.8rem',
                 color: 'var(--text-muted)',
+                transition: 'all 0.3s ease'
               }}
               title={`Theme: ${theme}`}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'var(--accent-100)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+              }}
             >
-              Theme: {theme}
+              {theme === 'dark' ? <Sun size={14} strokeWidth={2} /> : <Moon size={14} strokeWidth={2} />}
             </button>
             {/* Primary CTA moved to HistoryView and Sidebar to reduce duplication */}
       {/* Web3 controls removed */}
@@ -137,30 +146,6 @@ const Header = ({ currentView, currentStreak }) => {
           </div>
         )}
       </div>
-    <p
-        style={{
-      color: 'var(--text)',
-      margin: '0 0 2px 0',
-          fontSize: isMobile ? '1rem' : '1.125rem',
-          fontWeight: '600',
-        }}
-      >
-        {currentView === 'history' && 'Your daily mood companion'}
-        {currentView === 'entry' && 'New Entry'}
-        {currentView === 'stats' && 'Statistics'}
-        {currentView === 'achievements' && 'Achievements'}
-        {currentView === 'settings' && 'Settings'}
-      </p>
-    <p
-        style={{
-          color: 'var(--text-muted)',
-      margin: 0,
-          fontSize: '0.95rem',
-          fontWeight: '400',
-        }}
-      >
-        {getSubtitle()}
-      </p>
     </div>
   );
 };

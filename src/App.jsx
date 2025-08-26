@@ -60,18 +60,19 @@ const AppContent = () => {
 
   return (
     <>
-      <Header currentView={currentView} currentStreak={currentStreak} />
+      <div className="app-page">
+        <Sidebar
+          currentView={currentView}
+          onViewChange={handleViewChange}
+          onLoadStatistics={loadStatistics}
+        />
+        
+        <div className="app-shell">
+          <Header currentView={currentView} currentStreak={currentStreak} />
 
-    <div className={`app-layout ${currentView === 'entry' ? 'no-sidebar' : ''}`}>
-        {currentView !== 'entry' && (
-          <Sidebar
-            currentView={currentView}
-            onViewChange={handleViewChange}
-            onLoadStatistics={loadStatistics}
-          />
-        )}
+          <div className={`app-layout ${currentView === 'entry' ? 'no-sidebar' : ''}`}>
 
-        <main className="app-main">
+            <main className="app-main">
           {currentView === "history" && (
             <HistoryView
               pastEntries={pastEntries}
@@ -103,9 +104,11 @@ const AppContent = () => {
             />
           )}
 
-          {currentView === "achievements" && <AchievementsView />}
-          {currentView === "settings" && <SettingsView />}
-        </main>
+              {currentView === "achievements" && <AchievementsView />}
+              {currentView === "settings" && <SettingsView />}
+            </main>
+          </div>
+        </div>
       </div>
 
       <BottomNav

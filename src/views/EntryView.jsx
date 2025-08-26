@@ -73,15 +73,15 @@ const EntryView = ({
             onClick={onBack}
             style={{
               padding: '0.5rem 1rem',
-              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              background: 'var(--accent-600)',
               color: 'white',
               border: 'none',
-              borderRadius: '20px',
+              borderRadius: 'var(--radius-pill)',
               cursor: 'pointer',
               fontSize: '0.9rem',
               fontWeight: '500',
               transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+              boxShadow: 'var(--shadow-md)',
             }}
           >
             ← Back
@@ -100,15 +100,15 @@ const EntryView = ({
           onClick={onBack}
           style={{
             padding: '0.5rem 1rem',
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+            background: 'var(--accent-600)',
             color: 'white',
             border: 'none',
-            borderRadius: '20px',
+            borderRadius: 'var(--radius-pill)',
             cursor: 'pointer',
             fontSize: '0.9rem',
             fontWeight: '500',
             transition: 'all 0.3s ease',
-            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+            boxShadow: 'var(--shadow-md)',
           }}
         >
           ← Back to History

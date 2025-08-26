@@ -69,7 +69,7 @@ const AchievementsView = () => {
 
   if (loading) {
     return (
-      <div style={{ marginTop: '2rem', textAlign: 'center', color: '#666' }}>
+      <div style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
         Loading achievements...
       </div>
     );
@@ -77,7 +77,7 @@ const AchievementsView = () => {
 
   if (error) {
     return (
-      <div style={{ marginTop: '2rem', textAlign: 'center', color: '#ff6b6b' }}>
+      <div style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--accent-600)' }}>
         {error}
       </div>
     );
@@ -133,8 +133,8 @@ const AchievementsView = () => {
         {!achievements.find(a => a.achievement_type === active?.achievement_type) && (
           <ProgressBar value={Math.floor(Math.random()*7)} max={7} label="Progress to unlock" />
         )}
-        <div style={{ marginTop: 12, fontSize: 13, color: '#6b7280' }}>
-          Tips: Log daily to maintain your streak. Viewing statistics contributes to “Data Lover”.
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text-muted)' }}>
+          Tips: Log daily to maintain your streak. Viewing statistics contributes to "Data Lover".
         </div>
       </Modal>
     </div>
