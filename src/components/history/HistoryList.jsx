@@ -31,16 +31,7 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
         <p style={{ marginBottom: 12 }}>No entries yet.</p>
         <button
           onClick={() => window.dispatchEvent(new CustomEvent('nightlio:new-entry'))}
-          style={{
-            padding: '0.6rem 1rem',
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '20px',
-            cursor: 'pointer',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-          }}
+          className="primary"
         >
           Create first entry
         </button>

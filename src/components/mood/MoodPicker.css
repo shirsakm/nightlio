@@ -1,42 +1,4 @@
-.mood-grid {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin: 2rem 0;
-  flex-wrap: wrap;
-}
-
-@media (min-width: 500px) {
-  .mood-grid {
-    flex-wrap: nowrap;
-  }
-}
-
-.mood-button {
-  width: 80px;
-  height: 80px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-@media (max-width: 499px) {
-  .mood-button {
-    width: 70px;
-    height: 70px;
-  }
-}
-
-.mood-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
-}
-
-.mood-button:active {
-  transform: translateY(0);
-}
+/* Intentionally minimal to avoid overriding global styles in App.css */
+/* Mood grid and button visuals are defined in src/App.css under .mood-grid and .mood-button. */
+/* Keep only safe layout tweaks if needed. */
+/* Currently no overrides. */

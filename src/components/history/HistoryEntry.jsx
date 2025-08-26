@@ -33,17 +33,10 @@ const HistoryEntry = ({ entry, onDelete }) => {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      className="entry-card"
       style={{
-        border: isHovered ? '2px solid #667eea' : '2px solid transparent',
-        borderRadius: '16px',
-        padding: '1.5rem',
-        marginBottom: '1.5rem',
-        background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-        boxShadow: isHovered 
-          ? '0 12px 40px rgba(102, 126, 234, 0.15)' 
-          : '0 8px 32px rgba(0, 0, 0, 0.08)',
-        transition: 'all 0.3s ease',
-        position: 'relative',
+        border: isHovered ? '1px solid var(--accent-200)' : '1px solid var(--border)',
+        boxShadow: isHovered ? 'var(--shadow-md)' : 'var(--shadow-sm)'
       }}
     >
       {/* Delete Button */}
@@ -141,14 +134,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
             {entry.selections.map(selection => (
               <span
                 key={selection.id}
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                  color: 'white',
-                  borderRadius: '15px',
-                  fontSize: '0.8rem',
-                  fontWeight: '500',
-                }}
+                className="tag"
               >
                 {selection.name}
               </span>

@@ -44,28 +44,28 @@ const ProtectedRoute = ({ children }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
+        background: 'var(--bg)',
         margin: 0,
         boxSizing: 'border-box'
       }}>
         <div style={{
-          background: 'white',
-          borderRadius: '12px',
+          background: 'var(--surface)',
+          borderRadius: 'var(--radius)',
           padding: '2rem',
           textAlign: 'center',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+          boxShadow: 'var(--shadow-md)',
           width: '300px'
         }}>
           <div style={{
             width: '24px',
             height: '24px',
-            border: '3px solid #f0f0f0',
-            borderTop: '3px solid #667eea',
+            border: '3px solid var(--border-soft)',
+            borderTop: '3px solid var(--accent-600)',
             borderRadius: '50%',
             animation: 'spin 1s linear infinite',
             margin: '0 auto 1rem auto'
           }}></div>
-          <p style={{ color: '#666', margin: '0', fontSize: '0.9rem' }}>Logging in...</p>
+          <p style={{ color: 'var(--text-muted)', margin: '0', fontSize: '0.9rem' }}>Logging in...</p>
           <style>
             {`
               @keyframes spin {

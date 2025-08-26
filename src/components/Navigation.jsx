@@ -21,19 +21,16 @@ const Navigation = ({ currentView, onViewChange, onLoadStatistics }) => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.3rem',
+          gap: '0.4rem',
           padding: '0.5rem 1rem',
-          background:
-            currentView === 'history'
-              ? 'linear-gradient(135deg, #667eea, #764ba2)'
-              : 'transparent',
-          color: currentView === 'history' ? 'white' : '#667eea',
-          border: currentView === 'history' ? 'none' : '1px solid #667eea',
-          borderRadius: '20px',
+          background: currentView === 'history' ? 'var(--accent-50)' : 'transparent',
+          color: currentView === 'history' ? 'var(--accent-700)' : 'var(--text)',
+          border: currentView === 'history' ? '1px solid var(--accent-100)' : '1px solid var(--border)',
+          borderRadius: 'var(--radius-pill)',
           cursor: 'pointer',
           fontSize: '0.9rem',
-          fontWeight: '500',
-          transition: 'all 0.3s ease',
+          fontWeight: '600',
+          transition: 'background 180ms ease, color 180ms ease, border-color 180ms ease',
         }}
       >
         <Home size={16} />
@@ -44,19 +41,16 @@ const Navigation = ({ currentView, onViewChange, onLoadStatistics }) => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.3rem',
+          gap: '0.4rem',
           padding: '0.5rem 1rem',
-          background:
-            currentView === 'stats'
-              ? 'linear-gradient(135deg, #667eea, #764ba2)'
-              : 'transparent',
-          color: currentView === 'stats' ? 'white' : '#667eea',
-          border: currentView === 'stats' ? 'none' : '1px solid #667eea',
-          borderRadius: '20px',
+          background: currentView === 'stats' ? 'var(--accent-50)' : 'transparent',
+          color: currentView === 'stats' ? 'var(--accent-700)' : 'var(--text)',
+          border: currentView === 'stats' ? '1px solid var(--accent-100)' : '1px solid var(--border)',
+          borderRadius: 'var(--radius-pill)',
           cursor: 'pointer',
           fontSize: '0.9rem',
-          fontWeight: '500',
-          transition: 'all 0.3s ease',
+          fontWeight: '600',
+          transition: 'background 180ms ease, color 180ms ease, border-color 180ms ease',
         }}
       >
         <BarChart3 size={16} />
@@ -67,19 +61,16 @@ const Navigation = ({ currentView, onViewChange, onLoadStatistics }) => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.3rem',
+          gap: '0.4rem',
           padding: '0.5rem 1rem',
-          background:
-            currentView === 'achievements'
-              ? 'linear-gradient(135deg, #667eea, #764ba2)'
-              : 'transparent',
-          color: currentView === 'achievements' ? 'white' : '#667eea',
-          border: currentView === 'achievements' ? 'none' : '1px solid #667eea',
-          borderRadius: '20px',
+          background: currentView === 'achievements' ? 'var(--accent-50)' : 'transparent',
+          color: currentView === 'achievements' ? 'var(--accent-700)' : 'var(--text)',
+          border: currentView === 'achievements' ? '1px solid var(--accent-100)' : '1px solid var(--border)',
+          borderRadius: 'var(--radius-pill)',
           cursor: 'pointer',
           fontSize: '0.9rem',
-          fontWeight: '500',
-          transition: 'all 0.3s ease',
+          fontWeight: '600',
+          transition: 'background 180ms ease, color 180ms ease, border-color 180ms ease',
         }}
       >
         <Trophy size={16} />

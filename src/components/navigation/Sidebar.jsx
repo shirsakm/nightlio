@@ -18,12 +18,13 @@ const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
 
   return (
     <aside className={`sidebar`}>
-      <div className="sidebar__inner">
+  <div className="sidebar__inner">
         {items.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => handleClick(key)}
-            className={`sidebar__item ${currentView === key ? 'is-active' : ''}`}
+    className={`sidebar__item ${currentView === key ? 'is-active' : ''}`}
+    aria-current={currentView === key ? 'page' : undefined}
             title={label}
           >
             <Icon size={18} style={{ flexShrink: 0 }} />

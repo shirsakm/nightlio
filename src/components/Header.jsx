@@ -38,18 +38,15 @@ const Header = ({ currentView, currentStreak }) => {
       >
         {/* Left side - Logo and Streak */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <h1
-            style={{
-              background: 'linear-gradient(135deg, #ff6b6b, #4ecdc4)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              margin: '0',
-        fontSize: isMobile ? '2rem' : '2.5rem',
-        fontWeight: '800',
-              letterSpacing: '-0.02em',
-            }}
-          >
+  <h1
+    style={{
+      color: 'var(--text)',
+      margin: '0',
+    fontSize: isMobile ? '2rem' : '2.5rem',
+    fontWeight: '800',
+      letterSpacing: '-0.02em',
+    }}
+      >
             Nightlio
           </h1>
           {currentStreak > 0 && (
@@ -58,13 +55,14 @@ const Header = ({ currentView, currentStreak }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.3rem',
-                background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                color: 'white',
+        background: 'var(--accent-50)',
+        color: 'var(--accent-700)',
                 padding: '0.4rem 0.8rem',
-                borderRadius: '20px',
-                fontSize: '0.9rem',
+        borderRadius: 'var(--radius-pill)',
+        border: '1px solid var(--accent-100)',
+        fontSize: '0.85rem',
                 fontWeight: '600',
-                boxShadow: '0 2px 8px rgba(102, 126, 234, 0.2)',
+        boxShadow: 'var(--shadow-sm)',
               }}
             >
               <Zap size={16} />
@@ -81,11 +79,11 @@ const Header = ({ currentView, currentStreak }) => {
               style={{
                 padding: '0.4rem 0.8rem',
                 background: 'transparent',
-                border: '1px solid #ddd',
+                border: '1px solid var(--border)',
                 borderRadius: '20px',
                 cursor: 'pointer',
                 fontSize: '0.8rem',
-                color: '#666',
+                color: 'var(--text-muted)',
               }}
               title={`Theme: ${theme}`}
             >
@@ -97,19 +95,19 @@ const Header = ({ currentView, currentStreak }) => {
             {/* User Profile */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {user.avatar_url && (
-                <img
+        <img
                   src={user.avatar_url}
                   alt={user.name}
                   style={{
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    border: '2px solid #667eea'
+          border: '2px solid var(--accent-600)'
                   }}
                 />
               )}
               <span style={{ 
-                color: '#666', 
+        color: 'var(--text-muted)', 
                 fontSize: '0.9rem',
                 fontWeight: '500'
               }}>
@@ -125,11 +123,11 @@ const Header = ({ currentView, currentStreak }) => {
                 gap: '0.3rem',
                 padding: '0.4rem 0.8rem',
                 background: 'transparent',
-                border: '1px solid #ddd',
+                border: '1px solid var(--border)',
                 borderRadius: '20px',
                 cursor: 'pointer',
                 fontSize: '0.8rem',
-                color: '#666',
+                color: 'var(--text-muted)',
                 transition: 'all 0.3s ease'
               }}
             >
@@ -141,7 +139,7 @@ const Header = ({ currentView, currentStreak }) => {
       </div>
     <p
         style={{
-      color: '#1f2937',
+      color: 'var(--text)',
       margin: '0 0 2px 0',
           fontSize: isMobile ? '1rem' : '1.125rem',
           fontWeight: '600',
@@ -155,7 +153,7 @@ const Header = ({ currentView, currentStreak }) => {
       </p>
     <p
         style={{
-          color: '#6b7280',
+          color: 'var(--text-muted)',
       margin: 0,
           fontSize: '0.95rem',
           fontWeight: '400',
