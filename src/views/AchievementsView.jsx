@@ -48,6 +48,7 @@ const AchievementsView = () => {
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
     loadAchievements();
@@ -82,7 +83,6 @@ const AchievementsView = () => {
     );
   }
 
-  const [active, setActive] = useState(null);
   return (
     <div style={{ marginTop: '2rem' }}>
 
@@ -91,11 +91,10 @@ const AchievementsView = () => {
       {/* Achievements Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-        gap: '1rem',
-        padding: '0 1rem',
-        maxWidth: '1000px',
-        margin: '0 auto'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: '1.25rem',
+        padding: 0,
+        margin: 0
       }}>
         {/* All possible achievements */}
         {getAllAchievements().map((achievement, index) => {

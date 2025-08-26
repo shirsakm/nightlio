@@ -21,7 +21,6 @@ import "./App.css";
 const AppContent = () => {
   const [currentView, setCurrentView] = useState("history");
   const [selectedMood, setSelectedMood] = useState(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
@@ -63,13 +62,11 @@ const AppContent = () => {
     <>
       <Header currentView={currentView} currentStreak={currentStreak} />
 
-    <div className={`app-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+  <div className={`app-layout`}>
         <Sidebar
           currentView={currentView}
           onViewChange={handleViewChange}
           onLoadStatistics={loadStatistics}
-      collapsed={sidebarCollapsed}
-      onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
         />
 
         <main className="app-main">

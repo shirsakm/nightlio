@@ -1,9 +1,9 @@
-import { Home, BarChart3, Trophy, Settings, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, BarChart3, Trophy, Settings, PlusCircle } from 'lucide-react';
 
-const Sidebar = ({ currentView, onViewChange, onLoadStatistics, collapsed = false, onToggleCollapse }) => {
+const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
   const items = [
-  { key: 'history', label: 'History', icon: Home },
-  { key: 'entry', label: 'New Entry', icon: PlusCircle },
+  { key: 'history', label: 'Home', icon: Home },
+  { key: 'entry', label: 'Entry', icon: PlusCircle },
     { key: 'stats', label: 'Statistics', icon: BarChart3 },
     { key: 'achievements', label: 'Achievements', icon: Trophy },
     { key: 'settings', label: 'Settings', icon: Settings },
@@ -17,17 +17,8 @@ const Sidebar = ({ currentView, onViewChange, onLoadStatistics, collapsed = fals
   };
 
   return (
-    <aside className={`sidebar ${collapsed ? 'is-collapsed' : ''}`}>
+    <aside className={`sidebar`}>
       <div className="sidebar__inner">
-        <button
-          className="sidebar__item sidebar__toggle"
-          onClick={onToggleCollapse}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          title={collapsed ? 'Expand' : 'Collapse'}
-        >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          <span>{collapsed ? 'Expand' : 'Collapse'}</span>
-        </button>
         {items.map(({ key, label, icon: Icon }) => (
           <button
             key={key}

@@ -30,7 +30,7 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
       <div style={{ textAlign: 'center', color: '#4C566A', padding: '2rem' }}>
         <p style={{ marginBottom: 12 }}>No entries yet.</p>
         <button
-          onClick={() => show('Tap + to create your first entry', 'info')}
+          onClick={() => window.dispatchEvent(new CustomEvent('nightlio:new-entry'))}
           style={{
             padding: '0.6rem 1rem',
             background: 'linear-gradient(135deg, #667eea, #764ba2)',

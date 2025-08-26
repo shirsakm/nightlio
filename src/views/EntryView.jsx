@@ -179,21 +179,25 @@ const EntryView = ({
         {submitMessage && (
           <div
             style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: 'white',
-              padding: '2rem',
-              borderRadius: '16px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              zIndex: 1000,
-              textAlign: 'center',
-              minWidth: '300px',
-              backdropFilter: 'blur(20px)'
+              position: 'absolute',
+              inset: 0,
+              display: 'grid',
+              placeItems: 'center',
+              zIndex: 10,
             }}
           >
+            <div
+              style={{
+                background: 'white',
+                padding: '2rem',
+                borderRadius: '16px',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                textAlign: 'center',
+                minWidth: '300px',
+                maxWidth: 'min(560px, 90%)',
+              }}
+            >
             <div style={{
               fontSize: '3rem',
               marginBottom: '1rem'
@@ -208,6 +212,7 @@ const EntryView = ({
             }}>
               {submitMessage}
             </div>
+            </div>
           </div>
         )}
         
@@ -215,13 +220,10 @@ const EntryView = ({
         {submitMessage && (
           <div
             style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 999
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.35)',
+              zIndex: 5
             }}
           />
         )}

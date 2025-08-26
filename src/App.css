@@ -1,31 +1,36 @@
 #root {
-  width: 900px;
-  margin: var(--space-8) auto;
+  /* Full-bleed app container */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   padding: var(--space-6);
-  text-align: center;
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  min-height: calc(100vh - var(--space-16, 64px));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: left;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .app-layout {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 260px 1fr; /* persistent left sidebar */
   gap: var(--space-6);
   align-items: start;
+  min-height: calc(100vh - var(--space-12));
 }
 
 .app-main {
   min-height: 60vh;
-  position: relative;
+  position: relative; /* anchor in-card overlays */
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-2);
+  padding: var(--space-6);
 }
 
 .sidebar {
   position: sticky;
-  top: 12px;
+  top: var(--space-6);
   align-self: start;
   height: fit-content;
 }
@@ -111,32 +116,24 @@
 }
 
 /* collapsed sidebar layout */
-.app-layout.sidebar-collapsed {
-  grid-template-columns: 80px 1fr;
-}
-
-.app-layout.sidebar-collapsed .sidebar__item span {
-  display: none;
-}
-
-.app-layout.sidebar-collapsed .sidebar__item {
-  justify-content: center;
-}
+/* sidebar always visible - collapse removed */
 
 /* hide FAB on desktop (we'll show it only on mobile) */
 .fab { display: none; }
 
+
+/* Compact desktop mood grid; mobile keeps smaller sizes below */
 .mood-grid {
   display: flex;
-  gap: 1.5rem;
-  justify-content: center;
+  gap: 1rem;
+  justify-content: flex-start;
   flex-wrap: wrap;
-  margin: 3rem 0;
+  margin: 1.5rem 0 2rem;
 }
 
 .mood-button {
-  width: 100px;
-  height: 100px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -175,23 +172,23 @@
 
 @media (max-width: 600px) {
   #root {
-    margin: 0;
-    border-radius: 0;
-    min-height: 100vh;
+  margin: 0;
+  border-radius: 0;
+  min-height: 100vh;
   padding: var(--space-4);
   }
   .app-layout {
-    display: block;
+  display: block;
   }
   .sidebar { display: none; }
   .bottom-nav { display: flex; }
   .fab { display: grid; }
-  .app-main { padding-bottom: 120px; }
+  .app-main { padding: var(--space-4); padding-bottom: 120px; border-radius: 12px; }
   
   .mood-button {
-    font-size: 2.5rem;
-    width: 60px;
-    height: 60px;
+    font-size: 2rem;
+    width: 56px;
+    height: 56px;
   }
 }
 

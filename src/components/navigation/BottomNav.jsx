@@ -1,9 +1,8 @@
-import { Home, BarChart3, Trophy, Settings, PlusCircle } from 'lucide-react';
+import { Home, BarChart3, Trophy, Settings } from 'lucide-react';
 
 const BottomNav = ({ currentView, onViewChange, onLoadStatistics }) => {
   const items = [
     { key: 'history', label: 'Home', icon: Home },
-    { key: 'entry', label: 'Entry', icon: PlusCircle },
     { key: 'stats', label: 'Stats', icon: BarChart3 },
     { key: 'achievements', label: 'Awards', icon: Trophy },
     { key: 'settings', label: 'Settings', icon: Settings },

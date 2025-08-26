@@ -91,24 +91,7 @@ const Header = ({ currentView, currentStreak }) => {
             >
               Theme: {theme}
             </button>
-            {!isMobile && (
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent('nightlio:new-entry'))}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
-                }}
-              >
-                + New Entry
-              </button>
-            )}
+            {/* Primary CTA moved to HistoryView and Sidebar to reduce duplication */}
       {/* Web3 controls removed */}
 
             {/* User Profile */}
