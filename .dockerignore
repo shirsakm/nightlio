@@ -94,7 +94,6 @@ api/
 data/
 tests/
 scripts/
-contracts/
 
 # Documentation
 *.md

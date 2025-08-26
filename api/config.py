@@ -100,20 +100,20 @@ class ConfigData:
 
     # Feature flags
     ENABLE_GOOGLE_OAUTH: bool
-    ENABLE_WEB3: bool
 
     # Google OAuth
     GOOGLE_CLIENT_ID: Optional[str]
     GOOGLE_CLIENT_SECRET: Optional[str]
     GOOGLE_CALLBACK_URL: Optional[str]
 
-    # Web3
-    WEB3_RPC_URL: Optional[str]
-    WEB3_CONTRACT_ADDRESS: Optional[str]
+    # Web3 removed
 
     # Auth
     JWT_SECRET: str
     DEFAULT_SELF_HOST_ID: str = 'selfhost_default_user'
+    # Optional friendly defaults for the self-hosted user display
+    SELFHOST_USER_NAME: Optional[str] = None
+    SELFHOST_USER_EMAIL: Optional[str] = None
 
 
 _CONFIG_SINGLETON: Optional[ConfigData] = None
@@ -128,7 +128,7 @@ def _load_config_from_env() -> ConfigData:
     """
 
     enable_google = is_truthy(os.getenv('ENABLE_GOOGLE_OAUTH'))
-    enable_web3 = is_truthy(os.getenv('ENABLE_WEB3'))
+    # Web3 removed
 
     # Secrets pulled from env; don't default to empty string.
     jwt_secret = (
@@ -139,15 +139,15 @@ def _load_config_from_env() -> ConfigData:
     )
 
     return ConfigData(
-        ENABLE_GOOGLE_OAUTH=enable_google,
-        ENABLE_WEB3=enable_web3,
+    ENABLE_GOOGLE_OAUTH=enable_google,
         GOOGLE_CLIENT_ID=os.getenv('GOOGLE_CLIENT_ID'),
         GOOGLE_CLIENT_SECRET=os.getenv('GOOGLE_CLIENT_SECRET'),
         GOOGLE_CALLBACK_URL=os.getenv('GOOGLE_CALLBACK_URL'),
-        WEB3_RPC_URL=os.getenv('WEB3_RPC_URL'),
-        WEB3_CONTRACT_ADDRESS=os.getenv('WEB3_CONTRACT_ADDRESS'),
+    # Web3 fields removed
         JWT_SECRET=jwt_secret,
-        DEFAULT_SELF_HOST_ID=os.getenv('DEFAULT_SELF_HOST_ID') or 'selfhost_default_user',
+    DEFAULT_SELF_HOST_ID=os.getenv('DEFAULT_SELF_HOST_ID') or 'selfhost_default_user',
+    SELFHOST_USER_NAME=os.getenv('SELFHOST_USER_NAME') or 'Me',
+    SELFHOST_USER_EMAIL=os.getenv('SELFHOST_USER_EMAIL') or None,
     )
 
 
@@ -169,5 +169,4 @@ def config_to_public_dict(cfg: ConfigData) -> Dict[str, Any]:
     """
     return {
         'enable_google_oauth': bool(cfg.ENABLE_GOOGLE_OAUTH),
-        'enable_web3': bool(cfg.ENABLE_WEB3),
     }

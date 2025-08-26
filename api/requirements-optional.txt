@@ -6,5 +6,4 @@ authlib
 google-auth
 google-auth-oauthlib
 
-# Web3
-web3
+# Web3 removed

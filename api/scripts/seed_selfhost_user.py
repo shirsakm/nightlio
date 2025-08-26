@@ -24,7 +24,11 @@ def seed_selfhost_user() -> dict:
     cfg = get_config()
     db = MoodDatabase()  # uses default sqlite path under data/nightlio.db
     user_service = UserService(db)
-    user = user_service.ensure_local_user(cfg.DEFAULT_SELF_HOST_ID)
+    user = user_service.ensure_local_user(
+        cfg.DEFAULT_SELF_HOST_ID,
+        default_name=cfg.SELFHOST_USER_NAME or 'Me',
+        default_email=cfg.SELFHOST_USER_EMAIL or f"{cfg.DEFAULT_SELF_HOST_ID}@localhost",
+    )
     return user
 
 

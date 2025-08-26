@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (use install to allow lockfile refresh after dep changes)
+RUN npm install
 
 # Copy source code
 COPY . .

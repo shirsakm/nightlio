@@ -10,7 +10,7 @@ export const useConfig = () => {
 };
 
 export const ConfigProvider = ({ children }) => {
-  const [config, setConfig] = useState({ enable_google_oauth: false, enable_web3: false });
+  const [config, setConfig] = useState({ enable_google_oauth: false });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

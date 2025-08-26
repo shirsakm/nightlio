@@ -183,15 +183,7 @@ class ApiService {
     });
   }
 
-  async mintAchievementNFT(achievementId, tokenId, txHash) {
-    return this.request(`/api/achievements/${achievementId}/mint`, {
-      method: 'POST',
-      body: JSON.stringify({
-        token_id: tokenId,
-        tx_hash: txHash,
-      }),
-    });
-  }
+  // Web3 minting removed
 }
 
 const apiService = new ApiService();

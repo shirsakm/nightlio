@@ -1,76 +1,8 @@
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
-import { useNFT } from '../../hooks/useNFT';
 import { Zap, Flame, Target, BarChart3, Crown } from 'lucide-react';
 
 const AchievementNFT = ({ achievement, isUnlocked = true }) => {
-  const { isConnected } = useAccount();
-  const { mintAchievement, isPending, isConfirming, isConfirmed, useHasAchievement, writeError } = useNFT();
   const [error, setError] = useState('');
-  
-  // Log any write errors
-  if (writeError) {
-    console.error('Write error from wagmi:', writeError);
-  }
-  
-  // Check if user already has this achievement NFT (only if unlocked and connected)
-  const { data: hasNFT, isLoading: checkingNFT } = useHasAchievement(
-    isUnlocked && isConnected ? achievement.achievement_type : null
-  );
-
-  const handleMint = async () => {
-    // console.log('Mint button clicked');
-    // console.log('Connected:', isConnected);
-    // console.log('Achievement type:', achievement.achievement_type);
-    
-    if (!isConnected) {
-      setError('Please connect your wallet first');
-      return;
-    }
-
-    try {
-      setError('');
-      console.log('Attempting to mint achievement...');
-      await mintAchievement(achievement.achievement_type);
-      console.log('Mint transaction initiated');
-    } catch (err) {
-      console.error('Mint error:', err);
-      setError(err.message || 'Failed to mint NFT');
-    }
-  };
-
-  if (checkingNFT) {
-    return (
-      <div style={{ 
-        padding: '1.5rem',
-        borderRadius: '16px',
-        background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '320px',
-        maxWidth: '450px',
-        margin: '0 auto',
-        color: '#666'
-      }}>
-        <div style={{ 
-          fontSize: '3rem', 
-          marginBottom: '1rem',
-          opacity: 0.7
-        }}>⏳</div>
-        <div style={{ 
-          color: '#666',
-          fontSize: '0.9rem',
-          fontWeight: '500'
-        }}>
-          Checking NFT status...
-        </div>
-      </div>
-    );
-  }
 
   // Get the icon component
   const getIcon = (iconName) => {
@@ -184,7 +116,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
           }}>
             🔒 Locked
           </div>
-        ) : hasNFT ? (
+        ) : (
           <div style={{
             background: '#4ecdc4',
             color: 'white',
@@ -198,34 +130,12 @@ const AchievementNFT = ({ achievement, isUnlocked = true }) => {
             gap: '0.5rem'
           }}>
             <Zap size={16} />
-            Owned
+            Unlocked
           </div>
-        ) : (
-          <button
-            onClick={handleMint}
-            disabled={isPending || isConfirming || !isConnected}
-            style={{
-              background: isPending || isConfirming ? '#ccc' : 'linear-gradient(135deg, #667eea, #764ba2)',
-              color: 'white',
-              border: 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '25px',
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              cursor: isPending || isConfirming || !isConnected ? 'not-allowed' : 'pointer',
-              transition: 'all 0.3s ease',
-              width: '100%'
-            }}
-          >
-            {isPending ? 'Confirm in Wallet...' :
-             isConfirming ? 'Minting...' :
-             isConfirmed ? 'Minted!' :
-             'Mint NFT'}
-          </button>
         )}
       </div>
 
-      {error && (
+  {error && (
         <div style={{
           background: '#fee',
           color: '#c33',

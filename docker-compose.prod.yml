@@ -14,14 +14,11 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - CORS_ORIGINS=https://yourdomain.com
       - ENABLE_GOOGLE_OAUTH=${ENABLE_GOOGLE_OAUTH:-0}
-      - ENABLE_WEB3=${ENABLE_WEB3:-0}
       - DEFAULT_SELF_HOST_ID=${DEFAULT_SELF_HOST_ID:-selfhost_default_user}
       - DATABASE_PATH=/app/data/nightlio.db
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-}
-      - WEB3_RPC_URL=${WEB3_RPC_URL:-}
-      - WEB3_CONTRACT_ADDRESS=${WEB3_CONTRACT_ADDRESS:-}
       - PORT=5000
     volumes:
       - nightlio_data:/app/data

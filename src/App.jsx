@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
-import { Web3Provider } from "./contexts/Web3Context";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
@@ -105,9 +104,7 @@ const RootProviders = ({ children }) => {
       </ProtectedRoute>
     </AuthProvider>
   );
-  return config.enable_web3 ? (
-    <Web3Provider>{content}</Web3Provider>
-  ) : content;
+  return content;
 };
 
 function App() {

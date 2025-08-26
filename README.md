@@ -18,7 +18,7 @@ Nightlio is the result: a feature-complete, open-source alternative that you can
 * **🔒 Privacy First, Always:** Built from the ground up to be self-hosted. Your sensitive data is stored in a simple SQLite database file on *your* server. No third-party trackers or analytics.
 * **🚀 Simple Self-Hosting with Docker:** Get up and running in minutes with a single `docker compose up` command.
 * **🎮 Gamified Achievements:** Stay consistent with built-in achievements that unlock as you build your journaling habit.
-* **🌐 Optional Web3 Integration:** As a proof-of-concept, you can mint your achievements as NFTs on the Sepolia testnet to create a unique, on-chain record of your progress.
+* Web3 integration has been removed; achievements remain off-chain.
 
 <div align="center">🌙</div>
 
@@ -44,8 +44,8 @@ docker compose up -d
 ```
 
 Your instance is now live!
-* **Frontend:** [http://localhost:5173](http://localhost:5173)
-* **API Backend:** [http://localhost:5000](http://localhost:5000)
+* Frontend: http://localhost:5173
+* API: http://localhost:5000
 
 **Note:** By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
 
@@ -65,7 +65,6 @@ DATABASE_PATH=/app/data/nightlio.db
 
 # Feature flags (1 to enable, 0 to disable)
 ENABLE_GOOGLE_OAUTH=0
-ENABLE_WEB3=0
 
 # Google OAuth (if enabled)
 GOOGLE_CLIENT_ID=
@@ -133,7 +132,7 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header unless o
 * `POST /api/auth/verify` → 200 { user }
 
 **Config & Misc**
-* `GET /api/config` → { enable_google_oauth, enable_web3 }
+* `GET /api/config` → { enable_google_oauth }
 * `GET /api/` → health payload
 * `GET /api/time` → { time }
 
@@ -157,10 +156,9 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header unless o
 **Achievements**
 * `GET /api/achievements` → user achievements (with metadata)
 * `POST /api/achievements/check` → { new_achievements, count }
-* `POST /api/achievements/:id/mint { token_id, tx_hash }` → success
+	(NFT minting removed)
 
-**Web3 (optional)**
-* `GET /api/web3/health` → { connected: boolean }
+Web3 endpoints removed.
 
 </details>
 

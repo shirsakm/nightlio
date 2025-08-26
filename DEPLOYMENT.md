@@ -47,7 +47,7 @@ CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 
 # Optional features
 ENABLE_GOOGLE_OAUTH=0
-ENABLE_WEB3=0
+# Web3 removed
 DEFAULT_SELF_HOST_ID=selfhost_default_user
 
 # Google OAuth (if enabled)

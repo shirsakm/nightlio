@@ -49,18 +49,22 @@ class UserService:
         return user
 
     # Self-host local user provisioning
-    def ensure_local_user(self, default_user_id: str) -> Dict:
+    def ensure_local_user(self, default_user_id: str, default_name: Optional[str] = None, default_email: Optional[str] = None) -> Dict:
         """Ensure a self-host single-user exists and return it.
 
-        We reuse the google_id column to avoid schema changes: the synthetic id
-        is stored as google_id with provider fixed to 'google'-style storage.
+        - Uses the google_id column to store a stable synthetic identifier.
+        - Always upserts with provided friendly name/email to improve UX.
+        - Remains idempotent and returns the full user row.
         """
-        # Store synthetic id in google_id for compatibility
-        user = self.db.get_user_by_google_id(default_user_id)
-        if user:
-            self.db.update_user_last_login(user['id'])
-            return user
-        # Email column is NOT NULL in current schema; provide a synthetic email
-        synthetic_email = f"{default_user_id}@localhost"
-        user_id = self.db.create_user(default_user_id, email=synthetic_email, name=default_user_id, avatar_url=None)
-        return self.db.get_user_by_id(user_id)
+        name = default_name or 'Me'
+        email = default_email or f"{default_user_id}@localhost"
+
+        # Upsert ensures we set a friendly display name even if a previous
+        # row exists with the raw id as name.
+        user = self.db.upsert_user_by_google_id(
+            google_id=default_user_id,
+            email=email,
+            name=name,
+            avatar_url=None,
+        )
+        return user

@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app
+import os
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.common.errors import AuthlibBaseError
 import requests
@@ -100,7 +101,11 @@ def create_auth_routes(user_service: UserService):
             cfg = get_config()
             default_user_id = cfg.DEFAULT_SELF_HOST_ID
 
-            user = user_service.ensure_local_user(default_user_id)
+            # Use friendlier display for the self-hosted user
+            default_name = os.getenv('SELFHOST_USER_NAME') or 'Me'
+            default_email = os.getenv('SELFHOST_USER_EMAIL') or f"{default_user_id}@localhost"
+
+            user = user_service.ensure_local_user(default_user_id, default_name, default_email)
 
             # Prefer typed JWT secret; fallback to legacy config
             jwt_secret = cfg.JWT_SECRET or current_app.config.get('JWT_SECRET_KEY')

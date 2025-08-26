@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
-import { useNFT } from '../hooks/useNFT';
 import AchievementNFT from '../components/nft/AchievementNFT';
 import apiService from '../services/api';
 
@@ -44,8 +42,7 @@ const getAllAchievements = () => [
 ];
 
 const AchievementsView = () => {
-  const { isConnected } = useAccount();
-  const { nftBalance } = useNFT();
+  // Web3 removed
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -86,19 +83,7 @@ const AchievementsView = () => {
   return (
     <div style={{ marginTop: '2rem' }}>
 
-      {/* Wallet Connection Notice */}
-      {!isConnected && (
-        <div style={{
-          background: '#fff3cd',
-          color: '#856404',
-          padding: '1rem',
-          borderRadius: '8px',
-          marginBottom: '2rem',
-          textAlign: 'center'
-        }}>
-          Connect your wallet to mint achievement NFTs on Sepolia testnet
-        </div>
-      )}
+  {/* Web3 notice removed */}
 
       {/* Achievements Grid */}
       <div style={{

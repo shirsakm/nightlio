@@ -113,18 +113,7 @@ def create_app(config_name='default'):
                 if app.debug:
                     print(f"[warn] ENABLE_GOOGLE_OAUTH is true but oauth blueprint not available: {e} / {e2}")
 
-    if cfg.ENABLE_WEB3:
-        try:
-            # Optional Web3 routes (added in a later prompt).
-            from api.routes.web3_routes import web3_bp  # type: ignore
-            app.register_blueprint(web3_bp, url_prefix='/api')
-        except Exception as e:
-            try:
-                from routes.web3_routes import web3_bp  # type: ignore
-                app.register_blueprint(web3_bp, url_prefix='/api')
-            except Exception as e2:
-                if app.debug:
-                    print(f"[warn] ENABLE_WEB3 is true but web3 blueprint not available: {e} / {e2}")
+    # Web3 functionality removed from the application
 
     # Debug: Print all registered routes
     if app.debug:

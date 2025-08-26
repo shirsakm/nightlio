@@ -61,7 +61,7 @@ services:
 
 ### Optional Features
 - `ENABLE_GOOGLE_OAUTH`: Set to `1` to enable Google login
-- `ENABLE_WEB3`: Set to `1` to enable Web3 features
+Web3-related variables have been removed.
 - `DEFAULT_SELF_HOST_ID`: User ID for self-hosted instances
 
 ### Google OAuth Setup (Optional)

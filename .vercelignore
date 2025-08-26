@@ -9,6 +9,5 @@ railway.json
 
 # Ignore other non-frontend files
 data/
-contracts/
 *.md
 .env.example
