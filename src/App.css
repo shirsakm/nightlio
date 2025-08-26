@@ -17,6 +17,10 @@
   min-height: calc(100vh - var(--space-12));
 }
 
+.app-layout.no-sidebar {
+  grid-template-columns: 1fr;
+}
+
 .app-main {
   min-height: 60vh;
   position: relative; /* anchor in-card overlays */
@@ -26,6 +30,55 @@
   border: 1px solid rgba(0,0,0,0.06);
   box-shadow: var(--shadow-2);
   padding: var(--space-6);
+}
+
+/* Entry two-column layout (desktop) */
+.entry-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: var(--space-6);
+}
+
+.entry-left {
+  position: sticky;
+  top: calc(var(--space-6) + 56px); /* below header area */
+  align-self: start;
+  max-height: calc(100vh - 180px);
+  overflow: auto;
+  padding-right: var(--space-2);
+}
+
+.entry-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.entry-savebar {
+  position: sticky;
+  bottom: 0;
+  padding-top: var(--space-2);
+  background: linear-gradient(180deg, rgba(255,255,255,0), var(--bg-card) 40%);
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .entry-grid {
+    display: block;
+  }
+  .entry-left {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+    margin-bottom: var(--space-5);
+  }
+  .entry-savebar {
+    position: static;
+    background: transparent;
+    justify-content: stretch;
+  }
 }
 
 .sidebar {

@@ -62,12 +62,14 @@ const AppContent = () => {
     <>
       <Header currentView={currentView} currentStreak={currentStreak} />
 
-  <div className={`app-layout`}>
-        <Sidebar
-          currentView={currentView}
-          onViewChange={handleViewChange}
-          onLoadStatistics={loadStatistics}
-        />
+    <div className={`app-layout ${currentView === 'entry' ? 'no-sidebar' : ''}`}>
+        {currentView !== 'entry' && (
+          <Sidebar
+            currentView={currentView}
+            onViewChange={handleViewChange}
+            onLoadStatistics={loadStatistics}
+          />
+        )}
 
         <main className="app-main">
           {currentView === "history" && (
