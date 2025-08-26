@@ -11,6 +11,121 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.app-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.app-main {
+  min-height: 60vh;
+  position: relative;
+}
+
+.sidebar {
+  position: sticky;
+  top: 12px;
+  align-self: start;
+  height: fit-content;
+}
+
+.sidebar__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  color: #444;
+}
+
+.sidebar__toggle {
+  justify-content: space-between;
+}
+
+.sidebar__item.is-active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border-color: transparent;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  justify-content: space-around;
+  padding: 8px 12px calc(env(safe-area-inset-bottom) + 8px);
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0,0,0,0.08);
+  z-index: 50;
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #444;
+}
+
+.bottom-nav__item.is-active {
+  color: #4f46e5;
+}
+
+.bottom-nav__label {
+  font-size: 11px;
+}
+
+.fab {
+  position: fixed;
+  right: 18px;
+  bottom: 78px; /* above bottom nav */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+  z-index: 60;
+}
+
+/* collapsed sidebar layout */
+.app-layout.sidebar-collapsed {
+  grid-template-columns: 80px 1fr;
+}
+
+.app-layout.sidebar-collapsed .sidebar__item span {
+  display: none;
+}
+
+.app-layout.sidebar-collapsed .sidebar__item {
+  justify-content: center;
+}
+
+/* hide FAB on desktop (we'll show it only on mobile) */
+.fab { display: none; }
+
 .mood-grid {
   display: flex;
   gap: 1.5rem;
@@ -65,6 +180,13 @@
     min-height: 100vh;
     padding: 1rem;
   }
+  .app-layout {
+    display: block;
+  }
+  .sidebar { display: none; }
+  .bottom-nav { display: flex; }
+  .fab { display: grid; }
+  .app-main { padding-bottom: 120px; }
   
   .mood-button {
     font-size: 2.5rem;

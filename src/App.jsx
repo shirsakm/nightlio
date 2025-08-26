@@ -3,10 +3,13 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
-import Navigation from "./components/Navigation";
+import Sidebar from "./components/navigation/Sidebar";
+import BottomNav from "./components/navigation/BottomNav";
+import FAB from "./components/FAB";
 import HistoryView from "./views/HistoryView";
 import EntryView from "./views/EntryView";
 import StatisticsView from "./components/stats/StatisticsView";
+import SettingsView from "./views/SettingsView";
 import AchievementsView from "./views/AchievementsView";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
@@ -16,6 +19,7 @@ import "./App.css";
 const AppContent = () => {
   const [currentView, setCurrentView] = useState("history");
   const [selectedMood, setSelectedMood] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
@@ -50,46 +54,60 @@ const AppContent = () => {
   return (
     <>
       <Header currentView={currentView} currentStreak={currentStreak} />
-      
-      <Navigation 
-        currentView={currentView} 
+
+    <div className={`app-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+        <Sidebar
+          currentView={currentView}
+          onViewChange={handleViewChange}
+          onLoadStatistics={loadStatistics}
+      collapsed={sidebarCollapsed}
+      onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+        />
+
+        <main className="app-main">
+          {currentView === "history" && (
+            <HistoryView
+              pastEntries={pastEntries}
+              loading={historyLoading}
+              error={historyError}
+              onMoodSelect={handleMoodSelect}
+              onDelete={handleEntryDeleted}
+            />
+          )}
+
+      {currentView === "entry" && (
+            <EntryView
+              selectedMood={selectedMood}
+              groups={groups}
+              onBack={handleBackToHistory}
+              onCreateGroup={createGroup}
+              onCreateOption={createGroupOption}
+              onEntrySubmitted={handleEntrySubmitted}
+        onSelectMood={(m) => setSelectedMood(m)}
+            />
+          )}
+
+          {currentView === "stats" && (
+            <StatisticsView
+              statistics={statistics}
+              pastEntries={pastEntries}
+              loading={statsLoading}
+              error={statsError}
+            />
+          )}
+
+          {currentView === "achievements" && <AchievementsView />}
+          {currentView === "settings" && <SettingsView />}
+        </main>
+      </div>
+
+      <BottomNav
+        currentView={currentView}
         onViewChange={handleViewChange}
         onLoadStatistics={loadStatistics}
       />
 
-      {currentView === "history" && (
-        <HistoryView
-          pastEntries={pastEntries}
-          loading={historyLoading}
-          error={historyError}
-          onMoodSelect={handleMoodSelect}
-          onDelete={handleEntryDeleted}
-        />
-      )}
-
-      {currentView === "entry" && (
-        <EntryView
-          selectedMood={selectedMood}
-          groups={groups}
-          onBack={handleBackToHistory}
-          onCreateGroup={createGroup}
-          onCreateOption={createGroupOption}
-          onEntrySubmitted={handleEntrySubmitted}
-        />
-      )}
-
-      {currentView === "stats" && (
-        <StatisticsView
-          statistics={statistics}
-          pastEntries={pastEntries}
-          loading={statsLoading}
-          error={statsError}
-        />
-      )}
-
-      {currentView === "achievements" && (
-        <AchievementsView />
-      )}
+      <FAB onClick={() => handleViewChange("entry")} />
     </>
   );
 };

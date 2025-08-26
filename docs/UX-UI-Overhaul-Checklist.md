@@ -9,10 +9,10 @@ This document tracks proposed UX and UI improvements. Each item is a concrete, a
 
 ## 1) High‑impact quick wins (low effort)
 
-- [ ] Navigation
-  - [ ] Mobile: add a fixed bottom tab bar with icons + labels (History, Entry, Stats, Achievements, Settings)
-  - [ ] Desktop: add a collapsible left sidebar; keep header for page context only
-  - [ ] Add a persistent "+ New Entry" Floating Action Button (FAB) on mobile
+- [x] Navigation
+  - [x] Mobile: add a fixed bottom tab bar with icons + labels (History, Entry, Stats, Achievements, Settings)
+  - [x] Desktop: add a collapsible left sidebar; keep header for page context only
+  - [x] Add a persistent "+ New Entry" Floating Action Button (FAB) on mobile
 - [ ] Visual hierarchy
   - [ ] Reduce header height/padding
   - [ ] Ensure a clear page title and optional subtitle on every screen

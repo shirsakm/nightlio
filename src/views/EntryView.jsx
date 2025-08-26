@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import MoodPicker from '../components/mood/MoodPicker';
 import MoodDisplay from '../components/mood/MoodDisplay';
 import GroupSelector from '../components/groups/GroupSelector';
 import GroupManager from '../components/groups/GroupManager';
@@ -11,7 +12,8 @@ const EntryView = ({
   onBack, 
   onCreateGroup, 
   onCreateOption, 
-  onEntrySubmitted 
+  onEntrySubmitted,
+  onSelectMood,
 }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,6 +79,34 @@ const EntryView = ({
       setIsSubmitting(false);
     }
   };
+
+  if (!selectedMood) {
+    return (
+      <div style={{ marginTop: '2rem' }}>
+        <div style={{ marginBottom: '1rem' }}>
+          <button
+            onClick={onBack}
+            style={{
+              padding: '0.5rem 1rem',
+              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+            }}
+          >
+            ← Back
+          </button>
+        </div>
+        <h3 style={{ marginTop: 0 }}>Pick your mood to start an entry</h3>
+        <MoodPicker onMoodSelect={onSelectMood} />
+      </div>
+    );
+  }
 
   return (
     <div style={{ marginTop: '2rem' }}>
