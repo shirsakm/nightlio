@@ -84,33 +84,45 @@ const AchievementsView = () => {
   }
 
   return (
-    <div style={{ marginTop: '2rem' }}>
+    <div style={{ marginTop: '1.5rem' }}>
 
   {/* Web3 notice removed */}
 
       {/* Achievements Grid */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '1.25rem',
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '1rem',
         padding: 0,
-        margin: 0
+        margin: 0,
+        alignItems: 'stretch',
+        alignContent: 'flex-start',
+        width: '100%'
       }}>
         {/* All possible achievements */}
         {getAllAchievements().map((achievement, index) => {
           const unlockedAchievement = achievements.find(a => a.achievement_type === achievement.achievement_type);
           const isUnlocked = !!unlockedAchievement;
+          const progressValue = isUnlocked ? undefined : Math.floor(Math.random() * 7);
+          const progressMax = 7;
           return (
-            <div key={index} onClick={() => setActive(unlockedAchievement || achievement)} style={{ cursor: 'pointer' }}>
+            <div
+              key={index}
+              onClick={() => setActive(unlockedAchievement || achievement)}
+              style={{
+                cursor: 'pointer',
+                flex: '1 1 300px',
+                minWidth: 260,
+                maxWidth: '100%',
+                display: 'flex'
+              }}
+            >
               <AchievementNFT 
                 achievement={unlockedAchievement || achievement}
                 isUnlocked={isUnlocked}
+                progressValue={progressValue}
+                progressMax={progressMax}
               />
-              {!isUnlocked && (
-                <div style={{ padding: '0.75rem 1rem' }}>
-                  <ProgressBar value={Math.floor(Math.random()*7)} max={7} label="Progress" />
-                </div>
-              )}
             </div>
           );
         })}

@@ -26,7 +26,7 @@ const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
             className={`sidebar__item ${currentView === key ? 'is-active' : ''}`}
             title={label}
           >
-            <Icon size={18} />
+            <Icon size={18} style={{ flexShrink: 0 }} />
             <span>{label}</span>
           </button>
         ))}

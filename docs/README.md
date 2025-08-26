@@ -51,10 +51,10 @@ Use this checklist to track desktop-first improvements. Reference items by numbe
 - Files: `src/components/history/HistoryList.jsx`, `src/components/history/HistoryEntry.jsx`, styles
 
 7) Achievements grid polish
-- [ ] Consistent card height; lighter gradients; subtle rarity badge
-- [ ] Show progress bars inline on locked cards
-- [ ] 3–4 columns on wide screens; 1–2 on mobile
-- [ ] Acceptance: No layout shift; clear locked vs unlocked
+- [x] Consistent card height; lighter surface styles; subtle rarity badge
+- [x] Show progress bars inline on locked cards
+- [x] 3–4 columns on wide screens; 1–2 on mobile
+- [x] Acceptance: No layout shift; clear locked vs unlocked
 - Files: `src/views/AchievementsView.jsx`, `src/components/nft/AchievementNFT.jsx`
 
 8) Header refinement (desktop)

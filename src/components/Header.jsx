@@ -27,7 +27,7 @@ const Header = ({ currentView, currentStreak }) => {
 
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
   return (
-    <div style={{ marginBottom: '1.25rem' }}>
+    <div style={{ marginBottom: '1rem' }}>
       <div
         style={{
           display: 'flex',
@@ -139,10 +139,10 @@ const Header = ({ currentView, currentStreak }) => {
           </div>
         )}
       </div>
-      <p
+    <p
         style={{
-          color: '#1f2937',
-          margin: '0.25rem 0 0 0',
+      color: '#1f2937',
+      margin: '0 0 2px 0',
           fontSize: isMobile ? '1rem' : '1.125rem',
           fontWeight: '600',
         }}
@@ -153,10 +153,10 @@ const Header = ({ currentView, currentStreak }) => {
         {currentView === 'achievements' && 'Achievements'}
         {currentView === 'settings' && 'Settings'}
       </p>
-      <p
+    <p
         style={{
           color: '#6b7280',
-          margin: '2px 0 0 0',
+      margin: 0,
           fontSize: '0.95rem',
           fontWeight: '400',
         }}
