@@ -2,7 +2,7 @@
 
 **Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
 
-![Screenshots](https://placehold.co/800x400?text=Nightlio+Dashboard+Screenshot)
+<img width="1366" height="645" alt="image" src="https://github.com/user-attachments/assets/5699cd8c-a5df-4589-8aba-3d16d012a89a" />
 
 ### Why Nightlio?
 
