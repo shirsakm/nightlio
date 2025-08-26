@@ -21,6 +21,9 @@
   display: flex;
   flex-direction: column;
 }
+.app-page.no-sidebar .app-shell {
+  margin-left: 0;
+}
 
 /* Layout */
 .app-layout {
@@ -71,6 +74,10 @@
   background: var(--surface); 
   border-right: 1px solid var(--border); 
   box-sizing: border-box;
+  transition: transform 0.3s ease;
+}
+.app-page.no-sidebar .sidebar {
+  transform: translateX(-100%);
 }
 .sidebar__inner { display: flex; flex-direction: column; gap: 6px; padding: var(--space-2) var(--space-3) var(--space-2) var(--space-3); height: 100%; overflow-y: auto; background: transparent; border: none; border-radius: 0; box-shadow: none; box-sizing: border-box; }
 .sidebar__brand { display: flex; align-items: center; gap: 10px; padding: 0 0 var(--space-2); border-bottom: 1px solid var(--border); margin: 0 0 var(--space-2) 0; }
