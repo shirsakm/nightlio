@@ -3,12 +3,14 @@ import ReactMarkdown from 'react-markdown';
 import { Trash2 } from 'lucide-react';
 import { getMoodIcon } from '../../utils/moodUtils';
 import apiService from '../../services/api';
+import { useToast } from '../ui/ToastProvider';
 
 const HistoryEntry = ({ entry, onDelete }) => {
   const { icon: IconComponent, color } = getMoodIcon(entry.mood);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const { show } = useToast();
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this entry?')) {
       return;
@@ -18,9 +20,10 @@ const HistoryEntry = ({ entry, onDelete }) => {
     try {
       await apiService.deleteMoodEntry(entry.id);
       onDelete(entry.id);
+  show('Entry deleted', 'success');
     } catch (error) {
       console.error('Failed to delete entry:', error);
-      alert('Failed to delete entry. Please try again.');
+  show('Failed to delete entry. Please try again.', 'error');
     } finally {
       setIsDeleting(false);
     }

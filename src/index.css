@@ -22,9 +22,25 @@
   --space-10: 40px;
   --space-12: 48px;
 
+  /* Radius */
+  --radius-1: 8px;
+  --radius-2: 12px;
+  --radius-3: 16px;
+  --radius-4: 24px;
+
+  /* Shadows */
+  --shadow-1: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-3: 0 20px 60px rgba(0, 0, 0, 0.12);
+
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --bg-body: #ffffff;
+  --fg-body: #213547;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --fg-muted: #6b7280;
+  --fg-strong: #111827;
+  --brand: #667eea;
+  --brand-2: #764ba2;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -51,6 +67,7 @@ body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
+  color: var(--fg-body);
 }
 
 h1 {
@@ -77,15 +94,20 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Theme: light */
+html[data-theme="light"] {
+  --bg-body: #ffffff;
+  --fg-body: #213547;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --fg-muted: #6b7280;
+  --fg-strong: #111827;
+}
+
+/* Theme: dark */
+html[data-theme="dark"] {
+  --bg-body: #0f172a;
+  --fg-body: rgba(255, 255, 255, 0.9);
+  --bg-card: rgba(17, 24, 39, 0.85);
+  --fg-muted: #9ca3af;
+  --fg-strong: #f9fafb;
 }

@@ -1,12 +1,21 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Cell } from 'recharts';
+import Skeleton from '../ui/Skeleton';
 import { Frown, Meh, Smile, Heart } from 'lucide-react';
-import { getWeeklyMoodData, getMoodIcon } from '../../utils/moodUtils';
+import { getWeeklyMoodData, getMoodIcon, movingAverage } from '../../utils/moodUtils';
+import { exportSVGToPNG, exportDataToCSV } from '../../utils/exportUtils';
+import { useState, useMemo } from 'react';
 
 const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
-        Loading statistics...
+      <div style={{ textAlign: 'left', padding: '1rem 0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+          {[1,2,3,4].map((i) => (
+            <Skeleton key={i} height={120} radius={12} />
+          ))}
+        </div>
+        <Skeleton height={36} width={260} style={{ marginBottom: 12 }} />
+        <Skeleton height={320} radius={16} />
       </div>
     );
   }
@@ -27,7 +36,53 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
     );
   }
 
-  const weeklyData = getWeeklyMoodData(pastEntries);
+  const [range, setRange] = useState(7); // 7,30,90
+  const data = useMemo(() => getWeeklyMoodData(pastEntries, range), [pastEntries, range]);
+  const ma = useMemo(() => movingAverage(data.map(d => d.mood), 7), [data]);
+
+  // Compute simple tag correlations from entry selections
+  const tagStats = useMemo(() => {
+    const map = new Map();
+    for (const e of pastEntries || []) {
+      const mood = Number(e.mood);
+      if (!e.selections || e.selections.length === 0) continue;
+      for (const s of e.selections) {
+        const key = s.name || s.label || String(s.id);
+        const curr = map.get(key) || { tag: key, count: 0, sum: 0 };
+        curr.count += 1;
+        curr.sum += mood;
+        map.set(key, curr);
+      }
+    }
+    const rows = Array.from(map.values()).map(r => ({
+      tag: r.tag,
+      count: r.count,
+      avgMood: r.count ? r.sum / r.count : 0,
+    }));
+    const withMin = rows.filter(r => r.count >= 2); // minimum 2 occurrences to rank
+    const sorted = [...withMin].sort((a, b) => b.avgMood - a.avgMood);
+    return {
+      topPositive: sorted.slice(0, 5),
+      topNegative: sorted.slice(-5).reverse(),
+      all: rows,
+    };
+  }, [pastEntries]);
+
+  const exportTrendPNG = () => {
+    const svg = document.querySelector('#mood-trend svg');
+    exportSVGToPNG(svg, `mood-trend-${range}d.png`);
+  };
+  const exportTrendCSV = () => {
+    exportDataToCSV(data, ['date', 'mood'], `mood-trend-${range}d.csv`);
+  };
+  const exportDistributionPNG = () => {
+    const svg = document.querySelector('#mood-distribution svg');
+    exportSVGToPNG(svg, 'mood-distribution.png');
+  };
+  const exportDistributionCSV = () => {
+    const rows = [1,2,3,4,5].map(v => ({ mood: v, count: statistics.mood_distribution[v] || 0 }));
+    exportDataToCSV(rows, ['mood', 'count'], 'mood-distribution.csv');
+  };
 
   return (
     <div style={{ textAlign: 'left', marginTop: '2rem' }}>
@@ -105,7 +160,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
       </div>
 
       {/* Weekly Mood Trend */}
-      <div
+      <div id="mood-trend"
         style={{
           background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
           borderRadius: '16px',
@@ -114,18 +169,42 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
         }}
       >
-        <h3
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+          <h3
           style={{
             margin: '0 0 1.5rem 0',
             color: '#333',
             fontSize: '1.3rem',
             fontWeight: '600',
           }}
-        >
-          Weekly Mood Trend
-        </h3>
+          >
+            Mood Trend
+          </h3>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            {[7,30,90].map((d) => (
+              <button
+                key={d}
+                onClick={() => setRange(d)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 999,
+                  border: range === d ? 'none' : '1px solid rgba(0,0,0,0.1)',
+                  background: range === d ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'transparent',
+                  color: range === d ? '#fff' : '#444',
+                  fontWeight: 600,
+                  fontSize: 12,
+                }}
+              >
+                {d}d
+              </button>
+            ))}
+            <div style={{ width: 12 }} />
+            <button onClick={exportTrendPNG} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export PNG</button>
+            <button onClick={exportTrendCSV} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export CSV</button>
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={weeklyData} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
+          <LineChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis
               dataKey="date"
@@ -163,6 +242,16 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               strokeWidth={3}
               dot={{ fill: '#667eea', strokeWidth: 2, r: 6 }}
               connectNulls={false}
+            />
+            <Line
+              type="monotone"
+              data={data.map((d, i) => ({ ...d, ma: ma[i] }))}
+              dataKey="ma"
+              stroke="#ff6b6b"
+              strokeDasharray="6 6"
+              strokeWidth={2}
+              dot={false}
+              connectNulls
             />
           </LineChart>
         </ResponsiveContainer>
@@ -204,8 +293,8 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
         </div>
       </div>
 
-      {/* Mood Distribution Chart */}
-      <div
+  {/* Mood Distribution Chart */}
+      <div id="mood-distribution"
         style={{
           background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
           borderRadius: '16px',
@@ -224,6 +313,10 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
         >
           Mood Distribution
         </h3>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+          <button onClick={exportDistributionPNG} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export PNG</button>
+          <button onClick={exportDistributionCSV} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export CSV</button>
+        </div>
         <ResponsiveContainer width="100%" height={320}>
           <BarChart
             data={(() => {
@@ -319,6 +412,56 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           })}
         </div>
       </div>
+
+      {/* Tag Correlations */}
+      {(tagStats.topPositive.length > 0 || tagStats.topNegative.length > 0) && (
+        <div
+          style={{
+            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+            borderRadius: '16px',
+            padding: '2rem',
+            marginBottom: '2rem',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+            <h3 style={{ margin: 0, color: '#333', fontSize: '1.3rem', fontWeight: 600 }}>Tag Correlations</h3>
+            <div>
+              <button
+                onClick={() => exportDataToCSV(tagStats.all, ['tag', 'count', 'avgMood'], 'tag-correlations.csv')}
+                style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+            <div>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: '#2d6a4f' }}>Top Positive</h4>
+              {tagStats.topPositive.length === 0 && <div style={{ color: '#666' }}>No tags yet</div>}
+              {tagStats.topPositive.map(t => (
+                <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '0.5rem 0', borderBottom: '1px dashed #eee' }}>
+                  <span style={{ fontWeight: 600 }}>{t.tag}</span>
+                  <span style={{ color: '#2d6a4f' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: '#9b2226' }}>Top Negative</h4>
+              {tagStats.topNegative.length === 0 && <div style={{ color: '#666' }}>No tags yet</div>}
+              {tagStats.topNegative.map(t => (
+                <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '0.5rem 0', borderBottom: '1px dashed #eee' }}>
+                  <span style={{ fontWeight: 600 }}>{t.tag}</span>
+                  <span style={{ color: '#9b2226' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ marginTop: '0.75rem', fontSize: 12, color: '#666' }}>
+            Note: simple average mood per tag; requires at least 2 occurrences to rank.
+          </div>
+        </div>
+      )}
 
       {/* Mood Calendar */}
       <div

@@ -32,7 +32,7 @@ export const formatEntryTime = (entry) => {
   return entry.date;
 };
 
-export const getWeeklyMoodData = (pastEntries) => {
+export const getWeeklyMoodData = (pastEntries, days = 7) => {
   const today = new Date();
   const weekData = [];
 
@@ -42,15 +42,17 @@ export const getWeeklyMoodData = (pastEntries) => {
     entryLookup[entry.date] = entry;
   });
 
-  // Get last 7 days
-  for (let i = 6; i >= 0; i--) {
+  // Get last N days
+  for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     const dateStr = date.toLocaleDateString();
     const entry = entryLookup[dateStr];
 
     weekData.push({
-      date: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      date: days <= 7
+        ? date.toLocaleDateString('en-US', { weekday: 'short' })
+        : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       mood: entry ? entry.mood : null,
       moodEmoji: entry ? getMoodIcon(entry.mood).icon : null,
       hasEntry: !!entry,
@@ -58,4 +60,14 @@ export const getWeeklyMoodData = (pastEntries) => {
   }
 
   return weekData;
+};
+
+export const movingAverage = (arr, windowSize = 7) => {
+  const res = [];
+  for (let i = 0; i < arr.length; i++) {
+    const start = Math.max(0, i - windowSize + 1);
+    const slice = arr.slice(start, i + 1).filter((v) => v != null);
+    res.push(slice.length ? slice.reduce((a, b) => a + b, 0) / slice.length : null);
+  }
+  return res;
 };

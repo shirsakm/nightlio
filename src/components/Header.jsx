@@ -1,10 +1,12 @@
 import { Zap, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Header = ({ currentView, currentStreak }) => {
   const { user, logout } = useAuth();
   const { config } = useConfig();
+  const { theme, cycle } = useTheme();
   const getSubtitle = () => {
     switch (currentView) {
       case 'history':
@@ -74,6 +76,21 @@ const Header = ({ currentView, currentStreak }) => {
     {/* Right side - User Profile and primary action (desktop) */}
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button
+              onClick={cycle}
+              style={{
+                padding: '0.4rem 0.8rem',
+                background: 'transparent',
+                border: '1px solid #ddd',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                color: '#666',
+              }}
+              title={`Theme: ${theme}`}
+            >
+              Theme: {theme}
+            </button>
             {!isMobile && (
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('nightlio:new-entry'))}

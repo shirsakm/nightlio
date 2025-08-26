@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
 import Sidebar from "./components/navigation/Sidebar";
@@ -10,6 +11,7 @@ import HistoryView from "./views/HistoryView";
 import EntryView from "./views/EntryView";
 import StatisticsView from "./components/stats/StatisticsView";
 import SettingsView from "./views/SettingsView";
+import { ToastProvider } from "./components/ui/ToastProvider";
 import AchievementsView from "./views/AchievementsView";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
@@ -134,9 +136,13 @@ const RootProviders = ({ children }) => {
 function App() {
   return (
     <ConfigProvider>
-      <RootProviders>
-        <AppContent />
-      </RootProviders>
+      <ThemeProvider>
+        <ToastProvider>
+          <RootProviders>
+            <AppContent />
+          </RootProviders>
+        </ToastProvider>
+      </ThemeProvider>
     </ConfigProvider>
   );
 }

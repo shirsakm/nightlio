@@ -22,8 +22,8 @@ This document tracks proposed UX and UI improvements. Each item is a concrete, a
   - [x] Set base font-size 16px; line-height 1.4–1.6 for body text
   - [x] Use Inter or system font stack; minimize font weights to 3–4 steps (400/500/600/800)
 - [ ] Color and theming
-  - [ ] Introduce CSS variables (tokens) for colors, spacing, radius, shadows, typography
-  - [ ] Add dark mode via prefers-color-scheme and a user toggle
+  - [x] Introduce CSS variables (tokens) for colors, spacing, radius, shadows, typography
+  - [x] Add dark mode via prefers-color-scheme and a user toggle
   - [ ] Check WCAG AA contrast for text and UI elements
 - [ ] Feedback and empty states
   - [ ] Add skeleton loaders for lists and charts
@@ -55,15 +55,15 @@ This document tracks proposed UX and UI improvements. Each item is a concrete, a
   - [ ] Suggested tags: show recent/frequent tags and time-of-day suggestions
   - [ ] Autosave draft; confirm before navigating away with unsaved changes
 - [ ] StatisticsView (src/components/stats/StatisticsView.jsx)
-  - [ ] Time range tabs: 7d, 30d, 90d, YTD, Custom
-  - [ ] Mood trend with 7‑day moving average line
-  - [ ] Tag correlations: top positive/negative (card list)
+  - [x] Time range tabs: 7d, 30d, 90d, YTD, Custom
+  - [x] Mood trend with 7‑day moving average line
+  - [x] Tag correlations: top positive/negative (card list)
   - [ ] Time‑of‑day distribution chart (stacked bars or ridge plot alternative)
-  - [ ] Export buttons: PNG/CSV per chart
+  - [x] Export buttons: PNG/CSV per chart
 - [ ] AchievementsView (src/views/AchievementsView.jsx)
-  - [ ] Locked achievements: add progress bars (e.g., “5/7 days”)
+  - [x] Locked achievements: add progress bars (e.g., “5/7 days”)
   - [ ] Filter/sort by rarity; subtle confetti on unlock (respect reduced motion)
-  - [ ] Detail modal: “how to achieve”, current progress, related tips
+  - [x] Detail modal: “how to achieve”, current progress, related tips
 - [ ] Settings (new view)
   - [ ] Profile: name, avatar
   - [ ] Appearance: theme, density, reduced motion toggle
@@ -123,18 +123,18 @@ This document tracks proposed UX and UI improvements. Each item is a concrete, a
 
 ## 6) Concrete, incremental milestones
 
-- [ ] Milestone A: Foundation
-  - [ ] Add design tokens (CSS variables) and dark mode toggle
-  - [ ] Replace header spacing; add streak chip with tooltip
-  - [ ] Add toast system and skeletons
-- [ ] Milestone B: Navigation + Entry
-  - [ ] Add bottom tab bar (mobile) and sidebar (desktop)
-  - [ ] Add "+ New Entry" FAB (mobile)
-  - [ ] Implement Entry stepper (mood → tags → notes) with Markdown toolbar
+- [x] Milestone A: Foundation
+  - [x] Add design tokens (CSS variables) and dark mode toggle
+  - [x] Replace header spacing; add streak chip with tooltip
+  - [x] Add toast system and skeletons
+- [x] Milestone B: Navigation + Entry
+  - [x] Add bottom tab bar (mobile) and sidebar (desktop)
+  - [x] Add "+ New Entry" FAB (mobile)
+  - [x] Implement Entry stepper (mood → tags → notes) with Markdown toolbar
 - [ ] Milestone C: Stats + Achievements
-  - [ ] Add time range tabs and 7‑day moving average
-  - [ ] Add tag correlation cards and export
-  - [ ] Achievements progress bars and detail modal
+  - [x] Add time range tabs and 7‑day moving average
+  - [x] Add tag correlation cards and export
+  - [x] Achievements progress bars and detail modal
 - [ ] Milestone D: Settings + System
   - [ ] New Settings view (profile/appearance/data/privacy/integrations)
   - [ ] Route-level code splitting and prefetching

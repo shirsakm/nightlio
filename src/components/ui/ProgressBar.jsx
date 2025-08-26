@@ -1,0 +1,18 @@
+const ProgressBar = ({ value = 0, max = 100, label }) => {
+  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  return (
+    <div style={{ width: '100%' }}>
+      {label && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 12, color: 'var(--fg-muted)' }}>
+          <span>{label}</span>
+          <span>{Math.round(pct)}%</span>
+        </div>
+      )}
+      <div style={{ height: 8, background: 'rgba(0,0,0,0.08)', borderRadius: 999 }}>
+        <div style={{ width: `${pct}%`, height: '100%', borderRadius: 999, background: 'linear-gradient(135deg, #667eea, #764ba2)' }} />
+      </div>
+    </div>
+  );
+};
+
+export default ProgressBar;

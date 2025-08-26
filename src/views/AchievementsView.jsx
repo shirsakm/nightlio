@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import Modal from '../components/ui/Modal';
+import ProgressBar from '../components/ui/ProgressBar';
 import AchievementNFT from '../components/nft/AchievementNFT';
 import apiService from '../services/api';
 
@@ -80,6 +82,7 @@ const AchievementsView = () => {
     );
   }
 
+  const [active, setActive] = useState(null);
   return (
     <div style={{ marginTop: '2rem' }}>
 
@@ -97,15 +100,32 @@ const AchievementsView = () => {
         {/* All possible achievements */}
         {getAllAchievements().map((achievement, index) => {
           const unlockedAchievement = achievements.find(a => a.achievement_type === achievement.achievement_type);
+          const isUnlocked = !!unlockedAchievement;
           return (
-            <AchievementNFT 
-              key={index} 
-              achievement={unlockedAchievement || achievement}
-              isUnlocked={!!unlockedAchievement}
-            />
+            <div key={index} onClick={() => setActive(unlockedAchievement || achievement)} style={{ cursor: 'pointer' }}>
+              <AchievementNFT 
+                achievement={unlockedAchievement || achievement}
+                isUnlocked={isUnlocked}
+              />
+              {!isUnlocked && (
+                <div style={{ padding: '0.75rem 1rem' }}>
+                  <ProgressBar value={Math.floor(Math.random()*7)} max={7} label="Progress" />
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
+
+      <Modal open={!!active} onClose={() => setActive(null)} title={active?.name || 'Achievement'}>
+        <p style={{ marginTop: 0 }}>{active?.description}</p>
+        {!achievements.find(a => a.achievement_type === active?.achievement_type) && (
+          <ProgressBar value={Math.floor(Math.random()*7)} max={7} label="Progress to unlock" />
+        )}
+        <div style={{ marginTop: 12, fontSize: 13, color: '#6b7280' }}>
+          Tips: Log daily to maintain your streak. Viewing statistics contributes to “Data Lover”.
+        </div>
+      </Modal>
     </div>
   );
 };
