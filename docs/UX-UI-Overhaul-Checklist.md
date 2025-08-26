@@ -13,14 +13,14 @@ This document tracks proposed UX and UI improvements. Each item is a concrete, a
   - [x] Mobile: add a fixed bottom tab bar with icons + labels (History, Entry, Stats, Achievements, Settings)
   - [x] Desktop: add a collapsible left sidebar; keep header for page context only
   - [x] Add a persistent "+ New Entry" Floating Action Button (FAB) on mobile
-- [ ] Visual hierarchy
-  - [ ] Reduce header height/padding
-  - [ ] Ensure a clear page title and optional subtitle on every screen
-  - [ ] Promote primary action with a FAB and/or primary button above the fold
-- [ ] Typography and spacing
-  - [ ] Adopt 4/8px spacing scale, consistent margins/paddings
-  - [ ] Set base font-size 16px; line-height 1.4–1.6 for body text
-  - [ ] Use Inter or system font stack; minimize font weights to 3–4 steps (400/500/600/800)
+- [x] Visual hierarchy
+  - [x] Reduce header height/padding
+  - [x] Ensure a clear page title and optional subtitle on every screen
+  - [x] Promote primary action with a FAB and/or primary button above the fold
+- [x] Typography and spacing
+  - [x] Adopt 4/8px spacing scale, consistent margins/paddings
+  - [x] Set base font-size 16px; line-height 1.4–1.6 for body text
+  - [x] Use Inter or system font stack; minimize font weights to 3–4 steps (400/500/600/800)
 - [ ] Color and theming
   - [ ] Introduce CSS variables (tokens) for colors, spacing, radius, shadows, typography
   - [ ] Add dark mode via prefers-color-scheme and a user toggle

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -50,6 +50,12 @@ const AppContent = () => {
   const handleViewChange = (view) => {
     setCurrentView(view);
   };
+
+  useEffect(() => {
+    const handler = () => setCurrentView('entry');
+    window.addEventListener('nightlio:new-entry', handler);
+    return () => window.removeEventListener('nightlio:new-entry', handler);
+  }, []);
 
   return (
     <>

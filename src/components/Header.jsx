@@ -23,27 +23,28 @@ const Header = ({ currentView, currentStreak }) => {
     }
   };
 
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
   return (
-    <div style={{ marginBottom: '2rem' }}>
+    <div style={{ marginBottom: '1.25rem' }}>
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: '0.5rem',
+          marginBottom: '0.25rem',
         }}
       >
         {/* Left side - Logo and Streak */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h1
+      <h1
             style={{
               background: 'linear-gradient(135deg, #ff6b6b, #4ecdc4)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
               margin: '0',
-              fontSize: '3.5rem',
-              fontWeight: '800',
+        fontSize: isMobile ? '2rem' : '2.5rem',
+        fontWeight: '800',
               letterSpacing: '-0.02em',
             }}
           >
@@ -70,9 +71,27 @@ const Header = ({ currentView, currentStreak }) => {
           )}
         </div>
 
-    {/* Right side - User Profile */}
+    {/* Right side - User Profile and primary action (desktop) */}
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {!isMobile && (
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('nightlio:new-entry'))}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+                }}
+              >
+                + New Entry
+              </button>
+            )}
       {/* Web3 controls removed */}
 
             {/* User Profile */}
@@ -122,20 +141,24 @@ const Header = ({ currentView, currentStreak }) => {
       </div>
       <p
         style={{
-          color: '#666',
-          margin: '0.5rem 0',
-          fontSize: '1.2rem',
-          fontWeight: '400',
+          color: '#1f2937',
+          margin: '0.25rem 0 0 0',
+          fontSize: isMobile ? '1rem' : '1.125rem',
+          fontWeight: '600',
         }}
       >
-        Your daily mood companion
+        {currentView === 'history' && 'Your daily mood companion'}
+        {currentView === 'entry' && 'New Entry'}
+        {currentView === 'stats' && 'Statistics'}
+        {currentView === 'achievements' && 'Achievements'}
+        {currentView === 'settings' && 'Settings'}
       </p>
       <p
         style={{
-          color: '#999',
-          margin: '0',
-          fontSize: '1rem',
-          fontWeight: '300',
+          color: '#6b7280',
+          margin: '2px 0 0 0',
+          fontSize: '0.95rem',
+          fontWeight: '400',
         }}
       >
         {getSubtitle()}
