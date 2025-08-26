@@ -84,23 +84,43 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
     exportDataToCSV(rows, ['mood', 'count'], 'mood-distribution.csv');
   };
 
+  const container = {
+    background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+    borderRadius: '16px',
+    padding: '24px',
+    marginBottom: '24px',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
+  };
+  const lightBtn = {
+    padding: '6px 12px',
+    borderRadius: 8,
+    border: '1px solid #e5e7eb',
+    background: '#ffffff',
+    color: '#111827',
+    fontWeight: 600,
+    fontSize: 12,
+  };
+  const lightBtnHover = {
+    background: '#f8fafc',
+    border: '1px solid #d1d5db',
+  };
+
   return (
-    <div style={{ textAlign: 'left', marginTop: '2rem' }}>
+    <div style={{ textAlign: 'left', marginTop: '24px' }}>
       {/* Overview Cards */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '1rem',
-          marginBottom: '2rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '16px',
+          marginBottom: '24px',
         }}
       >
         <div
           style={{
-            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+            ...container,
+            padding: '20px',
+            marginBottom: 0,
             textAlign: 'center',
           }}
         >
@@ -112,10 +132,9 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
 
         <div
           style={{
-            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+            ...container,
+            padding: '20px',
+            marginBottom: 0,
             textAlign: 'center',
           }}
         >
@@ -127,10 +146,9 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
 
         <div
           style={{
-            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+            ...container,
+            padding: '20px',
+            marginBottom: 0,
             textAlign: 'center',
           }}
         >
@@ -142,10 +160,9 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
 
         <div
           style={{
-            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+            ...container,
+            padding: '20px',
+            marginBottom: 0,
             textAlign: 'center',
           }}
         >
@@ -160,19 +177,11 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
       </div>
 
       {/* Weekly Mood Trend */}
-      <div id="mood-trend"
-        style={{
-          background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-          borderRadius: '16px',
-          padding: '2rem',
-          marginBottom: '2rem',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+      <div id="mood-trend" style={container}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: 12 }}>
           <h3
           style={{
-            margin: '0 0 1.5rem 0',
+            margin: 0,
             color: '#333',
             fontSize: '1.3rem',
             fontWeight: '600',
@@ -186,11 +195,11 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                 key={d}
                 onClick={() => setRange(d)}
                 style={{
-                  padding: '6px 10px',
+                  padding: '6px 12px',
                   borderRadius: 999,
-                  border: range === d ? 'none' : '1px solid rgba(0,0,0,0.1)',
-                  background: range === d ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'transparent',
-                  color: range === d ? '#fff' : '#444',
+                  border: range === d ? 'none' : '1px solid #e5e7eb',
+                  background: range === d ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#ffffff',
+                  color: range === d ? '#ffffff' : '#111827',
                   fontWeight: 600,
                   fontSize: 12,
                 }}
@@ -199,8 +208,22 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               </button>
             ))}
             <div style={{ width: 12 }} />
-            <button onClick={exportTrendPNG} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export PNG</button>
-            <button onClick={exportTrendCSV} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export CSV</button>
+            <button
+              onClick={exportTrendPNG}
+              style={lightBtn}
+              onMouseEnter={(e) => Object.assign(e.currentTarget.style, lightBtnHover)}
+              onMouseLeave={(e) => Object.assign(e.currentTarget.style, lightBtn)}
+            >
+              Export PNG
+            </button>
+            <button
+              onClick={exportTrendCSV}
+              style={lightBtn}
+              onMouseEnter={(e) => Object.assign(e.currentTarget.style, lightBtnHover)}
+              onMouseLeave={(e) => Object.assign(e.currentTarget.style, lightBtn)}
+            >
+              Export CSV
+            </button>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={320}>
@@ -294,18 +317,10 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
       </div>
 
   {/* Mood Distribution Chart */}
-      <div id="mood-distribution"
-        style={{
-          background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-          borderRadius: '16px',
-          padding: '2rem',
-          marginBottom: '2rem',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-        }}
-      >
+      <div id="mood-distribution" style={container}>
         <h3
           style={{
-            margin: '0 0 1.5rem 0',
+            margin: '0 0 8px 0',
             color: '#333',
             fontSize: '1.3rem',
             fontWeight: '600',
@@ -314,8 +329,22 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           Mood Distribution
         </h3>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-          <button onClick={exportDistributionPNG} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export PNG</button>
-          <button onClick={exportDistributionCSV} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}>Export CSV</button>
+          <button
+            onClick={exportDistributionPNG}
+            style={lightBtn}
+            onMouseEnter={(e) => Object.assign(e.currentTarget.style, lightBtnHover)}
+            onMouseLeave={(e) => Object.assign(e.currentTarget.style, lightBtn)}
+          >
+            Export PNG
+          </button>
+          <button
+            onClick={exportDistributionCSV}
+            style={lightBtn}
+            onMouseEnter={(e) => Object.assign(e.currentTarget.style, lightBtnHover)}
+            onMouseLeave={(e) => Object.assign(e.currentTarget.style, lightBtn)}
+          >
+            Export CSV
+          </button>
         </div>
         <ResponsiveContainer width="100%" height={320}>
           <BarChart
@@ -414,33 +443,27 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
       </div>
 
       {/* Tag Correlations */}
-      {(tagStats.topPositive.length > 0 || tagStats.topNegative.length > 0) && (
-        <div
-          style={{
-            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-            borderRadius: '16px',
-            padding: '2rem',
-            marginBottom: '2rem',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-          }}
-        >
+  {(tagStats.topPositive.length > 0 || tagStats.topNegative.length > 0) && (
+    <div style={container}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
             <h3 style={{ margin: 0, color: '#333', fontSize: '1.3rem', fontWeight: 600 }}>Tag Correlations</h3>
             <div>
               <button
-                onClick={() => exportDataToCSV(tagStats.all, ['tag', 'count', 'avgMood'], 'tag-correlations.csv')}
-                style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', background: '#fff' }}
+        onClick={() => exportDataToCSV(tagStats.all, ['tag', 'count', 'avgMood'], 'tag-correlations.csv')}
+        style={lightBtn}
+        onMouseEnter={(e) => Object.assign(e.currentTarget.style, lightBtnHover)}
+        onMouseLeave={(e) => Object.assign(e.currentTarget.style, lightBtn)}
               >
                 Export CSV
               </button>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginTop: '12px' }}>
             <div>
               <h4 style={{ margin: '0 0 0.5rem 0', color: '#2d6a4f' }}>Top Positive</h4>
               {tagStats.topPositive.length === 0 && <div style={{ color: '#666' }}>No tags yet</div>}
               {tagStats.topPositive.map(t => (
-                <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '0.5rem 0', borderBottom: '1px dashed #eee' }}>
+        <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed #eee' }}>
                   <span style={{ fontWeight: 600 }}>{t.tag}</span>
                   <span style={{ color: '#2d6a4f' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
                 </div>
@@ -450,14 +473,14 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               <h4 style={{ margin: '0 0 0.5rem 0', color: '#9b2226' }}>Top Negative</h4>
               {tagStats.topNegative.length === 0 && <div style={{ color: '#666' }}>No tags yet</div>}
               {tagStats.topNegative.map(t => (
-                <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '0.5rem 0', borderBottom: '1px dashed #eee' }}>
+        <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed #eee' }}>
                   <span style={{ fontWeight: 600 }}>{t.tag}</span>
                   <span style={{ color: '#9b2226' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
                 </div>
               ))}
             </div>
           </div>
-          <div style={{ marginTop: '0.75rem', fontSize: 12, color: '#666' }}>
+      <div style={{ marginTop: '8px', fontSize: 12, color: '#666' }}>
             Note: simple average mood per tag; requires at least 2 occurrences to rank.
           </div>
         </div>
