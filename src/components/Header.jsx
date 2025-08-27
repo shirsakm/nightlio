@@ -47,23 +47,25 @@ const Header = ({ currentView, currentStreak }) => {
           marginBottom: '0.25rem',
         }}
       >
-        {/* Left side - Streak */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+  {/* Left side - Streak */}
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {currentStreak > 0 && (
             <div
               style={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
+    alignItems: 'center',
+    gap: '0.4rem',
+                background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
                 color: 'white',
                 padding: '0.4rem 0.8rem',
                 borderRadius: 'var(--radius-pill)',
-                border: '1px solid color-mix(in oklab, #FBBF24, transparent 70%)',
-                fontSize: '0.8rem',
+                border: '1px solid var(--border)',
+                fontSize: '0.85rem',
                 fontWeight: '600',
-                boxShadow: '0 4px 12px color-mix(in oklab, #FBBF24, transparent 75%), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-                letterSpacing: '0.025em',
+                boxShadow: 'var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.16)',
+    letterSpacing: '0.005em',
+    lineHeight: 1,
+    whiteSpace: 'nowrap',
               }}
             >
               <Flame size={14} strokeWidth={2} />

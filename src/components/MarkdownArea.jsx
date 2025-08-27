@@ -56,16 +56,23 @@ const MyComponent = forwardRef((props, ref) => {
         {`
           .mdx-editor .prose {
             text-align: left !important;
+            color: var(--text) !important;
           }
           .mdx-editor .prose * {
             text-align: left !important;
+            color: inherit !important;
           }
           .mdx-editor [data-editor-type="root"] {
             text-align: left !important;
+            color: var(--text) !important;
           }
           .mdx-editor [contenteditable] {
             text-align: left !important;
+            color: var(--text) !important;
           }
+          .mdx-editor a { color: var(--accent-600) !important; }
+          .mdx-editor code { color: var(--text) !important; }
+          .mdx-editor pre { color: var(--text) !important; }
         `}
       </style>
       <MDXEditor

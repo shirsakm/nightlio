@@ -150,7 +150,7 @@ const EntryView = ({
                 cursor: !isSubmitting ? 'pointer' : 'not-allowed',
                 transition: 'all 0.3s ease',
                 fontWeight: '600',
-        boxShadow: '0 8px 25px color-mix(in oklab, var(--accent-600), transparent 70%)'
+    boxShadow: 'var(--shadow-md)'
               }}
             >
               {isSubmitting ? 'Saving...' : 'Save Entry'}

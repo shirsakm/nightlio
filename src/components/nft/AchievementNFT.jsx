@@ -75,7 +75,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 2px 8px color-mix(in oklab, var(--accent-600), transparent 75%)'
+          boxShadow: 'var(--shadow-sm)'
         }}>
           <IconComponent size={26} color="white" />
         </div>
@@ -90,7 +90,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
       }}>
         <div>
           <h3 style={{ 
-            color: isUnlocked ? 'var(--text)' : 'var(--text-muted)', 
+            color: isUnlocked ? 'var(--text)' : 'color-mix(in oklab, var(--text), transparent 40%)', 
             margin: '0 0 0.5rem 0',
             fontSize: '1.05rem',
             fontWeight: 700,
@@ -105,7 +105,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
           </h3>
           
           <p style={{ 
-            color: isUnlocked ? 'var(--text-muted)' : 'color-mix(in oklab, var(--text), transparent 40%)', 
+            color: isUnlocked ? 'color-mix(in oklab, var(--text), transparent 15%)' : 'color-mix(in oklab, var(--text), transparent 45%)', 
             margin: '0 0 1rem 0',
             fontSize: '0.9rem',
             lineHeight: 1.35,

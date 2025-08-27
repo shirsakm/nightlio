@@ -16,16 +16,16 @@ const Navigation = ({ currentView, onViewChange, onLoadStatistics }) => {
         marginBottom: '3rem',
       }}
     >
-      <button
+    <button
         onClick={() => onViewChange('history')}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.4rem',
           padding: '0.5rem 1rem',
-          background: currentView === 'history' ? 'var(--accent-50)' : 'transparent',
-          color: currentView === 'history' ? 'var(--accent-700)' : 'var(--text)',
-          border: currentView === 'history' ? '1px solid var(--accent-100)' : '1px solid var(--border)',
+      background: currentView === 'history' ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))' : 'transparent',
+      color: currentView === 'history' ? '#fff' : 'var(--text)',
+      border: currentView === 'history' ? '1px solid color-mix(in oklab, var(--accent-600), transparent 55%)' : '1px solid var(--border)',
           borderRadius: 'var(--radius-pill)',
           cursor: 'pointer',
           fontSize: '0.9rem',
@@ -36,16 +36,16 @@ const Navigation = ({ currentView, onViewChange, onLoadStatistics }) => {
         <Home size={16} />
         Home
       </button>
-      <button
+    <button
         onClick={handleStatsClick}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.4rem',
           padding: '0.5rem 1rem',
-          background: currentView === 'stats' ? 'var(--accent-50)' : 'transparent',
-          color: currentView === 'stats' ? 'var(--accent-700)' : 'var(--text)',
-          border: currentView === 'stats' ? '1px solid var(--accent-100)' : '1px solid var(--border)',
+      background: currentView === 'stats' ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))' : 'transparent',
+      color: currentView === 'stats' ? '#fff' : 'var(--text)',
+      border: currentView === 'stats' ? '1px solid color-mix(in oklab, var(--accent-600), transparent 55%)' : '1px solid var(--border)',
           borderRadius: 'var(--radius-pill)',
           cursor: 'pointer',
           fontSize: '0.9rem',
@@ -56,16 +56,16 @@ const Navigation = ({ currentView, onViewChange, onLoadStatistics }) => {
         <BarChart3 size={16} />
         Stats
       </button>
-      <button
+    <button
         onClick={() => onViewChange('achievements')}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.4rem',
           padding: '0.5rem 1rem',
-          background: currentView === 'achievements' ? 'var(--accent-50)' : 'transparent',
-          color: currentView === 'achievements' ? 'var(--accent-700)' : 'var(--text)',
-          border: currentView === 'achievements' ? '1px solid var(--accent-100)' : '1px solid var(--border)',
+      background: currentView === 'achievements' ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))' : 'transparent',
+      color: currentView === 'achievements' ? '#fff' : 'var(--text)',
+      border: currentView === 'achievements' ? '1px solid color-mix(in oklab, var(--accent-600), transparent 55%)' : '1px solid var(--border)',
           borderRadius: 'var(--radius-pill)',
           cursor: 'pointer',
           fontSize: '0.9rem',
