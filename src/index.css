@@ -68,6 +68,12 @@
   /* Semantic status colors */
   --success: #16a34a;          /* emerald-600 */
   --danger: #ef4444;           /* red-500 */
+  /* Mood scale (light theme defaults) */
+  --mood-1: #ef4444; /* red */
+  --mood-2: #f59e0b; /* orange */
+  --mood-3: #facc15; /* yellow */
+  --mood-4: #22c55e; /* green */
+  --mood-5: #3b82f6; /* blue */
   /* Overlays and skeleton shimmer */
   --overlay: rgba(16,24,40,0.45);
   --skeleton-a: rgba(0,0,0,0.06);
@@ -171,6 +177,12 @@ html[data-theme="dark"] {
   /* Semantic status colors for Dracula */
   --success: #50fa7b;          /* green */
   --danger: #ff5555;           /* red */
+  /* Mood scale mapped to Dracula */
+  --mood-1: #ff5555; /* red */
+  --mood-2: #ffb86c; /* orange */
+  --mood-3: #f1fa8c; /* yellow */
+  --mood-4: #50fa7b; /* green */
+  --mood-5: #8be9fd; /* cyan */
   /* Overlays and skeleton */
   --overlay: rgba(0,0,0,0.55);
   --skeleton-a: rgba(255,255,255,0.06);

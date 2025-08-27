@@ -173,9 +173,9 @@ const LoginPage = () => {
         }}
       >
         <div style={{ marginBottom: "2rem" }}>
-          <h1
+      <h1
             style={{
-              background: "linear-gradient(135deg, #ff6b6b, #4ecdc4)",
+        background: "linear-gradient(135deg, var(--accent-600), var(--accent-700))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",

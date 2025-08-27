@@ -290,11 +290,11 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           }}
         >
           {[
-            { value: 1, icon: Frown, color: 'var(--danger)', label: 'Terrible' },
-            { value: 2, icon: Frown, color: '#ffa726', label: 'Bad' },
-            { value: 3, icon: Meh, color: '#ffca28', label: 'Okay' },
-            { value: 4, icon: Smile, color: '#66bb6a', label: 'Good' },
-            { value: 5, icon: Heart, color: '#42a5f5', label: 'Amazing' },
+            { value: 1, icon: Frown, color: 'var(--mood-1)', label: 'Terrible' },
+            { value: 2, icon: Frown, color: 'var(--mood-2)', label: 'Bad' },
+            { value: 3, icon: Meh,   color: 'var(--mood-3)', label: 'Okay' },
+            { value: 4, icon: Smile, color: 'var(--mood-4)', label: 'Good' },
+            { value: 5, icon: Heart, color: 'var(--mood-5)', label: 'Amazing' },
           ].map(mood => {
             const IconComponent = mood.icon;
             return (
@@ -350,7 +350,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
       <BarChart
             data={(() => {
         const moodLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Amazing'];
-        const moodColors = ['var(--danger)', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
+        const moodColors = ['var(--mood-1)', 'var(--mood-2)', 'var(--mood-3)', 'var(--mood-4)', 'var(--mood-5)'];
               const moodIcons = ['T', 'B', 'O', 'G', 'A'];
 
               return [1, 2, 3, 4, 5].map(moodValue => ({
@@ -398,7 +398,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               }}
             >
               {[1, 2, 3, 4, 5].map((entry, index) => {
-                const moodColors = ['var(--danger)', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
+                const moodColors = ['var(--mood-1)', 'var(--mood-2)', 'var(--mood-3)', 'var(--mood-4)', 'var(--mood-5)'];
                 return <Cell key={`cell-${index}`} fill={moodColors[index]} />;
               })}
             </Bar>
@@ -416,11 +416,11 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           }}
         >
           {[
-            { value: 1, icon: Frown, color: 'var(--danger)', label: 'Terrible' },
-            { value: 2, icon: Frown, color: '#ffa726', label: 'Bad' },
-            { value: 3, icon: Meh, color: '#ffca28', label: 'Okay' },
-            { value: 4, icon: Smile, color: '#66bb6a', label: 'Good' },
-            { value: 5, icon: Heart, color: '#42a5f5', label: 'Amazing' },
+            { value: 1, icon: Frown, color: 'var(--mood-1)', label: 'Terrible' },
+            { value: 2, icon: Frown, color: 'var(--mood-2)', label: 'Bad' },
+            { value: 3, icon: Meh,   color: 'var(--mood-3)', label: 'Okay' },
+            { value: 4, icon: Smile, color: 'var(--mood-4)', label: 'Good' },
+            { value: 5, icon: Heart, color: 'var(--mood-5)', label: 'Amazing' },
           ].map(mood => {
             const IconComponent = mood.icon;
             return (
@@ -460,22 +460,22 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginTop: '12px' }}>
             <div>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: '#2d6a4f' }}>Top Positive</h4>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--mood-4)' }}>Top Positive</h4>
               {tagStats.topPositive.length === 0 && <div style={{ color: 'var(--text-muted)' }}>No tags yet</div>}
               {tagStats.topPositive.map(t => (
-        <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed #eee' }}>
+  <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed var(--border)' }}>
                   <span style={{ fontWeight: 600 }}>{t.tag}</span>
-                  <span style={{ color: '#2d6a4f' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
+      <span style={{ color: 'var(--mood-4)' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
                 </div>
               ))}
             </div>
             <div>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: '#9b2226' }}>Top Negative</h4>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--mood-1)' }}>Top Negative</h4>
               {tagStats.topNegative.length === 0 && <div style={{ color: 'var(--text-muted)' }}>No tags yet</div>}
               {tagStats.topNegative.map(t => (
-        <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed #eee' }}>
+  <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed var(--border)' }}>
                   <span style={{ fontWeight: 600 }}>{t.tag}</span>
-                  <span style={{ color: '#9b2226' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
+      <span style={{ color: 'var(--mood-1)' }}>{t.avgMood.toFixed(2)} ({t.count})</span>
                 </div>
               ))}
             </div>
@@ -556,8 +556,8 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '8px',
-                    background: entry ? getMoodIcon(entry.mood).color + '20' : 'transparent',
-                    border: current.toDateString() === today.toDateString() ? '2px solid #667eea' : 'none',
+                    background: entry ? `color-mix(in oklab, ${getMoodIcon(entry.mood).color} 18%, transparent)` : 'transparent',
+                    border: current.toDateString() === today.toDateString() ? '2px solid var(--accent-600)' : 'none',
                     opacity: isCurrentMonth ? 1 : 0.3,
                     fontSize: entry ? '1.2rem' : '0.9rem',
                     fontWeight: entry ? '600' : '400',
