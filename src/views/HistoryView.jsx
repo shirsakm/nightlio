@@ -21,10 +21,10 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete }) =>
         <MoodPicker onMoodSelect={onMoodSelect} />
         <div style={{ textAlign: 'right' }}>
           <h2 style={{ margin: 0, color: 'var(--text)', fontSize: '1.25rem', lineHeight: '1.2' }}>Today</h2>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.125rem', lineHeight: '1.2' }}>
+          <div style={{ color: 'var(--text)', opacity: 0.9, fontSize: '0.8rem', marginTop: '0.125rem', lineHeight: '1.2' }}>
             {dateString}
           </div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.0625rem', lineHeight: '1.2' }}>
+          <div style={{ color: 'var(--text)', opacity: 0.7, fontSize: '0.75rem', marginTop: '0.0625rem', lineHeight: '1.2' }}>
             {timeString}
           </div>
         </div>

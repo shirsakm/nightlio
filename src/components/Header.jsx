@@ -56,13 +56,13 @@ const Header = ({ currentView, currentStreak }) => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
-                color: '#FFFFFF',
+                color: 'white',
                 padding: '0.4rem 0.8rem',
                 borderRadius: 'var(--radius-pill)',
-                border: '1px solid rgba(251, 191, 36, 0.3)',
+                border: '1px solid color-mix(in oklab, #FBBF24, transparent 70%)',
                 fontSize: '0.8rem',
                 fontWeight: '600',
-                boxShadow: '0 4px 12px rgba(251, 191, 36, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 4px 12px color-mix(in oklab, #FBBF24, transparent 75%), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
                 letterSpacing: '0.025em',
               }}
             >
@@ -85,7 +85,7 @@ const Header = ({ currentView, currentStreak }) => {
                 borderRadius: '20px',
                 cursor: 'pointer',
                 fontSize: '0.8rem',
-                color: 'var(--text-muted)',
+                color: 'var(--text)',
                 transition: 'all 0.3s ease'
               }}
               title={`Theme: ${theme}`}
@@ -115,8 +115,8 @@ const Header = ({ currentView, currentStreak }) => {
                   }}
                 />
               )}
-              <span style={{ 
-        color: 'var(--text-muted)', 
+      <span style={{ 
+    color: 'var(--text)', 
                 fontSize: '0.9rem',
                 fontWeight: '500'
               }}>
@@ -136,7 +136,7 @@ const Header = ({ currentView, currentStreak }) => {
                 borderRadius: '20px',
                 cursor: 'pointer',
                 fontSize: '0.8rem',
-                color: 'var(--text-muted)',
+                color: 'var(--text)',
                 transition: 'all 0.3s ease'
               }}
             >

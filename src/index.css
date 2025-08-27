@@ -65,6 +65,14 @@
   /* Interaction */
   --ring: 0 0 0 3px rgba(47,126,137,0.28);
 
+  /* Semantic status colors */
+  --success: #16a34a;          /* emerald-600 */
+  --danger: #ef4444;           /* red-500 */
+  /* Overlays and skeleton shimmer */
+  --overlay: rgba(16,24,40,0.45);
+  --skeleton-a: rgba(0,0,0,0.06);
+  --skeleton-b: rgba(0,0,0,0.12);
+
   /* Legacy mapping for existing code */
   color-scheme: light;
   --bg-body: var(--bg);
@@ -139,11 +147,37 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
-  --bg: #0f172a;
-  --surface: #111827;
-  --text: rgba(255,255,255,0.92);
-  --text-muted: #9ca3af;
-  --border: #1f2937;
-  --bg-card: rgba(17,24,39,0.9);
+  /* Dracula palette */
+  --bg: #282a36;               /* background */
+  --surface: #343746;          /* elevated surfaces */
+  --text: #f8f8f2;             /* foreground */
+  --text-muted: #6272a4;       /* comments */
+  --border: #44475a;           /* current line */
+  --bg-card: rgba(52,55,70,0.92);
   --fg-body: var(--text);
+
+  /* Accents mapped to Dracula purple as primary */
+  --accent-50:  #f7f3ff;
+  --accent-100: #efe7ff;
+  --accent-200: #e0d1ff;
+  --accent-400: #d5befe;
+  --accent-500: #c9aefc;
+  --accent-600: #bd93f9;       /* primary */
+  --accent-700: #a97cf3;
+
+  /* Focus ring tuned to accent */
+  --ring: 0 0 0 3px rgba(189,147,249,0.35);
+
+  /* Semantic status colors for Dracula */
+  --success: #50fa7b;          /* green */
+  --danger: #ff5555;           /* red */
+  /* Overlays and skeleton */
+  --overlay: rgba(0,0,0,0.55);
+  --skeleton-a: rgba(255,255,255,0.06);
+  --skeleton-b: rgba(255,255,255,0.12);
+
+  color-scheme: dark;
 }
+
+/* Subtle hover in dark mode */
+html[data-theme="dark"] button:hover { background-color: rgba(255,255,255,0.04); box-shadow: var(--shadow-sm); }

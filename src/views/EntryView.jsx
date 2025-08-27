@@ -137,20 +137,20 @@ const EntryView = ({
         <div className="entry-right">
           <MDArea ref={markdownRef} />
           <div className="entry-savebar">
-            <button
+      <button
               disabled={isSubmitting}
               onClick={handleSubmit}
               style={{
                 padding: '0.9rem 2rem',
                 fontSize: '1rem',
-                background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+        background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
                 color: 'white',
                 border: 'none',
                 borderRadius: '50px',
                 cursor: !isSubmitting ? 'pointer' : 'not-allowed',
                 transition: 'all 0.3s ease',
                 fontWeight: '600',
-                boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)'
+        boxShadow: '0 8px 25px color-mix(in oklab, var(--accent-600), transparent 70%)'
               }}
             >
               {isSubmitting ? 'Saving...' : 'Save Entry'}
@@ -169,13 +169,13 @@ const EntryView = ({
             zIndex: 10,
           }}
         >
-          <div
+      <div
             style={{
-              background: 'white',
+        background: 'var(--bg-card)',
               padding: '2rem',
               borderRadius: '16px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: 'var(--shadow-3)',
+        border: '1px solid var(--border)',
               textAlign: 'center',
               minWidth: '300px',
               maxWidth: 'min(560px, 90%)',
@@ -183,7 +183,7 @@ const EntryView = ({
           >
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
             <div style={{
-              color: submitMessage.includes('achievement') ? '#4ecdc4' : '#333',
+        color: submitMessage.includes('achievement') ? 'var(--accent-600)' : 'var(--text)',
               fontWeight: '600',
               fontSize: '1.1rem',
               lineHeight: '1.4'
@@ -195,11 +195,11 @@ const EntryView = ({
       )}
 
       {submitMessage && (
-        <div
+    <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(0, 0, 0, 0.35)',
+      background: 'var(--overlay)',
             zIndex: 5
           }}
         />

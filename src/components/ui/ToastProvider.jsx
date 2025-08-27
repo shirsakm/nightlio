@@ -46,15 +46,15 @@ export const ToastProvider = ({ children }) => {
           border-radius: 10px;
           background: var(--bg-card);
           box-shadow: var(--shadow-2);
-          border: 1px solid rgba(0,0,0,0.06);
+          border: 1px solid var(--border);
           color: var(--fg-strong);
           cursor: pointer;
           min-width: 220px;
           text-align: center;
         }
-        .toast--success { border-color: rgba(16,185,129,0.4); }
-        .toast--error { border-color: rgba(239,68,68,0.4); }
-        .toast--info { border-color: rgba(99,102,241,0.4); }
+  .toast--success { border-color: color-mix(in oklab, var(--success), transparent 60%); }
+  .toast--error { border-color: color-mix(in oklab, var(--danger), transparent 60%); }
+  .toast--info { border-color: color-mix(in oklab, var(--accent-600), transparent 60%); }
         `}
       </style>
     </ToastContext.Provider>

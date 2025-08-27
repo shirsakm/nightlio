@@ -49,8 +49,8 @@ const MyComponent = forwardRef((props, ref) => {
       border: 'none',
       borderRadius: '16px',
       overflow: 'hidden',
-      background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)'
+      background: 'var(--bg-card)',
+      boxShadow: 'var(--shadow-lg)'
     }}>
       <style>
         {`

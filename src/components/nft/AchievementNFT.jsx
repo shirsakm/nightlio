@@ -14,10 +14,10 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
 
   const rarityToken = (achievement.rarity || '').toLowerCase();
   const rarityStyles = {
-    legendary: { bg: 'rgba(255, 215, 0, 0.16)', text: '#7a6500', border: 'rgba(255, 215, 0, 0.5)' },
-    rare: { bg: 'rgba(155, 89, 182, 0.14)', text: '#5b3a66', border: 'rgba(155, 89, 182, 0.4)' },
-    uncommon: { bg: 'rgba(52, 152, 219, 0.14)', text: '#245b7a', border: 'rgba(52, 152, 219, 0.4)' },
-    common: { bg: 'rgba(149, 165, 166, 0.12)', text: '#4a5455', border: 'rgba(149, 165, 166, 0.4)' },
+    legendary: { bg: 'color-mix(in oklab, gold 25%, transparent)', text: 'var(--text)', border: 'color-mix(in oklab, gold, transparent 50%)' },
+    rare: { bg: 'color-mix(in oklab, var(--accent-600) 20%, transparent)', text: 'var(--text)', border: 'color-mix(in oklab, var(--accent-600), transparent 60%)' },
+    uncommon: { bg: 'color-mix(in oklab, #34a0ff 20%, transparent)', text: 'var(--text)', border: 'color-mix(in oklab, #34a0ff, transparent 60%)' },
+    common: { bg: 'color-mix(in oklab, var(--text) 12%, transparent)', text: 'var(--text)', border: 'color-mix(in oklab, var(--text), transparent 60%)' },
   };
   const r = rarityStyles[rarityToken] || rarityStyles.common;
 
@@ -27,9 +27,9 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
   boxSizing: 'border-box',
       padding: '1.25rem',
       borderRadius: '12px',
-      background: isUnlocked ? '#ffffff' : '#f7f8fa',
-      border: '1px solid rgba(0,0,0,0.06)',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+  background: 'var(--surface)',
+  border: '1px solid var(--border)',
+  boxShadow: 'var(--shadow-sm)',
       textAlign: 'center',
       display: 'flex',
       flexDirection: 'column',
@@ -68,14 +68,14 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
       }}>
         <div style={{
           background: isUnlocked 
-            ? 'linear-gradient(135deg, #667eea, #764ba2)'
-            : 'linear-gradient(135deg, #a8a8a8, #8c8c8c)',
+            ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))'
+            : 'linear-gradient(135deg, color-mix(in oklab, var(--text), transparent 40%), color-mix(in oklab, var(--text), transparent 20%))',
           borderRadius: '50%',
           padding: '0.85rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 2px 8px rgba(102, 126, 234, 0.25)'
+          boxShadow: '0 2px 8px color-mix(in oklab, var(--accent-600), transparent 75%)'
         }}>
           <IconComponent size={26} color="white" />
         </div>
@@ -90,7 +90,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
       }}>
         <div>
           <h3 style={{ 
-            color: isUnlocked ? '#1f2937' : '#6b7280', 
+            color: isUnlocked ? 'var(--text)' : 'var(--text-muted)', 
             margin: '0 0 0.5rem 0',
             fontSize: '1.05rem',
             fontWeight: 700,
@@ -105,7 +105,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
           </h3>
           
           <p style={{ 
-            color: isUnlocked ? '#4b5563' : '#9ca3af', 
+            color: isUnlocked ? 'var(--text-muted)' : 'color-mix(in oklab, var(--text), transparent 40%)', 
             margin: '0 0 1rem 0',
             fontSize: '0.9rem',
             lineHeight: 1.35,
@@ -133,7 +133,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
           </div>
         ) : (
           <div style={{
-            background: 'linear-gradient(135deg, #29c6b8, #4ecdc4)',
+            background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
             color: 'white',
             padding: '0.5rem 1rem',
             borderRadius: 999,

@@ -48,7 +48,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
             position: 'absolute',
             top: '1rem',
             right: '1rem',
-            background: isDeleting ? '#ccc' : '#ff6b6b',
+            background: isDeleting ? 'color-mix(in oklab, var(--text), transparent 60%)' : 'var(--danger)',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -60,7 +60,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
             cursor: isDeleting ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
             opacity: 0.9,
-            boxShadow: '0 2px 8px rgba(255, 107, 107, 0.3)',
+            boxShadow: '0 2px 8px color-mix(in oklab, var(--danger), transparent 70%)',
           }}
           onMouseEnter={(e) => {
             e.target.style.opacity = '1';

@@ -4,21 +4,21 @@ const GroupSelector = ({ groups, selectedOptions, onOptionToggle }) => {
   return (
     <div style={{ marginBottom: '2rem' }}>
       {groups.map(group => (
-        <div
+    <div
           key={group.id}
           style={{
             marginBottom: '1.5rem',
-            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+      background: 'var(--bg-card)',
             borderRadius: '16px',
             padding: '1.5rem',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)',
-            border: '1px solid rgba(102, 126, 234, 0.1)',
+      boxShadow: 'var(--shadow-md)',
+      border: '1px solid var(--border)',
           }}
         >
           <h3
             style={{
               margin: '0 0 1rem 0',
-              color: '#667eea',
+              color: 'var(--accent-600)',
               fontSize: '1rem',
               fontWeight: '500',
               letterSpacing: '0.5px',
@@ -40,31 +40,31 @@ const GroupSelector = ({ groups, selectedOptions, onOptionToggle }) => {
                 style={{
                   padding: '0.6rem 1.2rem',
                   borderRadius: '25px',
-                  border: selectedOptions.includes(option.id) 
-                    ? '2px solid #667eea' 
-                    : '2px solid #e0e0e0',
+          border: selectedOptions.includes(option.id) 
+            ? '2px solid var(--accent-600)' 
+            : '2px solid var(--border)',
                   background: selectedOptions.includes(option.id)
-                    ? 'linear-gradient(135deg, #667eea, #764ba2)'
-                    : '#ffffff',
-                  color: selectedOptions.includes(option.id) ? 'white' : '#555',
+            ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))'
+            : 'var(--surface)',
+          color: selectedOptions.includes(option.id) ? 'white' : 'var(--text)',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
                   fontWeight: selectedOptions.includes(option.id) ? '600' : '500',
                   transition: 'all 0.2s ease',
                   boxShadow: selectedOptions.includes(option.id)
-                    ? '0 4px 15px rgba(102, 126, 234, 0.25)'
-                    : '0 2px 8px rgba(0, 0, 0, 0.05)',
+                    ? '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 75%)'
+                    : 'var(--shadow-sm)',
                   transform: selectedOptions.includes(option.id) ? 'translateY(-1px)' : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (!selectedOptions.includes(option.id)) {
-                    e.target.style.borderColor = '#667eea';
+                    e.target.style.borderColor = 'var(--accent-600)';
                     e.target.style.transform = 'translateY(-1px)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!selectedOptions.includes(option.id)) {
-                    e.target.style.borderColor = '#e0e0e0';
+                    e.target.style.borderColor = 'var(--border)';
                     e.target.style.transform = 'none';
                   }
                 }}

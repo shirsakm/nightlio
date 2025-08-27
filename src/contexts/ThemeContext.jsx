@@ -7,9 +7,9 @@ const getSystemTheme = () => (window.matchMedia && window.matchMedia('(prefers-c
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     try {
-      return localStorage.getItem('nightlio:theme') || 'light';
+  return localStorage.getItem('nightlio:theme') || 'dark';
     } catch {
-      return 'light';
+  return 'dark';
     }
   });
 

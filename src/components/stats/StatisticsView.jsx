@@ -22,7 +22,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
 
   if (error) {
     return (
-      <div style={{ textAlign: 'center', color: '#ff6b6b', padding: '2rem' }}>
+      <div style={{ textAlign: 'center', color: 'var(--danger)', padding: '2rem' }}>
         {error}
       </div>
     );
@@ -30,7 +30,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
 
   if (!statistics) {
     return (
-      <div style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
+      <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
         No statistics available
       </div>
     );
@@ -85,24 +85,24 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
   };
 
   const container = {
-    background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+    background: 'var(--bg-card)',
     borderRadius: '16px',
     padding: '24px',
     marginBottom: '24px',
-    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
+    boxShadow: 'var(--shadow-lg)'
   };
   const lightBtn = {
     padding: '6px 12px',
     borderRadius: 8,
-    border: '1px solid #e5e7eb',
-    background: '#ffffff',
-    color: '#111827',
+    border: '1px solid var(--border)',
+    background: 'var(--surface)',
+    color: 'var(--text)',
     fontWeight: 600,
     fontSize: 12,
   };
   const lightBtnHover = {
-    background: '#f8fafc',
-    border: '1px solid #d1d5db',
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid var(--accent-200)',
   };
 
   return (
@@ -124,10 +124,10 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
             textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#667eea' }}>
+          <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--accent-600)' }}>
             {statistics.statistics.total_entries}
           </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Total Entries</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Entries</div>
         </div>
 
         <div
@@ -138,10 +138,10 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
             textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#4ecdc4' }}>
+          <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--accent-600)' }}>
             {statistics.statistics.average_mood?.toFixed(1) || '0.0'}
           </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Average Mood</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Average Mood</div>
         </div>
 
         <div
@@ -152,10 +152,10 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
             textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#ff6b6b' }}>
+          <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--danger)' }}>
             {statistics.current_streak}
           </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Current Streak</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Current Streak</div>
         </div>
 
         <div
@@ -166,13 +166,13 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
             textAlign: 'center',
           }}
         >
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#9b59b6' }}>
+          <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--accent-600)' }}>
             {(() => {
               const counts = Object.values(statistics.mood_distribution);
               return counts.length > 0 ? Math.max(...counts) : 0;
             })()}
           </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Best Day</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Best Day</div>
         </div>
       </div>
 
@@ -182,7 +182,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           <h3
           style={{
             margin: 0,
-            color: '#333',
+            color: 'var(--text)',
             fontSize: '1.3rem',
             fontWeight: '600',
           }}
@@ -197,9 +197,9 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                 style={{
                   padding: '6px 12px',
                   borderRadius: 999,
-                  border: range === d ? 'none' : '1px solid #e5e7eb',
-                  background: range === d ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#ffffff',
-                  color: range === d ? '#ffffff' : '#111827',
+                  border: range === d ? 'none' : '1px solid var(--border)',
+                  background: range === d ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))' : 'var(--surface)',
+                  color: range === d ? 'white' : 'var(--text)',
                   fontWeight: 600,
                   fontSize: 12,
                 }}
@@ -228,29 +228,29 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
         </div>
         <ResponsiveContainer width="100%" height={320}>
           <LineChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 12 }}
-              axisLine={{ stroke: '#e0e0e0' }}
+              tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+              axisLine={{ stroke: 'var(--border)' }}
             />
             <YAxis
               domain={[0.5, 5.5]}
               ticks={[1, 2, 3, 4, 5]}
-              tick={{ fontSize: 12 }}
-              axisLine={{ stroke: '#e0e0e0' }}
+              tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+              axisLine={{ stroke: 'var(--border)' }}
               width={20}
               tickFormatter={(value) => {
                 const moodLabels = { 1: 'T', 2: 'B', 3: 'O', 4: 'G', 5: 'A' };
                 return moodLabels[value] || '';
               }}
             />
-            <Tooltip
+      <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: '8px',
+        boxShadow: 'var(--shadow-md)',
               }}
               formatter={(value) => {
                 if (value === null) return ['No entry', ''];
@@ -261,16 +261,16 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
             <Line
               type="monotone"
               dataKey="mood"
-              stroke="#667eea"
+              stroke="var(--accent-600)"
               strokeWidth={3}
-              dot={{ fill: '#667eea', strokeWidth: 2, r: 6 }}
+              dot={{ fill: 'var(--accent-600)', strokeWidth: 2, r: 6 }}
               connectNulls={false}
             />
             <Line
               type="monotone"
               data={data.map((d, i) => ({ ...d, ma: ma[i] }))}
               dataKey="ma"
-              stroke="#ff6b6b"
+              stroke="var(--danger)"
               strokeDasharray="6 6"
               strokeWidth={2}
               dot={false}
@@ -290,7 +290,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           }}
         >
           {[
-            { value: 1, icon: Frown, color: '#ff6b6b', label: 'Terrible' },
+            { value: 1, icon: Frown, color: 'var(--danger)', label: 'Terrible' },
             { value: 2, icon: Frown, color: '#ffa726', label: 'Bad' },
             { value: 3, icon: Meh, color: '#ffca28', label: 'Okay' },
             { value: 4, icon: Smile, color: '#66bb6a', label: 'Good' },
@@ -305,7 +305,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                   alignItems: 'center',
                   gap: '0.3rem',
                   fontSize: '0.8rem',
-                  color: '#666',
+                  color: 'var(--text-muted)',
                 }}
               >
                 <IconComponent size={16} style={{ color: mood.color }} />
@@ -318,10 +318,10 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
 
   {/* Mood Distribution Chart */}
       <div id="mood-distribution" style={container}>
-        <h3
+    <h3
           style={{
             margin: '0 0 8px 0',
-            color: '#333',
+      color: 'var(--text)',
             fontSize: '1.3rem',
             fontWeight: '600',
           }}
@@ -347,10 +347,10 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           </button>
         </div>
         <ResponsiveContainer width="100%" height={320}>
-          <BarChart
+      <BarChart
             data={(() => {
-              const moodLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Amazing'];
-              const moodColors = ['#ff6b6b', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
+        const moodLabels = ['Terrible', 'Bad', 'Okay', 'Good', 'Amazing'];
+        const moodColors = ['var(--danger)', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
               const moodIcons = ['T', 'B', 'O', 'G', 'A'];
 
               return [1, 2, 3, 4, 5].map(moodValue => ({
@@ -362,25 +362,25 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
             })()}
             margin={{ top: 30, right: 20, left: 0, bottom: 20 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis
               dataKey="mood"
-              tick={{ fontSize: 16 }}
-              axisLine={{ stroke: '#e0e0e0' }}
+              tick={{ fontSize: 16, fill: 'var(--text-muted)' }}
+              axisLine={{ stroke: 'var(--border)' }}
             />
             <YAxis
-              tick={{ fontSize: 12 }}
-              axisLine={{ stroke: '#e0e0e0' }}
+              tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+              axisLine={{ stroke: 'var(--border)' }}
               allowDecimals={false}
               domain={[0, 'dataMax + 1']}
               width={20}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
-                border: 'none',
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border)',
                 borderRadius: '8px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                boxShadow: 'var(--shadow-md)',
               }}
               formatter={(value, _, props) => [
                 `${value} entries`,
@@ -394,11 +394,11 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                 position: 'top', 
                 fontSize: 12, 
                 fontWeight: '600',
-                fill: '#333'
+                fill: 'var(--text)'
               }}
             >
               {[1, 2, 3, 4, 5].map((entry, index) => {
-                const moodColors = ['#ff6b6b', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
+                const moodColors = ['var(--danger)', '#ffa726', '#ffca28', '#66bb6a', '#42a5f5'];
                 return <Cell key={`cell-${index}`} fill={moodColors[index]} />;
               })}
             </Bar>
@@ -416,7 +416,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           }}
         >
           {[
-            { value: 1, icon: Frown, color: '#ff6b6b', label: 'Terrible' },
+            { value: 1, icon: Frown, color: 'var(--danger)', label: 'Terrible' },
             { value: 2, icon: Frown, color: '#ffa726', label: 'Bad' },
             { value: 3, icon: Meh, color: '#ffca28', label: 'Okay' },
             { value: 4, icon: Smile, color: '#66bb6a', label: 'Good' },
@@ -431,7 +431,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                   alignItems: 'center',
                   gap: '0.3rem',
                   fontSize: '0.8rem',
-                  color: '#666',
+                  color: 'var(--text-muted)',
                 }}
               >
                 <IconComponent size={16} style={{ color: mood.color }} />
@@ -446,7 +446,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
   {(tagStats.topPositive.length > 0 || tagStats.topNegative.length > 0) && (
     <div style={container}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-            <h3 style={{ margin: 0, color: '#333', fontSize: '1.3rem', fontWeight: 600 }}>Tag Correlations</h3>
+            <h3 style={{ margin: 0, color: 'var(--text)', fontSize: '1.3rem', fontWeight: 600 }}>Tag Correlations</h3>
             <div>
               <button
         onClick={() => exportDataToCSV(tagStats.all, ['tag', 'count', 'avgMood'], 'tag-correlations.csv')}
@@ -461,7 +461,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginTop: '12px' }}>
             <div>
               <h4 style={{ margin: '0 0 0.5rem 0', color: '#2d6a4f' }}>Top Positive</h4>
-              {tagStats.topPositive.length === 0 && <div style={{ color: '#666' }}>No tags yet</div>}
+              {tagStats.topPositive.length === 0 && <div style={{ color: 'var(--text-muted)' }}>No tags yet</div>}
               {tagStats.topPositive.map(t => (
         <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed #eee' }}>
                   <span style={{ fontWeight: 600 }}>{t.tag}</span>
@@ -471,7 +471,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
             </div>
             <div>
               <h4 style={{ margin: '0 0 0.5rem 0', color: '#9b2226' }}>Top Negative</h4>
-              {tagStats.topNegative.length === 0 && <div style={{ color: '#666' }}>No tags yet</div>}
+              {tagStats.topNegative.length === 0 && <div style={{ color: 'var(--text-muted)' }}>No tags yet</div>}
               {tagStats.topNegative.map(t => (
         <div key={t.tag} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: '1px dashed #eee' }}>
                   <span style={{ fontWeight: 600 }}>{t.tag}</span>
@@ -480,7 +480,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               ))}
             </div>
           </div>
-      <div style={{ marginTop: '8px', fontSize: 12, color: '#666' }}>
+  <div style={{ marginTop: '8px', fontSize: 12, color: 'var(--text-muted)' }}>
             Note: simple average mood per tag; requires at least 2 occurrences to rank.
           </div>
         </div>
@@ -489,7 +489,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
       {/* Mood Calendar */}
       <div
         style={{
-          background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+          background: 'var(--bg-card)',
           borderRadius: '16px',
           padding: '2rem',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
@@ -498,7 +498,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
         <h3
           style={{
             margin: '0 0 1.5rem 0',
-            color: '#333',
+            color: 'var(--text)',
             fontSize: '1.3rem',
             fontWeight: '600',
           }}
@@ -519,7 +519,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               style={{
                 textAlign: 'center',
                 fontWeight: '600',
-                color: '#666',
+                color: 'var(--text-muted)',
                 padding: '0.5rem',
               }}
             >
@@ -561,7 +561,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                     opacity: isCurrentMonth ? 1 : 0.3,
                     fontSize: entry ? '1.2rem' : '0.9rem',
                     fontWeight: entry ? '600' : '400',
-                    color: entry ? getMoodIcon(entry.mood).color : '#666',
+                    color: entry ? getMoodIcon(entry.mood).color : 'var(--text-muted)',
                   }}
                 >
                   {entry ? (
