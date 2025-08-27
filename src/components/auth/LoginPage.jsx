@@ -152,8 +152,7 @@ const LoginPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background:
-          "linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)",
+        background: 'var(--bg)',
         padding: "1rem",
         margin: 0,
         boxSizing: "border-box",
@@ -162,21 +161,21 @@ const LoginPage = () => {
     >
       <div
         style={{
-          background: "rgba(255, 255, 255, 0.95)",
+          background: 'var(--bg-card)',
           backdropFilter: "blur(20px)",
           borderRadius: "24px",
           padding: "3rem",
-          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.1)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
+          boxShadow: 'var(--shadow-3)',
+          border: '1px solid var(--border)',
           textAlign: "center",
           width: "500px",
           transform: "translateY(0)",
         }}
       >
         <div style={{ marginBottom: "2rem" }}>
-          <h1
+      <h1
             style={{
-              background: "linear-gradient(135deg, #ff6b6b, #4ecdc4)",
+        background: "linear-gradient(135deg, var(--accent-600), var(--accent-700))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -190,7 +189,8 @@ const LoginPage = () => {
           </h1>
           <p
             style={{
-              color: "#666",
+              color: 'var(--text)',
+              opacity: 0.9,
               fontSize: "1.1rem",
               margin: "0 0 0.5rem 0",
             }}
@@ -199,7 +199,7 @@ const LoginPage = () => {
           </p>
           <p
             style={{
-              color: "#999",
+              color: 'var(--text-muted)',
               fontSize: "0.9rem",
               margin: "0",
             }}
@@ -209,9 +209,9 @@ const LoginPage = () => {
         </div>
 
         <div style={{ marginBottom: "2rem" }}>
-          <h2
+      <h2
             style={{
-              color: "#333",
+        color: 'var(--text)',
               fontSize: "1.5rem",
               fontWeight: "600",
               margin: "0 0 1rem 0",
@@ -219,9 +219,9 @@ const LoginPage = () => {
           >
             {isSelfHost ? 'Welcome' : 'Welcome Back'}
           </h2>
-          <p
+      <p
             style={{
-              color: "#666",
+        color: 'var(--text-muted)',
               fontSize: "0.95rem",
               margin: "0 0 2rem 0",
             }}
@@ -231,11 +231,11 @@ const LoginPage = () => {
               : 'Sign in with your Google account to continue your mood tracking journey'}
           </p>
 
-          {error && (
+      {error && (
             <div
               style={{
-                background: "#fee",
-                color: "#c33",
+        background: 'color-mix(in oklab, var(--danger) 12%, transparent)',
+        color: 'var(--danger)',
                 padding: "0.75rem",
                 borderRadius: "8px",
                 marginBottom: "1rem",
@@ -255,8 +255,8 @@ const LoginPage = () => {
                 display: 'inline-block',
                 padding: "1rem",
                 background: isLoading
-                  ? "#ccc"
-                  : "linear-gradient(135deg, #667eea, #764ba2)",
+                  ? 'color-mix(in oklab, var(--text), transparent 60%)'
+                  : 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
                 color: "white",
                 border: "none",
                 borderRadius: "12px",
@@ -266,7 +266,7 @@ const LoginPage = () => {
                 textAlign: 'center',
                 textDecoration: 'none',
                 transition: "all 0.3s ease",
-                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+                boxShadow: '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 70%)',
               }}
             >
               Continue
@@ -279,8 +279,8 @@ const LoginPage = () => {
                 width: "100%",
                 padding: "1rem",
                 background: isLoading
-                  ? "#ccc"
-                  : "linear-gradient(135deg, #667eea, #764ba2)",
+                  ? 'color-mix(in oklab, var(--text), transparent 60%)'
+                  : 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
                 color: "white",
                 border: "none",
                 borderRadius: "12px",
@@ -288,7 +288,7 @@ const LoginPage = () => {
                 fontWeight: "600",
                 cursor: isLoading ? "not-allowed" : "pointer",
                 transition: "all 0.3s ease",
-                boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+                boxShadow: '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 70%)',
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -371,15 +371,15 @@ const LoginPage = () => {
           )}
         </div>
 
-        <div
+    <div
           style={{
             fontSize: "0.8rem",
-            color: "#999",
+      color: 'var(--text-muted)',
             lineHeight: "1.4",
           }}
         >
           <p style={{ margin: "0", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-            <Lock size={14} color="#999" />
+      <Lock size={14} color="var(--text-muted)" />
             {isSelfHost
               ? 'Local-only mode. No external auth is used.'
               : 'Your data is private and secure. We only use your Google account for authentication.'}

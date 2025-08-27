@@ -15,9 +15,9 @@ const MoodDisplay = ({ moodValue, size = 32 }) => {
         justifyContent: 'center',
         gap: '1rem',
         padding: '1rem',
-        background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+        background: 'var(--bg-card)',
         borderRadius: '16px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+        boxShadow: 'var(--shadow-lg)',
       }}
     >
       <IconComponent

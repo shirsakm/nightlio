@@ -1,13 +1,93 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
+/*
+  Global design system — calming, modern palette and 8px spacing grid.
+  We keep some legacy tokens for compatibility (e.g. --shadow-1, --bg-card).
+*/
 :root {
-  font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Colors */
+  --bg: #F7F8FB;              /* app background */
+  --surface: #FFFFFF;          /* cards, panels */
+  --text: #1F2937;             /* gray-800 */
+  --text-muted: #667085;       /* gray-600 */
+  --border: #E6E8EC;           /* subtle dividers */
+  --border-soft: #F0F2F5;      /* extra soft */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Calming teal/blue accent */
+  --accent-50:  #EEF7F8;
+  --accent-100: #D6EEF0;
+  --accent-200: #BFE5E7;
+  --accent-400: #4FA9B3;
+  --accent-500: #348F99;
+  --accent-600: #2F7E89;       /* primary */
+  --accent-700: #22626B;
+
+  /* Typography */
+  --font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Spacing — 8px scale */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  /* retain legacy sizes */
+  --space-7: 56px;
+  --space-8: 64px;
+  --space-10: 80px;
+  --space-12: 96px;
+
+  /* Radii */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-1: 8px;   /* compat */
+  --radius-2: 12px;  /* compat */
+  --radius-3: 16px;
+  --radius-4: 24px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.06), 0 1px 1.5px rgba(16,24,40,0.03);
+  --shadow-md: 0 4px 12px rgba(16,24,40,0.08), 0 2px 4px rgba(16,24,40,0.06);
+  --shadow-lg: 0 10px 30px rgba(16,24,40,0.10), 0 3px 6px rgba(16,24,40,0.08);
+  /* compat */
+  --shadow-1: var(--shadow-md);
+  --shadow-2: var(--shadow-lg);
+  --shadow-3: 0 20px 60px rgba(16,24,40,0.14);
+
+  /* Interaction */
+  --ring: 0 0 0 3px rgba(47,126,137,0.28);
+
+  /* Semantic status colors */
+  --success: #16a34a;          /* emerald-600 */
+  --danger: #ef4444;           /* red-500 */
+  /* Mood scale (light theme defaults) */
+  --mood-1: #ef4444; /* red */
+  --mood-2: #f59e0b; /* orange */
+  --mood-3: #facc15; /* yellow */
+  --mood-4: #22c55e; /* green */
+  --mood-5: #3b82f6; /* blue */
+  /* Overlays and skeleton shimmer */
+  --overlay: rgba(16,24,40,0.45);
+  --skeleton-a: rgba(0,0,0,0.06);
+  --skeleton-b: rgba(0,0,0,0.12);
+
+  /* Legacy mapping for existing code */
+  color-scheme: light;
+  --bg-body: var(--bg);
+  --fg-body: var(--text);
+  --bg-card: var(--surface);
+  --fg-muted: var(--text-muted);
+  --fg-strong: var(--text);
+  --brand: var(--accent-600);
+  --brand-2: var(--accent-700);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,58 +95,101 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+a { font-weight: 500; color: var(--accent-600); text-decoration: none; }
+a:hover { color: var(--accent-700); text-decoration: underline; }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--fg-body);
 }
 
+/* Headings */
+h1, h2, h3 { color: var(--text); margin: 0 0 var(--space-2); line-height: 1.25; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.75rem, 2vw + 1rem, 2.25rem); font-weight: 700; }
+h2 { font-size: 1.5rem; font-weight: 600; }
+h3 { font-size: 1.25rem; font-weight: 600; }
+
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 2rem;
+  line-height: 1.2;
 }
 
 button {
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: 10px 16px;
   font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  font-weight: var(--fw-semibold);
+  font-family: var(--font-family);
+  background-color: var(--surface);
+  color: var(--text);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: transform 180ms cubic-bezier(.2,.6,.2,1), box-shadow 180ms cubic-bezier(.2,.6,.2,1), background-color 180ms cubic-bezier(.2,.6,.2,1);
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+button:hover { background-color: #f8fafc; box-shadow: var(--shadow-sm); }
+button:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* Primary button variant */
+button.primary { color: #fff; background: var(--accent-600); box-shadow: var(--shadow-sm); }
+button.primary:hover { background: var(--accent-700); transform: translateY(-1px) scale(1.02); box-shadow: var(--shadow-md); }
+button.primary:active { transform: translateY(0) scale(0.99); box-shadow: var(--shadow-sm); }
+button.primary:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Theme overrides (optional). Keep accent consistent. */
+html[data-theme="light"] {
+  --bg: #F7F8FB;
+  --surface: #FFFFFF;
+  --text: #1F2937;
+  --text-muted: #667085;
+  --border: #E6E8EC;
+  --bg-card: var(--surface);
+  --fg-body: var(--text);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+html[data-theme="dark"] {
+  /* Dracula palette */
+  --bg: #282a36;               /* background */
+  --surface: #343746;          /* elevated surfaces */
+  --text: #f8f8f2;             /* foreground */
+  --text-muted: #6272a4;       /* comments */
+  --border: #44475a;           /* current line */
+  --bg-card: rgba(52,55,70,0.92);
+  --fg-body: var(--text);
+
+  /* Accents mapped to Dracula purple as primary */
+  --accent-50:  #f7f3ff;
+  --accent-100: #efe7ff;
+  --accent-200: #e0d1ff;
+  --accent-400: #d5befe;
+  --accent-500: #c9aefc;
+  --accent-600: #bd93f9;       /* primary */
+  --accent-700: #a97cf3;
+
+  /* Focus ring tuned to accent */
+  --ring: 0 0 0 3px rgba(189,147,249,0.35);
+
+  /* Semantic status colors for Dracula */
+  --success: #50fa7b;          /* green */
+  --danger: #ff5555;           /* red */
+  /* Mood scale mapped to Dracula */
+  --mood-1: #ff5555; /* red */
+  --mood-2: #ffb86c; /* orange */
+  --mood-3: #f1fa8c; /* yellow */
+  --mood-4: #50fa7b; /* green */
+  --mood-5: #8be9fd; /* cyan */
+  /* Overlays and skeleton */
+  --overlay: rgba(0,0,0,0.55);
+  --skeleton-a: rgba(255,255,255,0.06);
+  --skeleton-b: rgba(255,255,255,0.12);
+
+  color-scheme: dark;
 }
+
+/* Subtle hover in dark mode */
+html[data-theme="dark"] button:hover { background-color: rgba(255,255,255,0.04); box-shadow: var(--shadow-sm); }

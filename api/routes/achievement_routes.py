@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from api.services.achievement_service import AchievementService
 from api.utils.auth_middleware import require_auth, get_current_user_id
+from api.config import get_config
 
 def create_achievement_routes(achievement_service: AchievementService):
     achievement_bp = Blueprint('achievement', __name__)
@@ -31,26 +32,6 @@ def create_achievement_routes(achievement_service: AchievementService):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    @achievement_bp.route('/achievements/<int:achievement_id>/mint', methods=['POST'])
-    @require_auth
-    def mint_achievement_nft(achievement_id):
-        try:
-            user_id = get_current_user_id()
-            data = request.json
-            token_id = data.get('token_id')
-            tx_hash = data.get('tx_hash')
-            
-            if not token_id or not tx_hash:
-                return jsonify({'error': 'token_id and tx_hash are required'}), 400
-            
-            achievement_service.update_achievement_nft(achievement_id, token_id, tx_hash)
-            
-            return jsonify({
-                'status': 'success',
-                'message': 'Achievement NFT minted successfully'
-            })
-
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
+    # Web3 NFT minting removed
 
     return achievement_bp

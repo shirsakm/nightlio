@@ -41,14 +41,14 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
   if (!showManager) {
     return (
       <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-        <button
+  <button
           onClick={() => setShowManager(true)}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.5rem',
             padding: '0.75rem 1.5rem',
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+            background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
             color: 'white',
             border: 'none',
             borderRadius: '25px',
@@ -57,7 +57,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
             fontWeight: '500',
             margin: '0 auto',
             transition: 'all 0.3s ease',
-            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+            boxShadow: '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 70%)',
           }}
         >
           <Settings size={16} />
@@ -68,12 +68,12 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
   }
 
   return (
-    <div
+  <div
       style={{
-        background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+    background: 'var(--bg-card)',
         borderRadius: '16px',
         padding: '1.5rem',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+    boxShadow: 'var(--shadow-lg)',
         marginTop: '1rem',
       }}
     >
@@ -88,7 +88,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
         <h3
           style={{
             margin: '0',
-            color: '#333',
+            color: 'var(--text)',
             fontSize: '1.2rem',
             fontWeight: '600',
           }}
@@ -101,7 +101,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: '#666',
+            color: 'var(--text-muted)',
             padding: '0.25rem',
           }}
         >
@@ -111,7 +111,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
 
       {/* Create New Group */}
       <div style={{ marginBottom: '2rem' }}>
-        <h4 style={{ margin: '0 0 1rem 0', color: '#555', fontSize: '1rem' }}>
+            <h4 style={{ margin: '0 0 1rem 0', color: 'var(--text)', opacity: 0.9, fontSize: '1rem' }}>
           Create New Category
         </h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -124,17 +124,17 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
             style={{
               flex: 1,
               padding: '0.75rem',
-              border: '1px solid #ddd',
+              border: '1px solid var(--border)',
               borderRadius: '8px',
               fontSize: '0.9rem',
             }}
           />
-          <button
+      <button
             onClick={handleCreateGroup}
             disabled={!newGroupName.trim() || isCreatingGroup}
             style={{
               padding: '0.75rem 1rem',
-              background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+        background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -152,7 +152,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
       {/* Create New Option */}
       {groups.length > 0 && (
         <div style={{ marginBottom: '2rem' }}>
-          <h4 style={{ margin: '0 0 1rem 0', color: '#555', fontSize: '1rem' }}>
+          <h4 style={{ margin: '0 0 1rem 0', color: 'var(--text)', opacity: 0.9, fontSize: '1rem' }}>
             Add Option to Category
           </h4>
           <div
@@ -163,12 +163,12 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
               flexWrap: 'wrap',
             }}
           >
-            <select
+      <select
               value={selectedGroupForOption}
               onChange={(e) => setSelectedGroupForOption(e.target.value)}
               style={{
                 padding: '0.75rem',
-                border: '1px solid #ddd',
+        border: '1px solid var(--border)',
                 borderRadius: '8px',
                 fontSize: '0.9rem',
                 minWidth: '150px',
@@ -181,7 +181,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
                 </option>
               ))}
             </select>
-            <input
+      <input
               type="text"
               placeholder="Option name (e.g., happy, tired)"
               value={newOptionName}
@@ -191,17 +191,17 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
                 flex: 1,
                 minWidth: '200px',
                 padding: '0.75rem',
-                border: '1px solid #ddd',
+        border: '1px solid var(--border)',
                 borderRadius: '8px',
                 fontSize: '0.9rem',
               }}
             />
-            <button
+      <button
               onClick={handleCreateOption}
               disabled={!newOptionName.trim() || !selectedGroupForOption || isCreatingOption}
               style={{
                 padding: '0.75rem 1rem',
-                background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+        background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
@@ -220,7 +220,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
       {/* Current Groups Overview */}
       {groups.length > 0 && (
         <div>
-          <h4 style={{ margin: '0 0 1rem 0', color: '#555', fontSize: '1rem' }}>
+          <h4 style={{ margin: '0 0 1rem 0', color: 'var(--text)', opacity: 0.9, fontSize: '1rem' }}>
             Current Categories
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -229,15 +229,15 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
                 key={group.id}
                 style={{
                   padding: '1rem',
-                  background: 'linear-gradient(145deg, #f8f9fa, #e9ecef)',
+                  background: 'var(--surface)',
                   borderRadius: '8px',
-                  border: '1px solid #e0e0e0',
+                  border: '1px solid var(--border)',
                 }}
               >
                 <div
                   style={{
                     fontWeight: '600',
-                    color: '#333',
+                    color: 'var(--text)',
                     marginBottom: '0.5rem',
                   }}
                 >
@@ -255,11 +255,11 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
                       key={option.id}
                       style={{
                         padding: '0.25rem 0.5rem',
-                        background: '#fff',
-                        border: '1px solid #ddd',
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border)',
                         borderRadius: '12px',
                         fontSize: '0.8rem',
-                        color: '#666',
+                        color: 'var(--text-muted)',
                       }}
                     >
                       {option.name}

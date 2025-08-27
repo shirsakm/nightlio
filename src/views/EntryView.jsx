@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import MoodPicker from '../components/mood/MoodPicker';
 import MoodDisplay from '../components/mood/MoodDisplay';
 import GroupSelector from '../components/groups/GroupSelector';
 import GroupManager from '../components/groups/GroupManager';
@@ -11,7 +12,8 @@ const EntryView = ({
   onBack, 
   onCreateGroup, 
   onCreateOption, 
-  onEntrySubmitted 
+  onEntrySubmitted,
+  onSelectMood,
 }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,13 +21,7 @@ const EntryView = ({
   const markdownRef = useRef();
 
   const handleOptionToggle = (optionId) => {
-    setSelectedOptions(prev => {
-      if (prev.includes(optionId)) {
-        return prev.filter(id => id !== optionId);
-      } else {
-        return [...prev, optionId];
-      }
-    });
+    setSelectedOptions(prev => (prev.includes(optionId) ? prev.filter(id => id !== optionId) : [...prev, optionId]));
   };
 
   const handleSubmit = async () => {
@@ -35,7 +31,6 @@ const EntryView = ({
     try {
       const markdownContent = markdownRef.current?.getMarkdown() || '';
       const now = new Date();
-      
       const response = await apiService.createMoodEntry({
         mood: selectedMood,
         date: now.toLocaleDateString(),
@@ -44,9 +39,7 @@ const EntryView = ({
         selected_options: selectedOptions,
       });
 
-      // Check for new achievements
       if (response.new_achievements && response.new_achievements.length > 0) {
-        // Map achievement types to readable names
         const achievementNames = {
           'first_entry': 'First Entry',
           'week_warrior': 'Week Warrior',
@@ -54,20 +47,14 @@ const EntryView = ({
           'data_lover': 'Data Lover',
           'mood_master': 'Mood Master'
         };
-        
-        const readableNames = response.new_achievements
-          .map(type => achievementNames[type] || type)
-          .join(', ');
-        
+        const readableNames = response.new_achievements.map(type => achievementNames[type] || type).join(', ');
         setSubmitMessage(`Entry saved! 🎉 New achievement unlocked: ${readableNames}`);
       } else {
         setSubmitMessage('Entry saved successfully! 🎉');
       }
-      
-      // Reset the editor
+
       markdownRef.current?.getInstance()?.setMarkdown('# How was your day?\n\nWrite about your thoughts, feelings, and experiences...');
-      
-      // Return to history after a short delay
+
       setTimeout(() => {
         onEntrySubmitted();
       }, 1500);
@@ -78,100 +65,125 @@ const EntryView = ({
     }
   };
 
+  if (!selectedMood) {
+    return (
+      <div style={{ marginTop: '1rem' }}>
+        <div style={{ marginBottom: '1rem' }}>
+          <button
+            onClick={onBack}
+            style={{
+              padding: '0.5rem 1rem',
+              background: 'var(--accent-600)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-pill)',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              transition: 'all 0.3s ease',
+              boxShadow: 'var(--shadow-md)',
+            }}
+          >
+            ← Back
+          </button>
+        </div>
+        <h3 style={{ marginTop: 0 }}>Pick your mood to start an entry</h3>
+        <MoodPicker onMoodSelect={onSelectMood} />
+      </div>
+    );
+  }
+
   return (
-    <div style={{ marginTop: '2rem' }}>
-      {/* Back Button */}
-      <div style={{ marginBottom: '2rem' }}>
+    <div className="entry-container" style={{ marginTop: '1rem', position: 'relative' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <button
           onClick={onBack}
           style={{
             padding: '0.5rem 1rem',
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+            background: 'var(--accent-600)',
             color: 'white',
             border: 'none',
-            borderRadius: '20px',
+            borderRadius: 'var(--radius-pill)',
             cursor: 'pointer',
             fontSize: '0.9rem',
             fontWeight: '500',
             transition: 'all 0.3s ease',
-            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+            boxShadow: 'var(--shadow-md)',
           }}
         >
           ← Back to History
         </button>
       </div>
 
-      {/* Selected Mood Display */}
-      <div style={{ marginBottom: '2rem' }}>
-        <MoodDisplay moodValue={selectedMood} />
+      <div className="entry-grid">
+        <div className="entry-left">
+          <div style={{ marginBottom: '1rem' }}>
+            <MoodDisplay moodValue={selectedMood} />
+          </div>
+          <GroupSelector
+            groups={groups}
+            selectedOptions={selectedOptions}
+            onOptionToggle={handleOptionToggle}
+          />
+          <div style={{ marginTop: '1rem' }}>
+            <GroupManager
+              groups={groups}
+              onCreateGroup={onCreateGroup}
+              onCreateOption={onCreateOption}
+            />
+          </div>
+        </div>
+
+        <div className="entry-right">
+          <MDArea ref={markdownRef} />
+          <div className="entry-savebar">
+      <button
+              disabled={isSubmitting}
+              onClick={handleSubmit}
+              style={{
+                padding: '0.9rem 2rem',
+                fontSize: '1rem',
+        background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50px',
+                cursor: !isSubmitting ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s ease',
+                fontWeight: '600',
+        boxShadow: '0 8px 25px color-mix(in oklab, var(--accent-600), transparent 70%)'
+              }}
+            >
+              {isSubmitting ? 'Saving...' : 'Save Entry'}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Groups Section */}
-      <GroupSelector
-        groups={groups}
-        selectedOptions={selectedOptions}
-        onOptionToggle={handleOptionToggle}
-      />
-
-      {/* Group Management */}
-      <div style={{ marginBottom: '2rem' }}>
-        <GroupManager
-          groups={groups}
-          onCreateGroup={onCreateGroup}
-          onCreateOption={onCreateOption}
-        />
-      </div>
-
-      {/* Markdown Editor */}
-      <MDArea ref={markdownRef} />
-
-      {/* Submit Button */}
-      <div style={{ marginTop: '3rem' }}>
-        <button
-          disabled={isSubmitting}
-          onClick={handleSubmit}
+      {submitMessage && (
+        <div
           style={{
-            padding: '1rem 2.5rem',
-            fontSize: '1.1rem',
-            background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '50px',
-            cursor: !isSubmitting ? 'pointer' : 'not-allowed',
-            transition: 'all 0.3s ease',
-            fontWeight: '600',
-            boxShadow: '0 8px 25px rgba(78, 205, 196, 0.3)',
-            transform: 'translateY(-2px)',
+            position: 'absolute',
+            inset: 0,
+            display: 'grid',
+            placeItems: 'center',
+            zIndex: 10,
           }}
         >
-          {isSubmitting ? 'Saving...' : 'Save Entry'}
-        </button>
-        {submitMessage && (
-          <div
+      <div
             style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: 'white',
+        background: 'var(--bg-card)',
               padding: '2rem',
               borderRadius: '16px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              zIndex: 1000,
+        boxShadow: 'var(--shadow-3)',
+        border: '1px solid var(--border)',
               textAlign: 'center',
               minWidth: '300px',
-              backdropFilter: 'blur(20px)'
+              maxWidth: 'min(560px, 90%)',
             }}
           >
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
             <div style={{
-              fontSize: '3rem',
-              marginBottom: '1rem'
-            }}>
-              🎉
-            </div>
-            <div style={{
-              color: submitMessage.includes('achievement') ? '#4ecdc4' : '#333',
+        color: submitMessage.includes('achievement') ? 'var(--accent-600)' : 'var(--text)',
               fontWeight: '600',
               fontSize: '1.1rem',
               lineHeight: '1.4'
@@ -179,23 +191,19 @@ const EntryView = ({
               {submitMessage}
             </div>
           </div>
-        )}
-        
-        {/* Backdrop */}
-        {submitMessage && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 999
-            }}
-          />
-        )}
-      </div>
+        </div>
+      )}
+
+      {submitMessage && (
+    <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+      background: 'var(--overlay)',
+            zIndex: 5
+          }}
+        />
+      )}
     </div>
   );
 };

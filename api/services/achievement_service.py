@@ -66,6 +66,4 @@ class AchievementService:
         
         return new_achievements
     
-    def update_achievement_nft(self, achievement_id: int, token_id: int, tx_hash: str):
-        """Update achievement with NFT information"""
-        self.db.update_achievement_nft(achievement_id, token_id, tx_hash)
+    # Web3/NFT functionality removed; no-op retained intentionally

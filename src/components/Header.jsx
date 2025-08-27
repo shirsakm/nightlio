@@ -1,63 +1,12 @@
-import { Zap, LogOut, Wallet } from 'lucide-react';
+import { Flame, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
-
-const Web3Controls = () => {
-  const { address, isConnected } = useAccount();
-  const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect();
-
-  return (
-    !isConnected ? (
-      <button
-        onClick={() => connect({ connector: connectors[0] })}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.3rem',
-          padding: '0.4rem 0.8rem',
-          background: 'linear-gradient(135deg, #667eea, #764ba2)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '20px',
-          cursor: 'pointer',
-          fontSize: '0.8rem',
-          fontWeight: '500',
-          transition: 'all 0.3s ease'
-        }}
-      >
-        <Wallet size={14} />
-        Connect Wallet
-      </button>
-    ) : (
-      <button
-        onClick={() => disconnect()}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.3rem',
-          padding: '0.4rem 0.8rem',
-          background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '20px',
-          cursor: 'pointer',
-          fontSize: '0.8rem',
-          fontWeight: '500',
-          transition: 'all 0.3s ease'
-        }}
-      >
-        <Wallet size={14} />
-        {address?.slice(0, 6)}...{address?.slice(-4)}
-      </button>
-    )
-  );
-};
+import { useTheme } from '../contexts/ThemeContext';
 
 const Header = ({ currentView, currentStreak }) => {
   const { user, logout } = useAuth();
   const { config } = useConfig();
+  const { theme, cycle } = useTheme();
   const getSubtitle = () => {
     switch (currentView) {
       case 'history':
@@ -70,81 +19,104 @@ const Header = ({ currentView, currentStreak }) => {
       case 'stats':
         return 'Your mood insights and patterns';
       case 'achievements':
-        return 'Unlock achievements and mint them as NFTs on Sepolia testnet';
+        return 'Unlock achievements';
       default:
         return 'Your daily mood companion';
     }
   };
 
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
   return (
-    <div style={{ marginBottom: '2rem' }}>
+    <div style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 40,
+      background: 'var(--surface)',
+      paddingBottom: '0.5rem',
+      marginBottom: '0.75rem',
+      borderBottom: '1px solid var(--border)',
+      paddingLeft: 'var(--space-4)',
+      paddingRight: 'var(--space-4)',
+      paddingTop: 'var(--space-2)'
+    }}>
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: '0.5rem',
+          marginBottom: '0.25rem',
         }}
       >
-        {/* Left side - Logo and Streak */}
+        {/* Left side - Streak */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h1
-            style={{
-              background: 'linear-gradient(135deg, #ff6b6b, #4ecdc4)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              margin: '0',
-              fontSize: '3.5rem',
-              fontWeight: '800',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Nightlio
-          </h1>
           {currentStreak > 0 && (
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                gap: '0.5rem',
+                background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
                 color: 'white',
                 padding: '0.4rem 0.8rem',
-                borderRadius: '20px',
-                fontSize: '0.9rem',
+                borderRadius: 'var(--radius-pill)',
+                border: '1px solid color-mix(in oklab, #FBBF24, transparent 70%)',
+                fontSize: '0.8rem',
                 fontWeight: '600',
-                boxShadow: '0 2px 8px rgba(102, 126, 234, 0.2)',
+                boxShadow: '0 4px 12px color-mix(in oklab, #FBBF24, transparent 75%), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                letterSpacing: '0.025em',
               }}
             >
-              <Zap size={16} />
-              <span>{currentStreak}</span>
+              <Flame size={14} strokeWidth={2} />
+              <span>{currentStreak} Day Streak</span>
             </div>
           )}
-        </div>
-
-    {/* Right side - User Profile & optional Web3 */}
+        </div>    {/* Right side - User Profile and primary action (desktop) */}
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      {/* Web3 controls only if enabled */}
-      {config?.enable_web3 ? <Web3Controls /> : null}
+            <button
+              onClick={cycle}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.4rem 0.8rem',
+                background: 'transparent',
+                border: '1px solid var(--border)',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                color: 'var(--text)',
+                transition: 'all 0.3s ease'
+              }}
+              title={`Theme: ${theme}`}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'var(--accent-100)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+              }}
+            >
+              {theme === 'dark' ? <Sun size={14} strokeWidth={2} /> : <Moon size={14} strokeWidth={2} />}
+            </button>
+            {/* Primary CTA moved to HistoryView and Sidebar to reduce duplication */}
+      {/* Web3 controls removed */}
 
             {/* User Profile */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {user.avatar_url && (
-                <img
+        <img
                   src={user.avatar_url}
                   alt={user.name}
                   style={{
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    border: '2px solid #667eea'
+          border: '2px solid var(--accent-600)'
                   }}
                 />
               )}
-              <span style={{ 
-                color: '#666', 
+      <span style={{ 
+    color: 'var(--text)', 
                 fontSize: '0.9rem',
                 fontWeight: '500'
               }}>
@@ -160,11 +132,11 @@ const Header = ({ currentView, currentStreak }) => {
                 gap: '0.3rem',
                 padding: '0.4rem 0.8rem',
                 background: 'transparent',
-                border: '1px solid #ddd',
+                border: '1px solid var(--border)',
                 borderRadius: '20px',
                 cursor: 'pointer',
                 fontSize: '0.8rem',
-                color: '#666',
+                color: 'var(--text)',
                 transition: 'all 0.3s ease'
               }}
             >
@@ -174,26 +146,6 @@ const Header = ({ currentView, currentStreak }) => {
           </div>
         )}
       </div>
-      <p
-        style={{
-          color: '#666',
-          margin: '0.5rem 0',
-          fontSize: '1.2rem',
-          fontWeight: '400',
-        }}
-      >
-        Your daily mood companion
-      </p>
-      <p
-        style={{
-          color: '#999',
-          margin: '0',
-          fontSize: '1rem',
-          fontWeight: '300',
-        }}
-      >
-        {getSubtitle()}
-      </p>
     </div>
   );
 };

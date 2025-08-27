@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
-import { Web3Provider } from "./contexts/Web3Context";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
-import Navigation from "./components/Navigation";
+import Sidebar from "./components/navigation/Sidebar";
+import BottomNav from "./components/navigation/BottomNav";
+import FAB from "./components/FAB";
 import HistoryView from "./views/HistoryView";
 import EntryView from "./views/EntryView";
 import StatisticsView from "./components/stats/StatisticsView";
+import SettingsView from "./views/SettingsView";
+import { ToastProvider } from "./components/ui/ToastProvider";
 import AchievementsView from "./views/AchievementsView";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
@@ -48,49 +52,72 @@ const AppContent = () => {
     setCurrentView(view);
   };
 
+  useEffect(() => {
+    const handler = () => setCurrentView('entry');
+    window.addEventListener('nightlio:new-entry', handler);
+    return () => window.removeEventListener('nightlio:new-entry', handler);
+  }, []);
+
   return (
     <>
-      <Header currentView={currentView} currentStreak={currentStreak} />
-      
-      <Navigation 
-        currentView={currentView} 
+      <div className={`app-page ${currentView === 'entry' ? 'no-sidebar' : ''}`}>
+        <Sidebar
+          currentView={currentView}
+          onViewChange={handleViewChange}
+          onLoadStatistics={loadStatistics}
+        />
+        
+        <div className="app-shell">
+          <Header currentView={currentView} currentStreak={currentStreak} />
+
+          <div className="app-layout">
+
+            <main className="app-main">
+          {currentView === "history" && (
+            <HistoryView
+              pastEntries={pastEntries}
+              loading={historyLoading}
+              error={historyError}
+              onMoodSelect={handleMoodSelect}
+              onDelete={handleEntryDeleted}
+            />
+          )}
+
+      {currentView === "entry" && (
+            <EntryView
+              selectedMood={selectedMood}
+              groups={groups}
+              onBack={handleBackToHistory}
+              onCreateGroup={createGroup}
+              onCreateOption={createGroupOption}
+              onEntrySubmitted={handleEntrySubmitted}
+        onSelectMood={(m) => setSelectedMood(m)}
+            />
+          )}
+
+          {currentView === "stats" && (
+            <StatisticsView
+              statistics={statistics}
+              pastEntries={pastEntries}
+              loading={statsLoading}
+              error={statsError}
+            />
+          )}
+
+              {currentView === "achievements" && <AchievementsView />}
+              {currentView === "settings" && <SettingsView />}
+            </main>
+          </div>
+        </div>
+      </div>
+
+      <BottomNav
+        currentView={currentView}
         onViewChange={handleViewChange}
         onLoadStatistics={loadStatistics}
       />
 
-      {currentView === "history" && (
-        <HistoryView
-          pastEntries={pastEntries}
-          loading={historyLoading}
-          error={historyError}
-          onMoodSelect={handleMoodSelect}
-          onDelete={handleEntryDeleted}
-        />
-      )}
-
-      {currentView === "entry" && (
-        <EntryView
-          selectedMood={selectedMood}
-          groups={groups}
-          onBack={handleBackToHistory}
-          onCreateGroup={createGroup}
-          onCreateOption={createGroupOption}
-          onEntrySubmitted={handleEntrySubmitted}
-        />
-      )}
-
-      {currentView === "stats" && (
-        <StatisticsView
-          statistics={statistics}
-          pastEntries={pastEntries}
-          loading={statsLoading}
-          error={statsError}
-        />
-      )}
-
-      {currentView === "achievements" && (
-        <AchievementsView />
-      )}
+      <FAB onClick={() => handleViewChange("entry")} />
     </>
   );
 };
@@ -105,17 +132,19 @@ const RootProviders = ({ children }) => {
       </ProtectedRoute>
     </AuthProvider>
   );
-  return config.enable_web3 ? (
-    <Web3Provider>{content}</Web3Provider>
-  ) : content;
+  return content;
 };
 
 function App() {
   return (
     <ConfigProvider>
-      <RootProviders>
-        <AppContent />
-      </RootProviders>
+      <ThemeProvider>
+        <ToastProvider>
+          <RootProviders>
+            <AppContent />
+          </RootProviders>
+        </ToastProvider>
+      </ThemeProvider>
     </ConfigProvider>
   );
 }

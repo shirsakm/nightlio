@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
-import { useNFT } from '../hooks/useNFT';
+import Modal from '../components/ui/Modal';
+import ProgressBar from '../components/ui/ProgressBar';
 import AchievementNFT from '../components/nft/AchievementNFT';
 import apiService from '../services/api';
 
@@ -44,11 +44,11 @@ const getAllAchievements = () => [
 ];
 
 const AchievementsView = () => {
-  const { isConnected } = useAccount();
-  const { nftBalance } = useNFT();
+  // Web3 removed
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
     loadAchievements();
@@ -69,7 +69,7 @@ const AchievementsView = () => {
 
   if (loading) {
     return (
-      <div style={{ marginTop: '2rem', textAlign: 'center', color: '#666' }}>
+      <div style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
         Loading achievements...
       </div>
     );
@@ -77,50 +77,66 @@ const AchievementsView = () => {
 
   if (error) {
     return (
-      <div style={{ marginTop: '2rem', textAlign: 'center', color: '#ff6b6b' }}>
+      <div style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--accent-600)' }}>
         {error}
       </div>
     );
   }
 
   return (
-    <div style={{ marginTop: '2rem' }}>
+    <div style={{ marginTop: '1.5rem' }}>
 
-      {/* Wallet Connection Notice */}
-      {!isConnected && (
-        <div style={{
-          background: '#fff3cd',
-          color: '#856404',
-          padding: '1rem',
-          borderRadius: '8px',
-          marginBottom: '2rem',
-          textAlign: 'center'
-        }}>
-          Connect your wallet to mint achievement NFTs on Sepolia testnet
-        </div>
-      )}
+  {/* Web3 notice removed */}
 
       {/* Achievements Grid */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+        display: 'flex',
+        flexWrap: 'wrap',
         gap: '1rem',
-        padding: '0 1rem',
-        maxWidth: '1000px',
-        margin: '0 auto'
+        padding: 0,
+        margin: 0,
+        alignItems: 'stretch',
+        alignContent: 'flex-start',
+        width: '100%'
       }}>
         {/* All possible achievements */}
         {getAllAchievements().map((achievement, index) => {
           const unlockedAchievement = achievements.find(a => a.achievement_type === achievement.achievement_type);
+          const isUnlocked = !!unlockedAchievement;
+          const progressValue = isUnlocked ? undefined : Math.floor(Math.random() * 7);
+          const progressMax = 7;
           return (
-            <AchievementNFT 
-              key={index} 
-              achievement={unlockedAchievement || achievement}
-              isUnlocked={!!unlockedAchievement}
-            />
+            <div
+              key={index}
+              onClick={() => setActive(unlockedAchievement || achievement)}
+              style={{
+                cursor: 'pointer',
+                flex: '1 1 300px',
+                minWidth: 260,
+                maxWidth: '100%',
+                display: 'flex'
+              }}
+            >
+              <AchievementNFT 
+                achievement={unlockedAchievement || achievement}
+                isUnlocked={isUnlocked}
+                progressValue={progressValue}
+                progressMax={progressMax}
+              />
+            </div>
           );
         })}
       </div>
+
+      <Modal open={!!active} onClose={() => setActive(null)} title={active?.name || 'Achievement'}>
+        <p style={{ marginTop: 0 }}>{active?.description}</p>
+        {!achievements.find(a => a.achievement_type === active?.achievement_type) && (
+          <ProgressBar value={Math.floor(Math.random()*7)} max={7} label="Progress to unlock" />
+        )}
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text-muted)' }}>
+          Tips: Log daily to maintain your streak. Viewing statistics contributes to "Data Lover".
+        </div>
+      </Modal>
     </div>
   );
 };

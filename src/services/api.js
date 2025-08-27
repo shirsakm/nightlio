@@ -1,10 +1,25 @@
 // Prefer Vite envs; allow overriding API base via VITE_API_URL in any mode
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+function normalizeBaseUrl(raw) {
+  let v = raw ?? '';
+  if (typeof v !== 'string') v = String(v);
+  v = v.trim();
+  // Handle cases like '""' or "''" injected by build-time env
+  if (v === '""' || v === "''") v = '';
+  // Strip surrounding quotes and any stray quotes
+  v = v.replace(/^['"]+|['"]+$/g, '');
+  v = v.replace(/["']/g, '');
+  // Remove trailing slashes
+  v = v.replace(/\/+$/g, '');
+  return v;
+}
+
+const API_BASE_URL = normalizeBaseUrl(
+  (typeof import.meta !== 'undefined' && import.meta.env && 'VITE_API_URL' in import.meta.env)
     ? import.meta.env.VITE_API_URL
     : ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV)
         ? 'http://localhost:5000'
-        : 'https://nightlio-production.up.railway.app');
+        : 'https://nightlio-production.up.railway.app')
+);
 
 class ApiService {
   constructor() {
@@ -16,7 +31,9 @@ class ApiService {
   }
 
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+  // Safe-join base + endpoint, honoring relative mode when base is empty
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = API_BASE_URL ? `${API_BASE_URL}${path}` : path;
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -34,12 +51,27 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        // Try to parse JSON error, else include text snippet to aid debugging
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        const ct = response.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          const errorData = await response.json().catch(() => ({}));
+          if (errorData && (errorData.error || errorData.message)) {
+            errorMessage = errorData.error || errorData.message;
+          }
+        } else {
+          const text = await response.text().catch(() => '');
+          if (text) errorMessage += ` | body: ${text.slice(0, 200)}`;
+        }
+        throw new Error(errorMessage);
       }
-
+      // Parse JSON safely
+      const ct = response.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON but received: ${ct || 'unknown'} | body: ${text.slice(0, 200)}`);
+      }
       return await response.json();
     } catch (error) {
       console.error('API request failed:', error);
@@ -151,15 +183,7 @@ class ApiService {
     });
   }
 
-  async mintAchievementNFT(achievementId, tokenId, txHash) {
-    return this.request(`/api/achievements/${achievementId}/mint`, {
-      method: 'POST',
-      body: JSON.stringify({
-        token_id: tokenId,
-        tx_hash: txHash,
-      }),
-    });
-  }
+  // Web3 minting removed
 }
 
 const apiService = new ApiService();
