@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Trash2 } from 'lucide-react';
+import { Trash } from 'lucide-react';
 import { getMoodIcon } from '../../utils/moodUtils';
 import apiService from '../../services/api';
 import { useToast } from '../ui/ToastProvider';
@@ -35,7 +35,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
       onMouseLeave={() => setIsHovered(false)}
       className="entry-card"
       style={{
-        border: isHovered ? '1px solid var(--accent-200)' : '1px solid var(--border)',
+        border: isHovered ? '1px solid color-mix(in oklab, var(--accent-600), transparent 55%)' : '1px solid var(--border)',
         boxShadow: isHovered ? 'var(--shadow-md)' : 'var(--shadow-sm)'
       }}
     >
@@ -51,16 +51,16 @@ const HistoryEntry = ({ entry, onDelete }) => {
             background: isDeleting ? 'color-mix(in oklab, var(--text), transparent 60%)' : 'var(--danger)',
             color: 'white',
             border: 'none',
-            borderRadius: '8px',
-            width: '36px',
-            height: '36px',
+            borderRadius: '10px',
+            width: '40px',
+            height: '40px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: isDeleting ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
             opacity: 0.9,
-            boxShadow: '0 2px 8px color-mix(in oklab, var(--danger), transparent 70%)',
+            boxShadow: 'var(--shadow-sm)',
           }}
           onMouseEnter={(e) => {
             e.target.style.opacity = '1';
@@ -71,7 +71,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
             e.target.style.transform = 'scale(1)';
           }}
         >
-          <Trash2 size={18} strokeWidth={2} />
+          <Trash size={24} strokeWidth={2.4} />
         </button>
       )}
 
@@ -94,20 +94,20 @@ const HistoryEntry = ({ entry, onDelete }) => {
           <IconComponent size={24} strokeWidth={1.5} />
         </span>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span
+      <span
             style={{
               fontWeight: '600',
-              color: 'var(--accent-600)',
+        color: 'var(--text)',
               fontSize: '1.1rem',
             }}
           >
             {entry.date}
           </span>
           {entry.created_at && (
-            <span
+      <span
               style={{
-                fontSize: '0.9rem',
-                color: 'var(--text-muted)',
+        fontSize: '0.95rem',
+        color: 'color-mix(in oklab, var(--text), transparent 30%)',
                 fontWeight: '400',
               }}
             >
