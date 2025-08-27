@@ -266,7 +266,7 @@ const LoginPage = () => {
                 textAlign: 'center',
                 textDecoration: 'none',
                 transition: "all 0.3s ease",
-                boxShadow: '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 70%)',
+                boxShadow: 'var(--shadow-md)',
               }}
             >
               Continue
@@ -288,7 +288,7 @@ const LoginPage = () => {
                 fontWeight: "600",
                 cursor: isLoading ? "not-allowed" : "pointer",
                 transition: "all 0.3s ease",
-                boxShadow: '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 70%)',
+                boxShadow: 'var(--shadow-md)',
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

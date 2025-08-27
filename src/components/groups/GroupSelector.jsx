@@ -52,7 +52,7 @@ const GroupSelector = ({ groups, selectedOptions, onOptionToggle }) => {
                   fontWeight: selectedOptions.includes(option.id) ? '600' : '500',
                   transition: 'all 0.2s ease',
                   boxShadow: selectedOptions.includes(option.id)
-                    ? '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 75%)'
+                    ? 'var(--shadow-md)'
                     : 'var(--shadow-sm)',
                   transform: selectedOptions.includes(option.id) ? 'translateY(-1px)' : 'none',
                 }}

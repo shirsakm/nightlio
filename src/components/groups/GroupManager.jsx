@@ -57,7 +57,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
             fontWeight: '500',
             margin: '0 auto',
             transition: 'all 0.3s ease',
-            boxShadow: '0 4px 15px color-mix(in oklab, var(--accent-600), transparent 70%)',
+            boxShadow: 'var(--shadow-md)',
           }}
         >
           <Settings size={16} />
