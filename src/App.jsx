@@ -8,6 +8,7 @@ import Sidebar from "./components/navigation/Sidebar";
 import BottomNav from "./components/navigation/BottomNav";
 import FAB from "./components/FAB";
 import HistoryView from "./views/HistoryView";
+import HistoryList from "./components/history/HistoryList";
 import EntryView from "./views/EntryView";
 import StatisticsView from "./components/stats/StatisticsView";
 import SettingsView from "./views/SettingsView";
@@ -80,6 +81,7 @@ const AppContent = () => {
               error={historyError}
               onMoodSelect={handleMoodSelect}
               onDelete={handleEntryDeleted}
+              renderOnlyHeader={true}
             />
           )}
 
@@ -107,6 +109,16 @@ const AppContent = () => {
               {currentView === "achievements" && <AchievementsView />}
               {currentView === "settings" && <SettingsView />}
             </main>
+            {currentView === "history" && (
+              <section className="app-wide" aria-label="History entries">
+                <HistoryList 
+                  entries={pastEntries}
+                  loading={historyLoading}
+                  error={historyError}
+                  onDelete={handleEntryDeleted}
+                />
+              </section>
+            )}
           </div>
         </div>
       </div>

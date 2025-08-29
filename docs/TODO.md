@@ -15,12 +15,12 @@ For each item: a short instruction, step-by-step implementation notes a Copilot 
     - Steps: introduce tokens for spacing (8/16/24/32), card radius, card background alpha, border alpha, primary accent, primary text and muted text; replace a handful of hard-coded values to reference tokens.
     - Acceptance: token definitions exist and at least five visual styles reference them.
 
-4. [ ] Convert history rows into interactive card components
+4. [x] Convert history rows into interactive card components
     - Task: Replace list rows with a card component that includes: thumbnail area (or placeholder), meta row (collection + date), title, excerpt, and tag chips. Make the entire card clickable and keyboard focusable.
     - Steps: implement the card markup pattern, wire an `onClick` or anchor to open the full record, ensure `tabindex=0` and `onKeyDown` handles Enter.
     - Acceptance: history list shows cards; clicking or pressing Enter opens the full record (or stub modal).
 
-5. [ ] Wrap cards in a responsive grid
+5. [x] Wrap cards in a responsive grid
     - Task: Place cards into a responsive grid that auto-fills columns on desktop with consistent gaps.
     - Steps: create grid container that produces columns based on a min column width (~280px) and consistent spacing between cards; ensure layout adapts to window resizing.
     - Acceptance: on desktop (>=1366px) cards form multiple columns with consistent 24px gaps and no horizontal overflow.
