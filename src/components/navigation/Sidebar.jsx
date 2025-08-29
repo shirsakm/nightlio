@@ -29,6 +29,7 @@ const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
         </div>
 
         <div className="sidebar__sections">
+          {/* eslint-disable-next-line no-unused-vars */}
           {items.map(({ key, label, icon: Icon }) => (
             <button
               key={key}

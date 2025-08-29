@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Settings, X } from 'lucide-react';
 
-const GroupManager = ({ groups, onCreateGroup, onCreateOption, loading }) => {
+const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
   const [showManager, setShowManager] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [newOptionName, setNewOptionName] = useState('');

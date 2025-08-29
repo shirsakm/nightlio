@@ -1,14 +1,28 @@
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
 import { Trash } from 'lucide-react';
 import { getMoodIcon } from '../../utils/moodUtils';
 import apiService from '../../services/api';
 import { useToast } from '../ui/ToastProvider';
+import EntryModal from './EntryModal';
 
 const HistoryEntry = ({ entry, onDelete }) => {
   const { icon: IconComponent, color } = getMoodIcon(entry.mood);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  // derive a simple title and excerpt from markdown
+  const stripMd = (s = '') => s
+    .replace(/`{1,3}[^`]*`{1,3}/g, ' ')
+    .replace(/!\[[^\]]*\]\([^\)]*\)/g, ' ')
+    .replace(/\[[^\]]*\]\([^\)]*\)/g, '$1')
+    .replace(/^[#>*\-+]+\s?/gm, '')
+    .replace(/[*_~`>#\[\]()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const plain = stripMd(entry.content || '');
+  const title = plain.slice(0, 80);
+  const excerpt = plain.slice(80, 420);
 
   const { show } = useToast();
   const handleDelete = async () => {
@@ -29,20 +43,35 @@ const HistoryEntry = ({ entry, onDelete }) => {
     }
   };
 
+  const openPreview = () => setOpen(true);
+  const onKey = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openPreview();
+    }
+  };
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="entry-card"
+      role="button"
+      tabIndex={0}
+      onClick={openPreview}
+      onKeyDown={onKey}
+      aria-label={`Open entry from ${entry.date}`}
       style={{
         border: isHovered ? '1px solid color-mix(in oklab, var(--accent-600), transparent 55%)' : '1px solid var(--border)',
-        boxShadow: isHovered ? 'var(--shadow-md)' : 'var(--shadow-sm)'
+        boxShadow: isHovered ? 'var(--shadow-md)' : 'var(--shadow-sm)',
+        cursor: 'pointer',
+        outline: 'none'
       }}
     >
       {/* Delete Button */}
       {isHovered && (
         <button
-          onClick={handleDelete}
+          onClick={(e) => { e.stopPropagation(); handleDelete(); }}
           disabled={isDeleting}
           style={{
             position: 'absolute',
@@ -75,8 +104,23 @@ const HistoryEntry = ({ entry, onDelete }) => {
         </button>
       )}
 
-      <div
-        style={{
+      {/* Thumbnail placeholder with mood icon */}
+      <div className="entry-thumb" style={{
+        height: 120,
+        borderRadius: 12,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, color-mix(in oklab, var(--accent-600) 16%, transparent), color-mix(in oklab, var(--accent-600) 6%, transparent))',
+        border: '1px solid var(--border)',
+        marginBottom: 12
+      }}>
+        <span style={{ color, display: 'flex', alignItems: 'center' }}>
+          <IconComponent size={28} strokeWidth={1.8} />
+        </span>
+      </div>
+
+      <div style={{
           display: 'flex',
           alignItems: 'center',
           marginBottom: '0.5rem',
@@ -91,7 +135,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
             color,
           }}
         >
-          <IconComponent size={24} strokeWidth={1.5} />
+          <IconComponent size={20} strokeWidth={1.5} />
         </span>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
       <span
@@ -142,28 +186,15 @@ const HistoryEntry = ({ entry, onDelete }) => {
           </div>
         </div>
       )}
-      
-      <div
-        style={{
-          color: 'var(--text)',
-          lineHeight: '1.6',
-          textAlign: 'left',
-        }}
-      >
-        <ReactMarkdown 
-          className="history-markdown"
-          components={{
-            p: ({children}) => <p style={{textAlign: 'left', margin: '0.5rem 0'}}>{children}</p>,
-            h1: ({children}) => <h1 style={{textAlign: 'left'}}>{children}</h1>,
-            h2: ({children}) => <h2 style={{textAlign: 'left'}}>{children}</h2>,
-            h3: ({children}) => <h3 style={{textAlign: 'left'}}>{children}</h3>,
-            ul: ({children}) => <ul style={{textAlign: 'left', paddingLeft: '1.5rem'}}>{children}</ul>,
-            ol: ({children}) => <ol style={{textAlign: 'left', paddingLeft: '1.5rem'}}>{children}</ol>,
-          }}
-        >
-          {entry.content}
-        </ReactMarkdown>
-      </div>
+
+      {/* Title + excerpt preview */}
+      <div className="entry-card__title">{title || 'Entry'}</div>
+      {excerpt && (
+        <div className="entry-card__excerpt">{excerpt}</div>
+      )}
+
+      {/* Modal for full view */}
+      <EntryModal isOpen={open} entry={entry} onClose={() => setOpen(false)} />
     </div>
   );
 };
