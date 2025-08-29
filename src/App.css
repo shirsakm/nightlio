@@ -197,3 +197,15 @@
 .history-markdown a { color: var(--accent-600); text-decoration: underline; }
 .history-markdown strong { font-weight: 600; color: var(--text); }
 .history-markdown em { font-style: italic; color: var(--text-muted); }
+
+/* Search placeholder */
+.search-placeholder { display: flex; align-items: center; gap: 8px; height: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 0 10px 0 12px; color: var(--text); box-shadow: var(--shadow-sm); }
+.search-placeholder:focus-within { border-color: color-mix(in oklab, var(--accent-600), transparent 55%); box-shadow: var(--shadow-md); }
+.search-placeholder svg { color: color-mix(in oklab, var(--text), transparent 20%); }
+.search-placeholder__input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 0.95rem; }
+.search-placeholder__input::placeholder { color: color-mix(in oklab, var(--text), transparent 40%); }
+.search-placeholder__hint { background: color-mix(in oklab, var(--text), transparent 90%); border: 1px solid var(--border); padding: 2px 6px; border-radius: 6px; font-size: 0.8rem; color: color-mix(in oklab, var(--text), transparent 20%); }
+
+@media (max-width: 700px) {
+  .search-placeholder { height: 36px; }
+}

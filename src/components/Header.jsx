@@ -2,14 +2,35 @@ import { Flame, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
 import { useTheme } from '../contexts/ThemeContext';
+import SearchPlaceholder from './search/SearchPlaceholder';
+import { useEffect } from 'react';
+import { useToast } from './ui/ToastProvider';
 
 const Header = ({ currentStreak }) => {
   const { user, logout } = useAuth();
   useConfig();
   const { theme, cycle } = useTheme();
-  // Subtitle helper removed (unused)
+  const { show } = useToast();
 
-  // const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
+  // Focus search on '/' and show ephemeral toast
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const targetTag = (e.target && e.target.tagName) || '';
+        // Avoid hijacking when typing in inputs/textareas
+        if (/^(INPUT|TEXTAREA)$/.test(targetTag)) return;
+        e.preventDefault();
+        const input = document.getElementById('global-search-input');
+        if (input) {
+          input.focus();
+          show('Search focused — search not yet implemented', 'info', 1500);
+        }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [show]);
+
   return (
     <div style={{
       position: 'sticky',
@@ -29,16 +50,17 @@ const Header = ({ currentStreak }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           marginBottom: '0.25rem',
+          gap: '1rem',
         }}
       >
-  {/* Left side - Streak */}
-  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Left side - Streak */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {currentStreak > 0 && (
             <div
               style={{
                 display: 'flex',
-    alignItems: 'center',
-    gap: '0.4rem',
+                alignItems: 'center',
+                gap: '0.4rem',
                 background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
                 color: 'white',
                 padding: '0.4rem 0.8rem',
@@ -47,16 +69,25 @@ const Header = ({ currentStreak }) => {
                 fontSize: '0.85rem',
                 fontWeight: '600',
                 boxShadow: 'var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.16)',
-    letterSpacing: '0.005em',
-    lineHeight: 1,
-    whiteSpace: 'nowrap',
+                letterSpacing: '0.005em',
+                lineHeight: 1,
+                whiteSpace: 'nowrap',
               }}
             >
               <Flame size={14} strokeWidth={2} />
               <span>{currentStreak} Day Streak</span>
             </div>
           )}
-        </div>    {/* Right side - User Profile and primary action (desktop) */}
+        </div>
+
+        {/* Center - Search Placeholder */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          <div style={{ width: '100%', maxWidth: 600 }}>
+            <SearchPlaceholder />
+          </div>
+        </div>
+
+        {/* Right side - User Profile and primary action (desktop) */}
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
@@ -85,24 +116,24 @@ const Header = ({ currentStreak }) => {
               {theme === 'dark' ? <Sun size={14} strokeWidth={2} /> : <Moon size={14} strokeWidth={2} />}
             </button>
             {/* Primary CTA moved to HistoryView and Sidebar to reduce duplication */}
-      {/* Web3 controls removed */}
+            {/* Web3 controls removed */}
 
             {/* User Profile */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {user.avatar_url && (
-        <img
+                <img
                   src={user.avatar_url}
                   alt={user.name}
                   style={{
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-          border: '2px solid var(--accent-600)'
+                    border: '2px solid var(--accent-600)'
                   }}
                 />
               )}
-      <span style={{ 
-    color: 'var(--text)', 
+              <span style={{ 
+                color: 'var(--text)', 
                 fontSize: '0.9rem',
                 fontWeight: '500'
               }}>
