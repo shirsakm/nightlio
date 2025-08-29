@@ -1,9 +1,7 @@
 import HistoryEntry from './HistoryEntry';
 import Skeleton from '../ui/Skeleton';
-import { useToast } from '../ui/ToastProvider';
 
 const HistoryList = ({ entries, loading, error, onDelete }) => {
-  const { show } = useToast();
   if (loading) {
     return (
       <div style={{ textAlign: 'left', padding: '1rem 0' }}>

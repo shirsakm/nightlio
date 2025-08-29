@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       const userData = await apiService.verifyToken(token);
       setUser(userData.user);
       apiService.setAuthToken(token);
-    } catch (error) {
+  } catch {
       // If verify fails, clear token and in self-host mode immediately local-login
       logout();
       if (!config.enable_google_oauth) {
@@ -59,8 +59,8 @@ export const AuthProvider = ({ children }) => {
         apiService.setAuthToken(jwtToken);
       }
       return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
+  } catch {
+      return { success: false, error: 'Local login failed' };
     } finally {
       setLoading(false);
     }

@@ -3,29 +3,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
 import { useTheme } from '../contexts/ThemeContext';
 
-const Header = ({ currentView, currentStreak }) => {
+const Header = ({ currentStreak }) => {
   const { user, logout } = useAuth();
-  const { config } = useConfig();
+  useConfig();
   const { theme, cycle } = useTheme();
-  const getSubtitle = () => {
-    switch (currentView) {
-      case 'history':
-        return 'How are you feeling today?';
-      case 'entry':
-        return `Recording for ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString(
-          [],
-          { hour: '2-digit', minute: '2-digit', hour12: true }
-        )}`;
-      case 'stats':
-        return 'Your mood insights and patterns';
-      case 'achievements':
-        return 'Unlock achievements';
-      default:
-        return 'Your daily mood companion';
-    }
-  };
+  // Subtitle helper removed (unused)
 
-  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
+  // const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
   return (
     <div style={{
       position: 'sticky',

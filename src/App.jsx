@@ -123,7 +123,7 @@ const AppContent = () => {
 };
 
 const RootProviders = ({ children }) => {
-  const { config, loading } = useConfig();
+  const { loading } = useConfig();
   if (loading) return null;
   const content = (
     <AuthProvider>

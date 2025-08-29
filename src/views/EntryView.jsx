@@ -58,7 +58,7 @@ const EntryView = ({
       setTimeout(() => {
         onEntrySubmitted();
       }, 1500);
-    } catch (error) {
+  } catch {
       setSubmitMessage('Failed to save entry. Please try again.');
     } finally {
       setIsSubmitting(false);

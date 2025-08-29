@@ -10,7 +10,7 @@ const LoginPage = () => {
   const { login } = useAuth();
   const { config } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   // Override any parent styling
   useEffect(() => {
@@ -82,7 +82,7 @@ const LoginPage = () => {
     };
 
     script.onerror = () => {
-      setError(
+  setMessage(
         "Failed to load Google services. Please check your internet connection."
       );
     };
@@ -95,15 +95,15 @@ const LoginPage = () => {
 
   const handleGoogleResponse = async (response) => {
     setIsLoading(true);
-    setError("");
+  setMessage("");
 
     try {
       const result = await login(response.credential);
       if (!result.success) {
-        setError(result.error || "Login failed. Please try again.");
+  setMessage(result.error || "Login failed. Please try again.");
       }
-    } catch (error) {
-      setError("Login failed. Please try again.");
+  } catch {
+      setMessage("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -134,11 +134,11 @@ const LoginPage = () => {
             }, 100);
           }
         });
-      } catch (error) {
-        setError("Sign-in failed. Please try refreshing the page.");
+  } catch {
+        setMessage("Sign-in failed. Please try refreshing the page.");
       }
     } else {
-      setError("Google services not loaded. Please refresh the page.");
+      setMessage("Google services not loaded. Please refresh the page.");
     }
   };
 
@@ -231,7 +231,7 @@ const LoginPage = () => {
               : 'Sign in with your Google account to continue your mood tracking journey'}
           </p>
 
-      {error && (
+  {message && (
             <div
               style={{
         background: 'color-mix(in oklab, var(--danger) 12%, transparent)',
@@ -242,7 +242,7 @@ const LoginPage = () => {
                 fontSize: "0.9rem",
               }}
             >
-              {error}
+              {message}
             </div>
           )}
 

@@ -17,7 +17,8 @@ const BottomNav = ({ currentView, onViewChange, onLoadStatistics }) => {
 
   return (
     <nav className="bottom-nav">
-      {items.map(({ key, label, icon: Icon }) => (
+  {/* eslint-disable-next-line no-unused-vars */}
+  {items.map(({ key, label, icon: Icon }) => (
         <button
           key={key}
           onClick={() => handleClick(key)}

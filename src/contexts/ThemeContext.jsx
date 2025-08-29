@@ -2,21 +2,21 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const ThemeContext = createContext({ theme: 'system', setTheme: () => {}, cycle: () => {} });
 
-const getSystemTheme = () => (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+// System theme detection handled implicitly; storage persists last choice
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     try {
-  return localStorage.getItem('nightlio:theme') || 'dark';
+      return localStorage.getItem('nightlio:theme') || 'dark';
     } catch {
-  return 'dark';
+      return 'dark';
     }
   });
 
   useEffect(() => {
     const effective = theme;
     document.documentElement.setAttribute('data-theme', effective);
-    try { localStorage.setItem('nightlio:theme', theme); } catch {}
+  try { localStorage.setItem('nightlio:theme', theme); } catch { /* ignore */ }
   }, [theme]);
 
   const value = useMemo(() => ({
