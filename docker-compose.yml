@@ -1,8 +1,6 @@
 services:
   api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
+    image: ${API_IMAGE:-ghcr.io/shirsakm/nightlio-api:latest}
     container_name: nightlio-api
     restart: unless-stopped
     environment:
@@ -30,11 +28,7 @@ services:
       retries: 3
 
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - VITE_API_URL=""   # Use relative /api proxied by nginx.conf
+    image: ${WEB_IMAGE:-ghcr.io/shirsakm/nightlio-frontend:latest}
     container_name: nightlio-frontend
     restart: unless-stopped
     ports:

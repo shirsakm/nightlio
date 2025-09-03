@@ -3,9 +3,7 @@
 
 services:
   api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
+    image: ${API_IMAGE:-ghcr.io/shirsakm/nightlio-api:latest}
     container_name: nightlio-api-prod
     restart: unless-stopped
     environment:
@@ -41,11 +39,7 @@ services:
           memory: 256M
 
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - VITE_API_URL=/api
+    image: ${WEB_IMAGE:-ghcr.io/shirsakm/nightlio-frontend:latest}
     container_name: nightlio-frontend-prod
     restart: unless-stopped
     # Only expose to internal network in production
