@@ -198,7 +198,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
                   padding: '6px 12px',
                   borderRadius: 999,
                   border: range === d ? 'none' : '1px solid var(--border)',
-                  background: range === d ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))' : 'var(--surface)',
+                  background: range === d ? 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))' : 'var(--surface)',
                   color: range === d ? 'white' : 'var(--text)',
                   fontWeight: 600,
                   fontSize: 12,

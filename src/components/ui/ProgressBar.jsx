@@ -9,7 +9,7 @@ const ProgressBar = ({ value = 0, max = 100, label }) => {
         </div>
       )}
       <div style={{ height: 8, background: 'var(--border-soft)', borderRadius: 999 }}>
-        <div style={{ width: `${pct}%`, height: '100%', borderRadius: 999, background: 'var(--accent-600)' }} />
+  <div style={{ width: `${pct}%`, height: '100%', borderRadius: 999, background: 'var(--accent-bg)' }} />
       </div>
     </div>
   );

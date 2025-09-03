@@ -40,7 +40,7 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
   }
 
   return (
-    <div style={{ textAlign: 'left', marginTop: '2rem' }}>
+    <div style={{ textAlign: 'left', marginTop: 0 }}>
       <div className="card-grid">
         {entries.map(entry => (
           <HistoryEntry 

@@ -48,7 +48,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
             alignItems: 'center',
             gap: '0.5rem',
             padding: '0.75rem 1.5rem',
-            background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+            background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
             color: 'white',
             border: 'none',
             borderRadius: '25px',
@@ -134,7 +134,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
             disabled={!newGroupName.trim() || isCreatingGroup}
             style={{
               padding: '0.75rem 1rem',
-        background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+  background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -201,7 +201,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
               disabled={!newOptionName.trim() || !selectedGroupForOption || isCreatingOption}
               style={{
                 padding: '0.75rem 1rem',
-        background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+  background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',

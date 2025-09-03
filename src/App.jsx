@@ -111,6 +111,7 @@ const AppContent = () => {
             </main>
             {currentView === "history" && (
               <section className="app-wide" aria-label="History entries">
+                <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>History</h2>
                 <HistoryList 
                   entries={pastEntries}
                   loading={historyLoading}

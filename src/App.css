@@ -31,7 +31,7 @@
 }
 .app-layout.no-sidebar { 
   margin-left: 0;
-  padding: var(--space-4);
+  padding: var(--gutter-page);
 }
 
 .app-main {
@@ -41,9 +41,9 @@
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  padding: var(--space-4);
+  padding: var(--gutter-page);
   overflow: auto;
-  margin: 0 var(--space-4) var(--space-4) var(--space-4);
+  margin: var(--gutter-page) var(--gutter-page) var(--gutter-page) var(--gutter-page);
 }
 .app-main h1 { margin: 0 0 var(--space-3) 0; }
 .app-main h2 { margin: var(--space-2) 0 var(--space-3) 0; }
@@ -84,10 +84,10 @@
 .sidebar__sections { display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .sidebar__footer { margin-top: auto; padding-top: var(--space-2); padding-bottom: var(--space-1); border-top: 1px solid var(--border); }
 .sidebar__item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: transparent; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--text); transition: background 180ms cubic-bezier(.2,.6,.2,1), color 180ms cubic-bezier(.2,.6,.2,1); }
-.sidebar__item:hover { background: var(--accent-50); }
+.sidebar__item:hover { background: var(--accent-bg-soft); }
 .sidebar__item.is-active { 
   color: #fff; 
-  background: linear-gradient(135deg, var(--accent-600), var(--accent-700)); 
+  background: linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2)); 
   border-color: var(--border);
   box-shadow: var(--shadow-sm);
 }
@@ -99,30 +99,30 @@
 .bottom-nav__label { font-size: 11px; }
 
 /* Floating action button */
-.fab { position: fixed; right: 18px; bottom: 78px; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-600); color: #fff; border: none; box-shadow: var(--shadow-md); z-index: 60; }
+.fab { position: fixed; right: 18px; bottom: 78px; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-bg); color: #fff; border: none; box-shadow: var(--shadow-md); z-index: 60; }
 .fab { display: none; }
 
 /* Mood selector */
 .mood-grid { display: flex; gap: 0.75rem; justify-content: flex-start; flex-wrap: wrap; margin: 0; }
 .mood-button { width: 72px; height: 72px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; transition: transform 180ms cubic-bezier(.2,.6,.2,1), border-color 180ms cubic-bezier(.2,.6,.2,1), box-shadow 180ms cubic-bezier(.2,.6,.2,1); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); }
 .mood-button:hover { transform: scale(1.04); border-color: var(--accent-200); box-shadow: var(--shadow-md); }
-.mood-button.selected { transform: scale(1.06); border-color: var(--accent-600); background: var(--accent-50); }
+.mood-button.selected { transform: scale(1.06); border-color: var(--accent-600); background: var(--accent-bg-soft); }
 
 @media (max-width: 600px) {
-  #root { margin: 0; border-radius: 0; min-height: 100vh; padding: var(--space-4); }
+  #root { margin: 0; border-radius: 0; min-height: 100vh; padding: var(--gutter-page); }
   .app-layout { display: block; }
   .sidebar { display: none; }
   .bottom-nav { display: flex; }
   .fab { display: grid; }
-  .app-main { padding: var(--space-4); padding-bottom: 120px; border-radius: var(--radius-sm); }
+  .app-main { padding: var(--gutter-page); padding-bottom: 120px; border-radius: var(--radius-sm); }
   .mood-button { font-size: 2rem; width: 56px; height: 56px; }
 }
 
 /* Entry cards */
-.entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: var(--space-3); margin-bottom: var(--space-3); transition: box-shadow 180ms cubic-bezier(.2,.6,.2,1), border-color 180ms cubic-bezier(.2,.6,.2,1); position: relative; }
+.entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: var(--space-3); margin-bottom: 0; transition: box-shadow 180ms cubic-bezier(.2,.6,.2,1), border-color 180ms cubic-bezier(.2,.6,.2,1); position: relative; }
 .entry-card .timestamp { color: color-mix(in oklab, var(--text), transparent 20%); font-size: 0.9rem; }
 .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--space-2); }
-.tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: var(--radius-pill); font-size: 0.875rem; line-height: 1; background: color-mix(in oklab, var(--accent-600) 16%, transparent); color: #fff; border: 1px solid color-mix(in oklab, var(--accent-600), transparent 55%); }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: var(--radius-pill); font-size: 0.875rem; line-height: 1; background: var(--accent-chip-bg); color: #fff; border: 1px solid color-mix(in oklab, var(--accent-600), transparent 45%); }
 .tag--neutral { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
 /* MDXEditor Custom Styles (condensed) */
@@ -190,7 +190,7 @@
 .history-markdown ul,
 .history-markdown ol { margin: 0.5rem 0; padding-left: 1.2rem; }
 .history-markdown li { margin-bottom: 0.2rem; }
-.history-markdown blockquote { border-left: 3px solid var(--accent-600); margin: 0.8rem 0; padding: 0.5rem 1rem; background: color-mix(in oklab, var(--accent-600) 12%, transparent); font-style: italic; }
+.history-markdown blockquote { border-left: 3px solid var(--accent-600); margin: 0.8rem 0; padding: 0.5rem 1rem; background: var(--accent-bg-softer); font-style: italic; }
 .history-markdown code { background: color-mix(in oklab, var(--text) 10%, transparent); color: var(--text); padding: 1px 4px; border-radius: 2px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.85em; }
 .history-markdown pre { background: color-mix(in oklab, var(--text) 8%, transparent); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 0.8rem; overflow-x: auto; margin: 0.8rem 0; }
 .history-markdown pre code { background: none; padding: 0; }
@@ -211,12 +211,9 @@
 }
 
 /* Card grid for history */
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; width: 100%; }
-@media (max-width: 900px) {
-  .card-grid { gap: 20px; }
-}
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-2); width: 100%; }
 @media (max-width: 640px) {
-  .card-grid { grid-template-columns: 1fr; gap: 16px; }
+  .card-grid { grid-template-columns: 1fr; }
 }
 
 /* History entry card preview pieces */
@@ -224,7 +221,7 @@
 .entry-card__excerpt { color: color-mix(in oklab, var(--text), transparent 20%); font-size: 0.95rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; line-clamp: 4; overflow: hidden; }
 
 /* Wide section under the panel to host the grid on base background */
-.app-wide { margin: var(--space-3) var(--space-4) var(--space-4) var(--space-4); padding: 0; background: transparent; }
+.app-wide { margin: var(--space-3) var(--gutter-page) var(--gutter-page) var(--gutter-page); padding: 0; background: transparent; }
 
 /* Reduce extra space below app-main when followed by app-wide */
 .app-main + .app-wide { margin-top: var(--space-3); }
