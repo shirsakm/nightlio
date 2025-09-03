@@ -45,7 +45,7 @@
   --space-12: 96px;
 
   /* Layout gutters */
-  --gutter-page: var(--space-2);
+  --gutter-page: var(--space-3);
 
   /* Radii */
   --radius: 12px;

@@ -17,7 +17,7 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, rend
 
   return (
     <>
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--gutter-page)' }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 0 }}>
         <MoodPicker onMoodSelect={onMoodSelect} />
         <div style={{ textAlign: 'right' }}>
           <h2 style={{ margin: 0, color: 'var(--text)', fontSize: '1.25rem', lineHeight: '1.2' }}>Today</h2>

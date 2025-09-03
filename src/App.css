@@ -43,7 +43,7 @@
   box-shadow: var(--shadow-sm);
   padding: var(--gutter-page);
   overflow: auto;
-  margin: 0 var(--gutter-page) var(--gutter-page) var(--gutter-page);
+  margin: var(--gutter-page) var(--gutter-page) var(--gutter-page) var(--gutter-page);
 }
 .app-main h1 { margin: 0 0 var(--space-3) 0; }
 .app-main h2 { margin: var(--space-2) 0 var(--space-3) 0; }
@@ -119,7 +119,7 @@
 }
 
 /* Entry cards */
-.entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: var(--space-3); margin-bottom: var(--space-3); transition: box-shadow 180ms cubic-bezier(.2,.6,.2,1), border-color 180ms cubic-bezier(.2,.6,.2,1); position: relative; }
+.entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: var(--space-3); margin-bottom: 0; transition: box-shadow 180ms cubic-bezier(.2,.6,.2,1), border-color 180ms cubic-bezier(.2,.6,.2,1); position: relative; }
 .entry-card .timestamp { color: color-mix(in oklab, var(--text), transparent 20%); font-size: 0.9rem; }
 .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--space-2); }
 .tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: var(--radius-pill); font-size: 0.875rem; line-height: 1; background: color-mix(in oklab, var(--accent-600) 16%, transparent); color: #fff; border: 1px solid color-mix(in oklab, var(--accent-600), transparent 55%); }
@@ -211,12 +211,9 @@
 }
 
 /* Card grid for history */
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; width: 100%; }
-@media (max-width: 900px) {
-  .card-grid { gap: 20px; }
-}
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-2); width: 100%; }
 @media (max-width: 640px) {
-  .card-grid { grid-template-columns: 1fr; gap: 16px; }
+  .card-grid { grid-template-columns: 1fr; }
 }
 
 /* History entry card preview pieces */
