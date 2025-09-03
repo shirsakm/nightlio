@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Trash } from 'lucide-react';
 import { getMoodIcon } from '../../utils/moodUtils';
 import apiService from '../../services/api';
 import { useToast } from '../ui/ToastProvider';
@@ -27,17 +26,19 @@ const HistoryEntry = ({ entry, onDelete }) => {
   const { show } = useToast();
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this entry?')) {
-      return;
+      return false;
     }
 
     setIsDeleting(true);
     try {
       await apiService.deleteMoodEntry(entry.id);
       onDelete(entry.id);
-  show('Entry deleted', 'success');
+      show('Entry deleted', 'success');
+      return true;
     } catch (error) {
       console.error('Failed to delete entry:', error);
-  show('Failed to delete entry. Please try again.', 'error');
+      show('Failed to delete entry. Please try again.', 'error');
+      return false;
     } finally {
       setIsDeleting(false);
     }
@@ -68,41 +69,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
         outline: 'none'
       }}
     >
-      {/* Delete Button */}
-      {isHovered && (
-        <button
-          onClick={(e) => { e.stopPropagation(); handleDelete(); }}
-          disabled={isDeleting}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            background: isDeleting ? 'color-mix(in oklab, var(--text), transparent 60%)' : 'var(--danger)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '10px',
-            width: '40px',
-            height: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: isDeleting ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s ease',
-            opacity: 0.9,
-            boxShadow: 'var(--shadow-sm)',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.opacity = '1';
-            e.target.style.transform = 'scale(1.05)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.opacity = '0.9';
-            e.target.style.transform = 'scale(1)';
-          }}
-        >
-          <Trash size={24} strokeWidth={2.4} />
-        </button>
-      )}
+  {/* Delete control moved into modal */}
 
       {/* Thumbnail placeholder with mood icon */}
       <div className="entry-thumb" style={{
@@ -194,7 +161,16 @@ const HistoryEntry = ({ entry, onDelete }) => {
       )}
 
       {/* Modal for full view */}
-      <EntryModal isOpen={open} entry={entry} onClose={() => setOpen(false)} />
+      <EntryModal 
+        isOpen={open} 
+        entry={entry} 
+        onClose={() => setOpen(false)}
+        onDelete={async () => {
+          const ok = await handleDelete();
+          if (ok) setOpen(false);
+        }}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

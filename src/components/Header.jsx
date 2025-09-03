@@ -38,10 +38,10 @@ const Header = ({ currentStreak }) => {
       zIndex: 40,
       background: 'var(--surface)',
       paddingBottom: '0.5rem',
-      marginBottom: '0.75rem',
+  marginBottom: 'var(--gutter-page)',
       borderBottom: '1px solid var(--border)',
-      paddingLeft: 'var(--space-4)',
-      paddingRight: 'var(--space-4)',
+  paddingLeft: 'var(--gutter-page)',
+  paddingRight: 'var(--gutter-page)',
       paddingTop: 'var(--space-2)'
     }}>
       <div

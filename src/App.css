@@ -31,7 +31,7 @@
 }
 .app-layout.no-sidebar { 
   margin-left: 0;
-  padding: var(--space-4);
+  padding: var(--gutter-page);
 }
 
 .app-main {
@@ -41,9 +41,9 @@
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  padding: var(--space-4);
+  padding: var(--gutter-page);
   overflow: auto;
-  margin: 0 var(--space-4) var(--space-4) var(--space-4);
+  margin: 0 var(--gutter-page) var(--gutter-page) var(--gutter-page);
 }
 .app-main h1 { margin: 0 0 var(--space-3) 0; }
 .app-main h2 { margin: var(--space-2) 0 var(--space-3) 0; }
@@ -109,12 +109,12 @@
 .mood-button.selected { transform: scale(1.06); border-color: var(--accent-600); background: var(--accent-50); }
 
 @media (max-width: 600px) {
-  #root { margin: 0; border-radius: 0; min-height: 100vh; padding: var(--space-4); }
+  #root { margin: 0; border-radius: 0; min-height: 100vh; padding: var(--gutter-page); }
   .app-layout { display: block; }
   .sidebar { display: none; }
   .bottom-nav { display: flex; }
   .fab { display: grid; }
-  .app-main { padding: var(--space-4); padding-bottom: 120px; border-radius: var(--radius-sm); }
+  .app-main { padding: var(--gutter-page); padding-bottom: 120px; border-radius: var(--radius-sm); }
   .mood-button { font-size: 2rem; width: 56px; height: 56px; }
 }
 
@@ -224,7 +224,7 @@
 .entry-card__excerpt { color: color-mix(in oklab, var(--text), transparent 20%); font-size: 0.95rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; line-clamp: 4; overflow: hidden; }
 
 /* Wide section under the panel to host the grid on base background */
-.app-wide { margin: var(--space-3) var(--space-4) var(--space-4) var(--space-4); padding: 0; background: transparent; }
+.app-wide { margin: var(--space-3) var(--gutter-page) var(--gutter-page) var(--gutter-page); padding: 0; background: transparent; }
 
 /* Reduce extra space below app-main when followed by app-wide */
 .app-main + .app-wide { margin-top: var(--space-3); }
