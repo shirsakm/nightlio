@@ -21,11 +21,35 @@ const panelStyle = {
   padding: '20px',
 };
 
+const deriveTitleBody = (content = '') => {
+  const text = (content || '').replace(/\r\n/g, '\n').trim();
+  if (!text) return { title: '', body: '' };
+  const lines = text.split('\n');
+  const first = (lines[0] || '').trim();
+  // If first line is a markdown heading like # Title
+  const heading = first.match(/^#{1,6}\s+(.+?)\s*$/);
+  if (heading) {
+    return { title: heading[1].trim(), body: lines.slice(1).join('\n').trim() };
+  }
+  // Otherwise, multi-line: first line as title, remainder as body
+  if (lines.length > 1) {
+    return { title: first, body: lines.slice(1).join('\n').trim() };
+  }
+  // Single-line content; split at first space into title + body
+  const idx = first.indexOf(' ');
+  if (idx > 0) {
+    return { title: first.slice(0, idx).trim(), body: first.slice(idx + 1).trim() };
+  }
+  // Single word only
+  return { title: first, body: '' };
+};
+
 const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
   if (!isOpen || !entry) return null;
   const onBackdrop = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
+  const { title, body } = deriveTitleBody(entry.content);
   return (
     <div style={backdropStyle} onClick={onBackdrop} role="dialog" aria-modal="true">
       <div style={panelStyle}>
@@ -62,6 +86,11 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
             </button>
           </div>
         </div>
+        {title && (
+          <div className="history-markdown" style={{ marginBottom: 8 }}>
+            <h1 style={{ margin: 0 }}>{title}</h1>
+          </div>
+        )}
         {entry.selections?.length > 0 && (
           <div className="tag-list" style={{ marginBottom: 12 }}>
             {entry.selections.map((s) => (
@@ -70,7 +99,7 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
           </div>
         )}
         <div className="history-markdown">
-          <ReactMarkdown>{entry.content}</ReactMarkdown>
+          <ReactMarkdown>{body}</ReactMarkdown>
         </div>
       </div>
     </div>

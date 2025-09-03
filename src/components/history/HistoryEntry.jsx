@@ -10,18 +10,39 @@ const HistoryEntry = ({ entry, onDelete }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // derive a simple title and excerpt from markdown
+  // helpers to split title/body and strip markdown for previews
   const stripMd = (s = '') => s
     .replace(/`{1,3}[^`]*`{1,3}/g, ' ')
     .replace(/!\[[^\]]*\]\([^\)]*\)/g, ' ')
-    .replace(/\[[^\]]*\]\([^\)]*\)/g, '$1')
-    .replace(/^[#>*\-+]+\s?/gm, '')
+    .replace(/\[(.*?)\]\([^\)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[>\-+*]\s+/gm, '')
     .replace(/[*_~`>#\[\]()]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
-  const plain = stripMd(entry.content || '');
-  const title = plain.slice(0, 80);
-  const excerpt = plain.slice(80, 420);
+
+  const splitTitleBody = (content = '') => {
+    const text = (content || '').replace(/\r\n/g, '\n').trim();
+    if (!text) return { title: '', body: '' };
+    const lines = text.split('\n');
+    const first = (lines[0] || '').trim();
+    const heading = first.match(/^#{1,6}\s+(.+?)\s*$/);
+    if (heading) {
+      return { title: heading[1].trim(), body: lines.slice(1).join('\n').trim() };
+    }
+    if (lines.length > 1) {
+      return { title: first, body: lines.slice(1).join('\n').trim() };
+    }
+    const idx = first.indexOf(' ');
+    if (idx > 0) {
+      return { title: first.slice(0, idx).trim(), body: first.slice(idx + 1).trim() };
+    }
+    return { title: first, body: '' };
+  };
+
+  const { title: rawTitle, body: rawBody } = splitTitleBody(entry.content || '');
+  const title = stripMd(rawTitle).slice(0, 80);
+  const excerpt = stripMd(rawBody).slice(0, 420);
 
   const { show } = useToast();
   const handleDelete = async () => {
