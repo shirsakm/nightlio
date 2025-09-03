@@ -47,6 +47,13 @@
   /* Layout gutters */
   --gutter-page: var(--space-3);
 
+  /* Semantic accent backgrounds (used only for backgrounds) */
+  --accent-bg: var(--accent-600);
+  --accent-bg-2: var(--accent-700);
+  --accent-bg-soft: var(--accent-50);                 /* subtle background tints */
+  --accent-bg-softer: color-mix(in oklab, var(--accent-600) 10%, transparent);
+  --accent-chip-bg: color-mix(in oklab, var(--accent-600) 16%, transparent); /* chips/pills */
+
   /* Radii */
   --radius: 12px;
   --radius-sm: 8px;
@@ -139,8 +146,8 @@ button:hover { background-color: #f8fafc; box-shadow: var(--shadow-sm); }
 button:focus-visible { outline: none; box-shadow: var(--ring); }
 
 /* Primary button variant */
-button.primary { color: #fff; background: var(--accent-600); box-shadow: var(--shadow-sm); }
-button.primary:hover { background: var(--accent-700); transform: translateY(-1px) scale(1.02); box-shadow: var(--shadow-md); }
+button.primary { color: #fff; background: var(--accent-bg); box-shadow: var(--shadow-sm); }
+button.primary:hover { background: var(--accent-bg-2); transform: translateY(-1px) scale(1.02); box-shadow: var(--shadow-md); }
 button.primary:active { transform: translateY(0) scale(0.99); box-shadow: var(--shadow-sm); }
 button.primary:disabled { opacity: .6; cursor: not-allowed; }
 
@@ -173,6 +180,13 @@ html[data-theme="dark"] {
   --accent-500: #c9aefc;
   --accent-600: #bd93f9;       /* primary */
   --accent-700: #a97cf3;
+
+  /* Darker backgrounds for lavender surfaces (only affects backgrounds using these tokens) */
+  --accent-bg: color-mix(in oklab, var(--accent-600) 85%, #000);
+  --accent-bg-2: color-mix(in oklab, var(--accent-700) 85%, #000);
+  --accent-bg-soft: color-mix(in oklab, var(--accent-600) 22%, transparent);
+  --accent-bg-softer: color-mix(in oklab, var(--accent-600) 16%, transparent);
+  --accent-chip-bg: color-mix(in oklab, var(--accent-600) 24%, transparent);
 
   /* Focus ring tuned to accent */
   --ring: 0 0 0 3px rgba(189,147,249,0.35);

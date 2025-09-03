@@ -61,7 +61,7 @@ const Header = ({ currentStreak }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+                background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
                 color: 'white',
                 padding: '0.4rem 0.8rem',
                 borderRadius: 'var(--radius-pill)',
@@ -107,7 +107,7 @@ const Header = ({ currentStreak }) => {
               }}
               title={`Theme: ${theme}`}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = 'var(--accent-100)';
+                e.target.style.backgroundColor = 'var(--accent-bg-soft)';
               }}
               onMouseLeave={(e) => {
                 e.target.style.backgroundColor = 'transparent';

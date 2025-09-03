@@ -43,8 +43,8 @@ const GroupSelector = ({ groups, selectedOptions, onOptionToggle }) => {
           border: selectedOptions.includes(option.id) 
             ? '2px solid var(--accent-600)' 
             : '2px solid var(--border)',
-                  background: selectedOptions.includes(option.id)
-            ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))'
+      background: selectedOptions.includes(option.id)
+    ? 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))'
             : 'var(--surface)',
           color: selectedOptions.includes(option.id) ? 'white' : 'var(--text)',
                   cursor: 'pointer',

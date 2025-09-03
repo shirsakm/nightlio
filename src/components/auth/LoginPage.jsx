@@ -256,7 +256,7 @@ const LoginPage = () => {
                 padding: "1rem",
                 background: isLoading
                   ? 'color-mix(in oklab, var(--text), transparent 60%)'
-                  : 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+                  : 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
                 color: "white",
                 border: "none",
                 borderRadius: "12px",
@@ -280,7 +280,7 @@ const LoginPage = () => {
                 padding: "1rem",
                 background: isLoading
                   ? 'color-mix(in oklab, var(--text), transparent 60%)'
-                  : 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+                  : 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
                 color: "white",
                 border: "none",
                 borderRadius: "12px",

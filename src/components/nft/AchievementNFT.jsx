@@ -68,7 +68,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
       }}>
         <div style={{
           background: isUnlocked 
-            ? 'linear-gradient(135deg, var(--accent-600), var(--accent-700))'
+            ? 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))'
             : 'linear-gradient(135deg, color-mix(in oklab, var(--text), transparent 40%), color-mix(in oklab, var(--text), transparent 20%))',
           borderRadius: '50%',
           padding: '0.85rem',
@@ -133,7 +133,7 @@ const AchievementNFT = ({ achievement, isUnlocked = true, progressValue, progres
           </div>
         ) : (
           <div style={{
-            background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+            background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
             color: 'white',
             padding: '0.5rem 1rem',
             borderRadius: 999,

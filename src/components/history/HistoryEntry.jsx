@@ -89,7 +89,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
     >
       {/* Header: mood icon + date • time */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-        <span style={{ color, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: 'color-mix(in oklab, var(--accent-600) 10%, transparent)', border: '1px solid var(--border)' }}>
+  <span style={{ color, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: 'var(--accent-bg-softer)', border: '1px solid var(--border)' }}>
           <IconComponent size={18} strokeWidth={1.8} />
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>

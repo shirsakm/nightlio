@@ -73,7 +73,7 @@ const EntryView = ({
             onClick={onBack}
             style={{
               padding: '0.5rem 1rem',
-              background: 'var(--accent-600)',
+              background: 'var(--accent-bg)',
               color: 'white',
               border: 'none',
               borderRadius: 'var(--radius-pill)',
@@ -100,7 +100,7 @@ const EntryView = ({
           onClick={onBack}
           style={{
             padding: '0.5rem 1rem',
-            background: 'var(--accent-600)',
+            background: 'var(--accent-bg)',
             color: 'white',
             border: 'none',
             borderRadius: 'var(--radius-pill)',
@@ -143,7 +143,7 @@ const EntryView = ({
               style={{
                 padding: '0.9rem 2rem',
                 fontSize: '1rem',
-        background: 'linear-gradient(135deg, var(--accent-600), var(--accent-700))',
+  background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
                 color: 'white',
                 border: 'none',
                 borderRadius: '50px',
