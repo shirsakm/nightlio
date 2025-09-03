@@ -1,13 +1,13 @@
-# Build stage
-FROM node:18-alpine as build
+# Build stage (Debian-based to ensure native binaries resolve on all arches)
+FROM node:20-bookworm-slim AS build
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files (ensure lockfile is included for reproducible installs)
 COPY package*.json ./
 
-# Install dependencies (use install to allow lockfile refresh after dep changes)
-RUN npm install
+# Install dependencies (use npm ci for clean, locked installs)
+RUN npm ci --no-audit --no-fund
 
 # Copy source code
 COPY . .
@@ -20,7 +20,7 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM nginx:stable-bookworm
 
 # Copy built assets from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
