@@ -1,0 +1,52 @@
+# A descriptive name for your workflow
+name: Publish Docker Image to GHCR
+
+# This section defines the trigger for the workflow.
+# It will only run when you push a new tag that starts with "v" (e.g., v1.0.0)
+on:
+  push:
+    tags:
+      - 'v*'
+
+# A workflow run is made up of one or more jobs that can run in sequence or in parallel
+jobs:
+  build-and-publish:
+    # The type of machine to run the job on. "ubuntu-latest" is a standard choice.
+    runs-on: ubuntu-latest
+
+    # These are permissions the job needs to push your container image to the registry.
+    permissions:
+      contents: read
+      packages: write
+
+    # A job is a sequence of steps.
+    steps:
+      # Step 1: Checks out your repository's code so the workflow can access it.
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      # Step 2: Logs into the GitHub Container Registry (GHCR) so you can push images.
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }} # A secure, automatically generated token
+
+      # Step 3: Extracts metadata. It cleverly creates Docker tags from your Git tag.
+      # For example, a Git tag "v1.2.3" will result in Docker tags "1.2.3" and "latest".
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      # Step 4: Builds the Docker image from your Dockerfile and pushes it to GHCR
+      # with the tags generated in the previous step.
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
