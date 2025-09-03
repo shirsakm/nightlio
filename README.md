@@ -6,7 +6,7 @@
 
 ### Why Nightlio?
 
-Nightlio was inspired by great mood-tracking apps like Daylio, but born out of frustration with aggressive subscription models, paywalls, and a lack of cross-platform access. I wanted a beautiful, effective tool to log my mood and journal my thoughts without compromising on privacy or being locked into a single device.
+Nightlio was inspired by awesome mood-tracking apps like Daylio, but born out of frustration with aggressive subscription models, paywalls, and a lack of cross-platform access. I wanted a beautiful, effective tool to log my mood and journal my thoughts without compromising on privacy or being locked into a single device.
 
 Nightlio is the result: a feature-complete, open-source alternative that you can run anywhere. It's fully web-based and responsive for use on both desktop and mobile. No ads, no subscriptions, and absolutely no data mining. Just you and your data.
 
@@ -18,7 +18,6 @@ Nightlio is the result: a feature-complete, open-source alternative that you can
 * **🔒 Privacy First, Always:** Built from the ground up to be self-hosted. Your sensitive data is stored in a simple SQLite database file on *your* server. No third-party trackers or analytics.
 * **🚀 Simple Self-Hosting with Docker:** Get up and running in minutes with a single `docker compose up` command.
 * **🎮 Gamified Achievements:** Stay consistent with built-in achievements that unlock as you build your journaling habit.
-* Web3 integration has been removed; achievements remain off-chain.
 
 <div align="center">🌙</div>
 
@@ -28,7 +27,7 @@ Get your own Nightlio instance running in under 5 minutes.
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/shirsakm/nightlio.git](https://github.com/shirsakm/nightlio.git)
+git clone https://github.com/shirsakm/nightlio.git
 cd nightlio
 
 # 2. Create your configuration file
@@ -47,7 +46,8 @@ Your instance is now live!
 * Frontend: http://localhost:5173
 * API: http://localhost:5000
 
-**Note:** By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
+> [!NOTE]
+> By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
 
 <div align="center">🌙</div>
 
