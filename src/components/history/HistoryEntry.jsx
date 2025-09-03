@@ -46,10 +46,7 @@ const HistoryEntry = ({ entry, onDelete }) => {
 
   const { show } = useToast();
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this entry?')) {
-      return false;
-    }
-
+    if (!window.confirm('Are you sure you want to delete this entry?')) return false;
     setIsDeleting(true);
     try {
       await apiService.deleteMoodEntry(entry.id);
@@ -90,90 +87,23 @@ const HistoryEntry = ({ entry, onDelete }) => {
         outline: 'none'
       }}
     >
-  {/* Delete control moved into modal */}
-
-      {/* Thumbnail placeholder with mood icon */}
-      <div className="entry-thumb" style={{
-        height: 120,
-        borderRadius: 12,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, color-mix(in oklab, var(--accent-600) 16%, transparent), color-mix(in oklab, var(--accent-600) 6%, transparent))',
-        border: '1px solid var(--border)',
-        marginBottom: 12
-      }}>
-        <span style={{ color, display: 'flex', alignItems: 'center' }}>
-          <IconComponent size={28} strokeWidth={1.8} />
+      {/* Header: mood icon + date • time */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+        <span style={{ color, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: 'color-mix(in oklab, var(--accent-600) 10%, transparent)', border: '1px solid var(--border)' }}>
+          <IconComponent size={18} strokeWidth={1.8} />
         </span>
-      </div>
-
-      <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          marginBottom: '0.5rem',
-          gap: '0.5rem',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            color,
-          }}
-        >
-          <IconComponent size={20} strokeWidth={1.5} />
-        </span>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <span
-            style={{
-              fontWeight: '600',
-        color: 'var(--text)',
-              fontSize: '1.1rem',
-            }}
-          >
-            {entry.date}
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span style={{ fontWeight: 700, color: 'var(--text)' }}>{entry.date}</span>
           {entry.created_at && (
-      <span
-              style={{
-        fontSize: '0.95rem',
-        color: 'color-mix(in oklab, var(--text), transparent 30%)',
-                fontWeight: '400',
-              }}
-            >
-              {new Date(entry.created_at).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-              })}
-            </span>
+            <>
+              <span aria-hidden="true" style={{ color: 'color-mix(in oklab, var(--text), transparent 40%)' }}>•</span>
+              <span style={{ color: 'color-mix(in oklab, var(--text), transparent 20%)' }}>
+                {new Date(entry.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+              </span>
+            </>
           )}
         </div>
       </div>
-      
-      {/* Display selected options */}
-      {entry.selections && entry.selections.length > 0 && (
-        <div style={{ marginBottom: '1rem' }}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}
-          >
-            {entry.selections.map(selection => (
-              <span
-                key={selection.id}
-                className="tag"
-              >
-                {selection.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Title + excerpt preview */}
       <div className="entry-card__title">{title || 'Entry'}</div>
@@ -181,10 +111,21 @@ const HistoryEntry = ({ entry, onDelete }) => {
         <div className="entry-card__excerpt">{excerpt}</div>
       )}
 
+      {/* Tags at the bottom */}
+      {entry.selections && entry.selections.length > 0 && (
+        <div style={{ marginTop: '0.75rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {entry.selections.map(selection => (
+              <span key={selection.id} className="tag">{selection.name}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Modal for full view */}
-      <EntryModal 
-        isOpen={open} 
-        entry={entry} 
+      <EntryModal
+        isOpen={open}
+        entry={entry}
         onClose={() => setOpen(false)}
         onDelete={async () => {
           const ok = await handleDelete();
