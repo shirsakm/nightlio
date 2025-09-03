@@ -23,6 +23,9 @@ Nightlio is the result: a feature-complete, open-source alternative that you can
 
 ## 🐳 Docker Quickstart (Recommended)
 
+> [!NOTE]
+> By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
+
 Get your own Nightlio instance running in under 5 minutes.
 
 ```bash
@@ -42,11 +45,7 @@ nano .env
 docker compose up -d
 ```
 
-Your instance is now live!
-* Frontend: http://localhost:5173
-* API: http://localhost:5000
-
-Or try without cloning (quick test):
+Alternatively, give it a try without cloning!
 
 ```bash
 docker network create nightlio-test || true
@@ -68,7 +67,11 @@ docker run -d --name nightlio-frontend \
 	ghcr.io/shirsakm/nightlio-frontend:latest
 ```
 
-## 🏠 Self-hosting (production)
+Your instance is now live!
+* Frontend: http://localhost:5173
+* API: http://localhost:5000
+
+## 🏠 Self-hosting
 
 Two easy paths using the published GHCR images.
 
@@ -109,36 +112,35 @@ docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-### Option B — Minimal compose (no repo clone)
+### Option B — Minimal compose
 
 Create docker-compose.yml in an empty folder with:
 
 ```yaml
 services:
-	api:
-		image: ghcr.io/shirsakm/nightlio-api:0.1.1
-		restart: unless-stopped
-		environment:
-			- SECRET_KEY=change-me
-			- JWT_SECRET=change-me-too
-			- CORS_ORIGINS=https://your.domain
-			- ENABLE_GOOGLE_OAUTH=0
-			- DEFAULT_SELF_HOST_ID=selfhost_default_user
-			- DATABASE_PATH=/app/data/nightlio.db
-			- PORT=5000
-		volumes:
-			- ./data:/app/data
-		expose:
-			- "5000"
-		networks: { nightlio: { aliases: [api] } }
-
-	web:
-		image: ghcr.io/shirsakm/nightlio-frontend:0.1.1
-		restart: unless-stopped
-		depends_on: [api]
-		ports:
-			- "80:80"  # or put behind your own reverse proxy with TLS
-		networks: [nightlio]
+  api:
+    image: ghcr.io/shirsakm/nightlio-api:0.1.1
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=change-me
+      - JWT_SECRET=change-me-too
+      - CORS_ORIGINS=https://your.domain
+      - ENABLE_GOOGLE_OAUTH=0
+      - DEFAULT_SELF_HOST_ID=selfhost_default_user
+      - DATABASE_PATH=/app/data/nightlio.db
+      - PORT=5000
+    volumes:
+      - ./data:/app/data
+    expose:
+      - "5000"
+    networks: { nightlio: { aliases: [api] } }
+  web:
+    image: ghcr.io/shirsakm/nightlio-frontend:0.1.1
+    restart: unless-stopped
+    depends_on: [api]
+      ports:
+        - "80:80"  # or put behind your own reverse proxy with TLS
+    networks: [nightlio]
 
 networks: { nightlio: {} }
 ```
@@ -149,12 +151,9 @@ Run it:
 docker compose up -d
 ```
 
-Notes
-- Persistent data lives in ./data/nightlio.db — include it in backups.
-- Pin to a version (0.1.1) for predictable upgrades; switch to newer tags when ready.
-
 > [!NOTE]
-> By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
+> 1. Persistent data lives in ./data/nightlio.db — include it in backups.
+> 2. Pin to a version (0.1.1) for predictable upgrades; switch to newer tags when ready.
 
 <div align="center">🌙</div>
 
