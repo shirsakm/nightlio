@@ -103,7 +103,7 @@ mkdir -p data
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-TLS: put your certs in ./ssl (fullchain.pem, privkey.pem). The provided nginx config will serve 80/443.
+TLS: put your certs in `./ssl` (`fullchain.pem`, `privkey.pem`). The provided nginx config will serve `80/443`.
 
 Upgrade later:
 
