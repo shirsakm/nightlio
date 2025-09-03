@@ -3,11 +3,11 @@ FROM node:20-bookworm-slim AS build
 
 WORKDIR /app
 
-# Copy package files (ensure lockfile is included for reproducible installs)
-COPY package*.json ./
+# Copy only package.json to allow arch-specific optional dependencies (Rollup) to resolve
+COPY package.json ./
 
-# Install dependencies (use npm ci for clean, locked installs)
-RUN npm ci --no-audit --no-fund
+# Install dependencies (npm install resolves optional deps for current arch)
+RUN npm install --no-audit --no-fund
 
 # Copy source code
 COPY . .

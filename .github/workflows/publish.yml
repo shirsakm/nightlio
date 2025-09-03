@@ -55,6 +55,18 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest
 
+      # Work around npm optional deps bug for Rollup on arm64 by removing the
+      # lockfile and reinstalling deps in the workspace before Docker build.
+      - name: Set up Node.js for workaround
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Clean lockfile and reinstall deps (frontend)
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --no-audit --no-fund
+
       - name: Build and push API image
         uses: docker/build-push-action@v5
         with:
