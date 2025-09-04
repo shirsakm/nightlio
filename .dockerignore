@@ -44,6 +44,7 @@ jspm_packages/
 
 # dotenv environment variables file
 .env
+.env.*
 .env.local
 .env.development.local
 .env.test.local

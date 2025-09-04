@@ -18,7 +18,7 @@ const API_BASE_URL = normalizeBaseUrl(
     ? import.meta.env.VITE_API_URL
     : ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV)
         ? 'http://localhost:5000'
-        : 'https://nightlio-production.up.railway.app')
+        : '') // In production, default to relative paths so nginx proxy handles /api
 );
 
 class ApiService {
@@ -31,9 +31,25 @@ class ApiService {
   }
 
   async request(endpoint, options = {}) {
-  // Safe-join base + endpoint, honoring relative mode when base is empty
-  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  const url = API_BASE_URL ? `${API_BASE_URL}${path}` : path;
+    // Safe-join base + endpoint, honoring relative mode when base is empty
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    // If base is a relative prefix like '/api', and endpoint already starts with '/api',
+    // avoid double-prefixing (i.e., '/api' + '/api/config' -> '/api/config').
+    const base = API_BASE_URL;
+    let url;
+    if (!base) {
+      url = path;
+    } else if (/^https?:\/\//i.test(base)) {
+      url = `${base}${path}`;
+    } else {
+      // Treat base as a path prefix
+      const baseNoTrail = base.replace(/\/+$/g, '');
+      if (path === baseNoTrail || path.startsWith(`${baseNoTrail}/`)) {
+        url = path; // endpoint already includes the base prefix
+      } else {
+        url = `${baseNoTrail}${path}`;
+      }
+    }
     const config = {
       headers: {
         'Content-Type': 'application/json',

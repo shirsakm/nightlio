@@ -84,8 +84,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          build-args: |
-            VITE_API_URL=/api
+          # No VITE_API_URL: built app will use relative paths, which nginx proxies at /api
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta_web.outputs.tags }}
