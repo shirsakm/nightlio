@@ -151,6 +151,26 @@ class MoodDatabase:
                 except Exception as _:
                     # Best-effort; continue so app remains usable
                     pass
+
+                # Create goal_completions table to track per-day completions
+                try:
+                    conn.execute('''
+                    CREATE TABLE IF NOT EXISTS goal_completions (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        goal_id INTEGER NOT NULL,
+                        date TEXT NOT NULL, -- ISO date YYYY-MM-DD
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                        FOREIGN KEY (goal_id) REFERENCES goals (id) ON DELETE CASCADE,
+                        UNIQUE(user_id, goal_id, date)
+                    )
+                    ''')
+                    conn.execute('CREATE INDEX IF NOT EXISTS idx_goal_completions_user_goal ON goal_completions(user_id, goal_id)')
+                    conn.execute('CREATE INDEX IF NOT EXISTS idx_goal_completions_date ON goal_completions(date)')
+                    print("✅ Goal completions table created")
+                except Exception:
+                    pass
                 
         except Exception as e:
             print(f"❌ Database initialization failed: {str(e)}")
@@ -315,6 +335,15 @@ class MoodDatabase:
                 ''',
                 (current_completed, streak, period_start, last_completed_date, goal_id, user_id)
             )
+            # Record today's completion in goal_completions (idempotent)
+            try:
+                if last_completed_date == today_str:
+                    conn.execute(
+                        'INSERT OR IGNORE INTO goal_completions (user_id, goal_id, date) VALUES (?, ?, ?)',
+                        (user_id, goal_id, today_str)
+                    )
+            except Exception:
+                pass
             conn.commit()
             updated = conn.execute(
                 'SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at FROM goals WHERE id = ? AND user_id = ?'
@@ -325,6 +354,24 @@ class MoodDatabase:
                 # Consider completed today if last_completed_date == today
                 result['already_completed_today'] = (result.get('last_completed_date') == today_str)
             return result
+
+    def get_goal_completions(self, user_id: int, goal_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None) -> List[Dict]:
+        """Return list of completion dates for a goal within an optional date range.
+        Dates are ISO strings YYYY-MM-DD. If no range provided, returns last 90 days.
+        """
+        from datetime import datetime, timedelta
+        with self._connect() as conn:
+            conn.row_factory = sqlite3.Row
+            if not start_date or not end_date:
+                end = datetime.now().date()
+                start = end - timedelta(days=90)
+                start_date = start.strftime('%Y-%m-%d')
+                end_date = end.strftime('%Y-%m-%d')
+            rows = conn.execute(
+                'SELECT date FROM goal_completions WHERE user_id = ? AND goal_id = ? AND date BETWEEN ? AND ? ORDER BY date ASC',
+                (user_id, goal_id, start_date, end_date)
+            ).fetchall()
+            return [dict(row) for row in rows]
     
     def add_mood_entry(self, user_id: int, date: str, mood: int, content: str, time: Optional[str] = None, selected_options: Optional[List[int]] = None) -> int:
         """Add a new mood entry and return the entry ID"""

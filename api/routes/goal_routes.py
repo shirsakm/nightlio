@@ -105,4 +105,20 @@ def create_goal_routes(goal_service: GoalService):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
+    @bp.route('/goals/<int:goal_id>/completions', methods=['GET', 'OPTIONS'], strict_slashes=False)
+    @bp.route('/goals/<int:goal_id>/completions/', methods=['GET', 'OPTIONS'], strict_slashes=False)
+    @bp.route('/goal/<int:goal_id>/completions', methods=['GET', 'OPTIONS'], strict_slashes=False)
+    @require_auth
+    def get_completions(goal_id: int):
+        try:
+            user_id = get_current_user_id()
+            if not isinstance(user_id, int):
+                return jsonify({'error': 'Unauthorized'}), 401
+            start_date = request.args.get('start')
+            end_date = request.args.get('end')
+            rows = goal_service.get_completions(user_id, goal_id, start_date, end_date)
+            return jsonify(rows)
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
     return bp

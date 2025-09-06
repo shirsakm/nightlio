@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Target, Trash2, CheckCircle, Calendar } from 'lucide-react';
 import { useToast } from '../ui/ToastProvider';
+import GoalStatsCalendar from './GoalStatsCalendar';
+import Modal from '../ui/Modal';
 
 const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const { show } = useToast();
 
   const handleDelete = async () => {
@@ -194,6 +197,19 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
         <CheckCircle size={14} />
         {isDoneToday ? 'Completed' : 'Mark as done'}
       </button>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          className="secondary"
+          onClick={() => setShowStats(true)}
+          style={{ padding: '8px 12px', borderRadius: 8 }}
+          title="View statistics"
+        >
+          Statistics
+        </button>
+      </div>
+      <Modal open={showStats} title="Goal Statistics" onClose={() => setShowStats(false)}>
+        <GoalStatsCalendar goalId={goal.id} />
+      </Modal>
     </div>
   );
 };

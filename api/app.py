@@ -68,10 +68,7 @@ def create_app(config_name='default'):
 
     CORS(app, origins=app.config['CORS_ORIGINS'])
 
-    # Generic CORS preflight handler to avoid 404 on OPTIONS for API routes
-    @app.route('/api/<path:_path>', methods=['OPTIONS'])
-    def _api_preflight(_path: str):  # pragma: no cover - trivial
-        return ('', 204)
+    # Rely on flask-cors to handle CORS and automatic OPTIONS responses per route
 
     # Setup error handlers
     setup_error_handlers(app)
