@@ -14,6 +14,8 @@ const GoalsSection = ({ onNavigateToGoals }) => {
       try {
         const data = await apiService.getGoals();
         if (!mounted) return;
+        const d = new Date();
+        const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         const mapped = (data || []).slice(0, 3).map(g => ({
           id: g.id,
           title: g.title,
@@ -22,6 +24,15 @@ const GoalsSection = ({ onNavigateToGoals }) => {
           completed: g.completed ?? 0,
           total: g.frequency_per_week ?? 0,
           streak: g.streak ?? 0,
+          last_completed_date: g.last_completed_date || null,
+          _doneToday: (() => {
+            try {
+              const localVal = typeof localStorage !== 'undefined' ? localStorage.getItem(`goal_done_${g.id}`) : null;
+              return (localVal === today) || g.already_completed_today === true || (g.last_completed_date === today);
+            } catch {
+              return g.already_completed_today === true || (g.last_completed_date === today);
+            }
+          })(),
         }));
         setGoals(mapped);
   } catch {
@@ -52,11 +63,18 @@ const GoalsSection = ({ onNavigateToGoals }) => {
   }
 
   const handleMarkComplete = (goalId) => {
-    setGoals(prev => prev.map(goal => 
-      goal.id === goalId 
-        ? { ...goal, completed: Math.min(goal.completed + 1, goal.total) }
-        : goal
-    ));
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const target = goals.find(g => g.id === goalId);
+    if (!target) return;
+    if (target.last_completed_date === today || target._doneToday) return; // already done today
+    // Lock UI for today without changing counts; server will return updated counts
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(`goal_done_${goalId}`, today);
+      }
+    } catch {}
+    setGoals(prev => prev.map(g => g.id === goalId ? { ...g, last_completed_date: today, _doneToday: true } : g));
     apiService.incrementGoalProgress(goalId).then(updated => {
       if (!updated) return;
       setGoals(prev => prev.map(g => g.id === goalId ? {
@@ -64,9 +82,29 @@ const GoalsSection = ({ onNavigateToGoals }) => {
         completed: updated.completed ?? g.completed,
         total: updated.frequency_per_week ?? g.total,
         streak: updated.streak ?? g.streak,
+        last_completed_date: updated.last_completed_date || today,
+        _doneToday: (() => {
+          const serverDone = updated.already_completed_today === true || (updated.last_completed_date === today);
+          if (serverDone) return true;
+          try {
+            const localVal = typeof localStorage !== 'undefined' ? localStorage.getItem(`goal_done_${goalId}`) : null;
+            return localVal === today;
+          } catch {
+            return false;
+          }
+        })(),
         frequency: `${updated.frequency_per_week ?? g.total} days a week`
       } : g));
-    }).catch(() => {});
+    }).catch(() => {
+      // Revert if failed
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const existing = localStorage.getItem(`goal_done_${goalId}`);
+          if (existing === today) localStorage.removeItem(`goal_done_${goalId}`);
+        }
+      } catch {}
+      setGoals(prev => prev.map(g => g.id === goalId ? { ...g, last_completed_date: target.last_completed_date || null } : g));
+    });
   };
 
   return (
@@ -164,7 +202,17 @@ const GoalsSection = ({ onNavigateToGoals }) => {
 const GoalPreviewCard = ({ goal, onMarkComplete }) => {
   const [isHovered, setIsHovered] = useState(false);
   const progressPercentage = (goal.completed / goal.total) * 100;
-  const isCompleted = goal.completed >= goal.total;
+  const isCompletedWeek = goal.completed >= goal.total;
+  const isDoneToday = (() => {
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    try {
+      const localVal = typeof localStorage !== 'undefined' ? localStorage.getItem(`goal_done_${goal.id}`) : null;
+      return (localVal === today) || goal.last_completed_date === today || goal._doneToday === true;
+    } catch {
+      return goal.last_completed_date === today || goal._doneToday === true;
+    }
+  })();
 
   return (
     <div
@@ -245,7 +293,7 @@ const GoalPreviewCard = ({ goal, onMarkComplete }) => {
           <div style={{
             width: `${progressPercentage}%`,
             height: '100%',
-            background: isCompleted ? 'var(--success)' : 'var(--accent-600)',
+            background: isCompletedWeek ? 'var(--success)' : 'var(--accent-600)',
             transition: 'width 0.3s ease'
           }} />
         </div>
@@ -253,19 +301,21 @@ const GoalPreviewCard = ({ goal, onMarkComplete }) => {
 
       {/* Quick Action Button */}
       <button
-        onClick={() => onMarkComplete(goal.id)}
-        disabled={isCompleted}
+        onClick={() => {
+          if (!isDoneToday) onMarkComplete(goal.id);
+        }}
+        disabled={isDoneToday}
         style={{
           width: '100%',
           padding: '8px 12px',
           borderRadius: '8px',
           border: 'none',
-          background: isCompleted ? 'var(--success)' : 'var(--accent-600)',
+          background: isDoneToday ? 'var(--success)' : 'var(--accent-600)',
           color: 'white',
           fontSize: '0.85rem',
           fontWeight: '500',
-          cursor: isCompleted ? 'default' : 'pointer',
-          opacity: isCompleted ? 0.8 : 1,
+          cursor: isDoneToday ? 'default' : 'pointer',
+          opacity: isDoneToday ? 0.9 : 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -274,7 +324,7 @@ const GoalPreviewCard = ({ goal, onMarkComplete }) => {
         }}
       >
         <CheckCircle size={14} />
-        {isCompleted ? 'Completed' : 'Mark as Done'}
+        {isDoneToday ? 'Completed' : 'Mark as Done'}
       </button>
     </div>
   );

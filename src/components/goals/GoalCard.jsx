@@ -20,6 +20,19 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
   };
 
   const handleMarkComplete = () => {
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    try {
+      const localVal = typeof localStorage !== 'undefined' ? localStorage.getItem(`goal_done_${goal.id}`) : null;
+      if (localVal === today) {
+        show('Already completed for today', 'info');
+        return;
+      }
+    } catch {}
+    if (goal.last_completed_date === today) {
+      show('Already completed for today', 'info');
+      return;
+    }
     if (goal.completed >= goal.total) {
       show('Goal already completed for this period!', 'info');
       return;
@@ -30,6 +43,16 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
 
   const progressPercentage = (goal.completed / goal.total) * 100;
   const isCompleted = goal.completed >= goal.total;
+  const isDoneToday = (() => {
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    try {
+      const localVal = typeof localStorage !== 'undefined' ? localStorage.getItem(`goal_done_${goal.id}`) : null;
+      return (localVal === today) || goal.last_completed_date === today || goal._doneToday === true;
+    } catch {
+      return goal.last_completed_date === today || goal._doneToday === true;
+    }
+  })();
 
   return (
     <div
@@ -149,18 +172,18 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
       {/* Action Button */}
       <button
         onClick={handleMarkComplete}
-        disabled={isCompleted}
+        disabled={isDoneToday}
         style={{
           width: '100%',
           padding: '8px 12px',
           borderRadius: '8px',
           border: 'none',
-          background: isCompleted ? 'var(--success)' : 'var(--accent-600)',
+          background: isDoneToday ? 'var(--success)' : 'var(--accent-600)',
           color: 'white',
           fontSize: '0.85rem',
           fontWeight: '500',
-          cursor: isCompleted ? 'default' : 'pointer',
-          opacity: isCompleted ? 0.8 : 1,
+          cursor: isDoneToday ? 'default' : 'pointer',
+          opacity: isDoneToday ? 0.9 : 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -169,7 +192,7 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
         }}
       >
         <CheckCircle size={14} />
-        {isCompleted ? 'Completed' : 'Mark as Done'}
+        {isDoneToday ? 'Completed' : 'Mark as Done'}
       </button>
     </div>
   );

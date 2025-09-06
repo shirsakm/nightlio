@@ -130,11 +130,20 @@ class MoodDatabase:
                         completed INTEGER NOT NULL DEFAULT 0,
                         streak INTEGER NOT NULL DEFAULT 0,
                         period_start TEXT, -- ISO date (YYYY-MM-DD) for current week start (Monday)
+                        last_completed_date TEXT, -- ISO date of last completion to enforce 1/day
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
                     )
                     ''')
+                    # Backfill column if database existed before adding last_completed_date
+                    try:
+                        cur = conn.execute('PRAGMA table_info(goals)')
+                        cols = {row[1] for row in cur.fetchall()}
+                        if 'last_completed_date' not in cols:
+                            conn.execute('ALTER TABLE goals ADD COLUMN last_completed_date TEXT')
+                    except Exception:
+                        pass
                     conn.execute('''
                     CREATE INDEX IF NOT EXISTS idx_goals_user ON goals(user_id)
                     ''')
@@ -194,24 +203,37 @@ class MoodDatabase:
             conn.row_factory = sqlite3.Row
             rows = conn.execute(
                 '''
-                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, created_at, updated_at
+                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at
                 FROM goals WHERE user_id = ? ORDER BY created_at DESC
                 ''',
                 (user_id,)
             ).fetchall()
-            return [dict(r) for r in rows]
+            from datetime import datetime
+            today_str = datetime.now().strftime('%Y-%m-%d')
+            results: List[Dict] = []
+            for r in rows:
+                d = dict(r)
+                d['already_completed_today'] = (d.get('last_completed_date') == today_str)
+                results.append(d)
+            return results
 
     def get_goal_by_id(self, user_id: int, goal_id: int) -> Optional[Dict]:
         with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute(
                 '''
-                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, created_at, updated_at
+                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at
                 FROM goals WHERE id = ? AND user_id = ?
                 ''',
-                (goal_id, user_id)
+                (goal_id, user_id) 
             ).fetchone()
-            return dict(row) if row else None
+            if not row:
+                return None
+            from datetime import datetime
+            today_str = datetime.now().strftime('%Y-%m-%d')
+            d = dict(row)
+            d['already_completed_today'] = (d.get('last_completed_date') == today_str)
+            return d
 
     def update_goal(self, user_id: int, goal_id: int, title: Optional[str] = None, description: Optional[str] = None, frequency_per_week: Optional[int] = None) -> bool:
         updates = []
@@ -251,6 +273,7 @@ class MoodDatabase:
     def increment_goal_progress(self, user_id: int, goal_id: int) -> Optional[Dict]:
         from datetime import datetime
         today_start = self._week_start_iso()
+        today_str = datetime.now().strftime('%Y-%m-%d')
         with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute('SELECT * FROM goals WHERE id = ? AND user_id = ?', (goal_id, user_id)).fetchone()
@@ -261,6 +284,7 @@ class MoodDatabase:
             freq = int(goal.get('frequency_per_week') or 0)
             streak = int(goal.get('streak') or 0)
             period_start = goal.get('period_start')
+            last_completed_date = goal.get('last_completed_date')
             # If new week, reset completed and update streak based on last week success
             if period_start != today_start:
                 if current_completed >= freq and freq > 0:
@@ -269,23 +293,38 @@ class MoodDatabase:
                     streak = 0
                 current_completed = 0
                 period_start = today_start
-            # Increment if not yet at target
-            if current_completed < freq:
-                current_completed += 1
+            # Enforce once per day per goal
+            did_increment = False
+            if last_completed_date == today_str:
+                # Already completed today; nothing to do
+                pass
+            else:
+                if current_completed < freq:
+                    # Increment count and mark completion date
+                    current_completed += 1
+                    last_completed_date = today_str
+                    did_increment = True
+                else:
+                    # Weekly target already met, but still record today's completion to lock the UI
+                    last_completed_date = today_str
             conn.execute(
                 '''
                 UPDATE goals
-                SET completed = ?, streak = ?, period_start = ?, updated_at = CURRENT_TIMESTAMP
+                SET completed = ?, streak = ?, period_start = ?, last_completed_date = COALESCE(?, last_completed_date), updated_at = CURRENT_TIMESTAMP
                 WHERE id = ? AND user_id = ?
                 ''',
-                (current_completed, streak, period_start, goal_id, user_id)
+                (current_completed, streak, period_start, last_completed_date, goal_id, user_id)
             )
             conn.commit()
             updated = conn.execute(
-                'SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, created_at, updated_at FROM goals WHERE id = ? AND user_id = ?'
+                'SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at FROM goals WHERE id = ? AND user_id = ?'
                 , (goal_id, user_id)
             ).fetchone()
-            return dict(updated) if updated else None
+            result = dict(updated) if updated else None
+            if result is not None:
+                # Consider completed today if last_completed_date == today
+                result['already_completed_today'] = (result.get('last_completed_date') == today_str)
+            return result
     
     def add_mood_entry(self, user_id: int, date: str, mood: int, content: str, time: Optional[str] = None, selected_options: Optional[List[int]] = None) -> int:
         """Add a new mood entry and return the entry ID"""

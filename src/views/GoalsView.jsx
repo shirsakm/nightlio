@@ -32,6 +32,8 @@ const GoalsView = () => {
       try {
         const data = await apiService.getGoals();
         if (!mounted) return;
+        const d = new Date();
+        const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         const mapped = (data || []).map(g => ({
           id: g.id,
           title: g.title,
@@ -40,7 +42,17 @@ const GoalsView = () => {
           completed: g.completed ?? 0,
           total: g.frequency_per_week ?? 0,
           streak: g.streak ?? 0,
-          created_at: g.created_at
+          created_at: g.created_at,
+          last_completed_date: g.last_completed_date || null,
+          _doneToday: (() => {
+            try {
+              const localKey = `goal_done_${g.id}`;
+              const localVal = typeof localStorage !== 'undefined' ? localStorage.getItem(localKey) : null;
+              return (localVal === today) || g.already_completed_today === true || (g.last_completed_date === today);
+            } catch {
+              return g.already_completed_today === true || (g.last_completed_date === today);
+            }
+          })(),
         }));
         setGoals(mapped);
   } catch {
@@ -94,16 +106,29 @@ const GoalsView = () => {
   };
 
   const handleDeleteGoal = (goalId) => {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(`goal_done_${goalId}`);
+      }
+    } catch {}
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
     apiService.deleteGoal(goalId).catch(() => {});
   };
 
   const handleUpdateProgress = (goalId) => {
-    setGoals(prev => prev.map(goal => 
-      goal.id === goalId 
-        ? { ...goal, completed: Math.min(goal.completed + 1, goal.total) }
-        : goal
-    ));
+  const d = new Date();
+  const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    // Guard: if done today already, ignore and do not call API
+    const target = goals.find(g => g.id === goalId);
+    if (!target) return;
+  if (target.last_completed_date === today || target._doneToday) return;
+    // Optimistically lock the button for today without incrementing counts
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(`goal_done_${goalId}`, today);
+    }
+  } catch {}
+  setGoals(prev => prev.map(g => g.id === goalId ? { ...g, last_completed_date: today, _doneToday: true } : g));
     apiService.incrementGoalProgress(goalId).then(updated => {
       if (!updated) return;
       setGoals(prev => prev.map(g => g.id === goalId ? {
@@ -111,10 +136,30 @@ const GoalsView = () => {
         completed: updated.completed ?? g.completed,
         total: updated.frequency_per_week ?? g.total,
         streak: updated.streak ?? g.streak,
-        // show same label format
+        last_completed_date: updated.last_completed_date || today,
+        _doneToday: (() => {
+          const serverDone = updated.already_completed_today === true || (updated.last_completed_date === today);
+          if (serverDone) return true;
+          try {
+            const localVal = typeof localStorage !== 'undefined' ? localStorage.getItem(`goal_done_${goalId}`) : null;
+            return localVal === today;
+          } catch {
+            return false;
+          }
+        })(),
         frequency: `${updated.frequency_per_week ?? g.total} days a week`
       } : g));
-    }).catch(() => {});
+    }).catch(() => {
+      // Revert lock on failure
+      try {
+        if (typeof localStorage !== 'undefined') {
+          // Remove the optimistic local lock on failure
+          const existing = localStorage.getItem(`goal_done_${goalId}`);
+          if (existing === today) localStorage.removeItem(`goal_done_${goalId}`);
+        }
+      } catch {}
+      setGoals(prev => prev.map(g => g.id === goalId ? { ...g, last_completed_date: target.last_completed_date || null, _doneToday: target.last_completed_date === today } : g));
+    });
   };
 
   if (showForm) {
