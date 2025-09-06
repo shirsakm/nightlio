@@ -6,9 +6,10 @@ def require_auth(f):
     """Decorator to require JWT authentication"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Allow CORS preflight requests to pass through without auth
+        # Allow CORS preflight requests (OPTIONS) to succeed without auth
+        # Return 204 directly so the route handler isn't invoked.
         if request.method == 'OPTIONS':
-            return f(*args, **kwargs)
+            return ('', 204)
         auth_header = request.headers.get('Authorization')
         
         if not auth_header or not auth_header.startswith('Bearer '):
