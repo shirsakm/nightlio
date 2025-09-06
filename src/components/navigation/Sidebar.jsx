@@ -1,9 +1,10 @@
-import { Home, BarChart3, Trophy, Settings, PlusCircle, MoonStar } from 'lucide-react';
+import { Home, BarChart3, Trophy, Settings, PlusCircle, MoonStar, Target } from 'lucide-react';
 
 const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
   const items = [
     { key: 'history', label: 'Home', icon: Home },
     { key: 'entry', label: 'New Entry', icon: PlusCircle },
+    { key: 'goals', label: 'Goals', icon: Target },
     { key: 'stats', label: 'Statistics', icon: BarChart3 },
     { key: 'achievements', label: 'Achievements', icon: Trophy },
   ];
