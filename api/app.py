@@ -13,10 +13,12 @@ load_dotenv(env_path)
 try:
     from api.database import MoodDatabase
     from api.services.mood_service import MoodService
+    from api.services.goal_service import GoalService
     from api.services.group_service import GroupService
     from api.services.user_service import UserService
     from api.services.achievement_service import AchievementService
     from api.routes.mood_routes import create_mood_routes
+    from api.routes.goal_routes import create_goal_routes
     from api.routes.group_routes import create_group_routes
     from api.routes.auth_routes import create_auth_routes
     from api.routes.misc_routes import create_misc_routes
@@ -27,10 +29,12 @@ try:
 except Exception:  # fallback for running from inside api/
     from database import MoodDatabase
     from services.mood_service import MoodService
+    from services.goal_service import GoalService
     from services.group_service import GroupService
     from services.user_service import UserService
     from services.achievement_service import AchievementService
     from routes.mood_routes import create_mood_routes
+    from routes.goal_routes import create_goal_routes
     from routes.group_routes import create_group_routes
     from routes.auth_routes import create_auth_routes
     from routes.misc_routes import create_misc_routes
@@ -45,22 +49,29 @@ def create_app(config_name='default'):
         from api.config import config as config_map
         from api.config import get_config
     except Exception:
-        from config import config as config_map
-        from config import get_config
+        # Fallback when running from within api/ directory
+        from config import config as config_map  # type: ignore[import-not-found]
+        from config import get_config  # type: ignore[import-not-found]
     
     app = Flask(__name__)
     app.config.from_object(config_map[config_name])
     
     # Load typed runtime config and align secrets
+    cfg = None
     try:
         cfg = get_config()
         # Ensure JWT verification uses the same secret that issuance uses
-        if cfg.JWT_SECRET:
-            app.config['JWT_SECRET_KEY'] = cfg.JWT_SECRET
+        if getattr(cfg, 'JWT_SECRET', None):
+            app.config['JWT_SECRET_KEY'] = getattr(cfg, 'JWT_SECRET')
     except Exception:
         cfg = None  # fallback if typed config fails
 
     CORS(app, origins=app.config['CORS_ORIGINS'])
+
+    # Generic CORS preflight handler to avoid 404 on OPTIONS for API routes
+    @app.route('/api/<path:_path>', methods=['OPTIONS'])
+    def _api_preflight(_path: str):  # pragma: no cover - trivial
+        return ('', 204)
 
     # Setup error handlers
     setup_error_handlers(app)
@@ -74,6 +85,7 @@ def create_app(config_name='default'):
     # Initialize services
     mood_service = MoodService(db)
     group_service = GroupService(db)
+    goal_service = GoalService(db)
     user_service = UserService(db)
     achievement_service = AchievementService(db)
 
@@ -81,6 +93,7 @@ def create_app(config_name='default'):
     app.register_blueprint(create_auth_routes(user_service), url_prefix='/api')
     app.register_blueprint(create_mood_routes(mood_service), url_prefix='/api')
     app.register_blueprint(create_group_routes(group_service), url_prefix='/api')
+    app.register_blueprint(create_goal_routes(goal_service), url_prefix='/api')
     app.register_blueprint(create_achievement_routes(achievement_service), url_prefix='/api')
     app.register_blueprint(create_misc_routes(), url_prefix='/api')
     app.register_blueprint(create_config_routes(), url_prefix='/api')
@@ -100,7 +113,7 @@ def create_app(config_name='default'):
         except Exception:
             cfg = None
 
-    if cfg.ENABLE_GOOGLE_OAUTH:
+    if cfg and getattr(cfg, 'ENABLE_GOOGLE_OAUTH', False):
         try:
             # Registered only when enabled; module can lazy-import heavy deps.
             from api.auth.oauth import oauth_bp  # type: ignore
@@ -119,7 +132,8 @@ def create_app(config_name='default'):
     if app.debug:
         print("Registered routes:")
         for rule in app.url_map.iter_rules():
-            print(f"  {rule.rule} -> {rule.endpoint} [{', '.join(rule.methods)}]")
+            methods = sorted(list(getattr(rule, 'methods', []) or []))
+            print(f"  {rule.rule} -> {rule.endpoint} [{', '.join(methods)}]")
 
     return app
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Target, Plus, ArrowRight, Calendar, CheckCircle } from 'lucide-react';
 import Skeleton from '../ui/Skeleton';
+import apiService from '../../services/api';
 
 const GoalsSection = ({ onNavigateToGoals }) => {
   const [goals, setGoals] = useState([]);
@@ -8,35 +9,28 @@ const GoalsSection = ({ onNavigateToGoals }) => {
 
   // Dummy data for home page preview (first 3 goals)
   useEffect(() => {
-    setTimeout(() => {
-      setGoals([
-        {
-          id: 1,
-          title: 'Morning Meditation',
-          frequency: '7 days a week',
-          completed: 5,
-          total: 7,
-          streak: 3
-        },
-        {
-          id: 2,
-          title: 'Evening Walk',
-          frequency: '5 days a week',
-          completed: 3,
-          total: 5,
-          streak: 2
-        },
-        {
-          id: 3,
-          title: 'Read Before Bed',
-          frequency: '4 days a week',
-          completed: 2,
-          total: 4,
-          streak: 1
-        }
-      ]);
-      setLoading(false);
-    }, 800);
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await apiService.getGoals();
+        if (!mounted) return;
+        const mapped = (data || []).slice(0, 3).map(g => ({
+          id: g.id,
+          title: g.title,
+          description: g.description,
+          frequency: `${g.frequency_per_week} days a week`,
+          completed: g.completed ?? 0,
+          total: g.frequency_per_week ?? 0,
+          streak: g.streak ?? 0,
+        }));
+        setGoals(mapped);
+  } catch {
+        // leave empty on failure; section can show skeleton or CTA
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
   }, []);
 
   if (loading) {
@@ -63,6 +57,16 @@ const GoalsSection = ({ onNavigateToGoals }) => {
         ? { ...goal, completed: Math.min(goal.completed + 1, goal.total) }
         : goal
     ));
+    apiService.incrementGoalProgress(goalId).then(updated => {
+      if (!updated) return;
+      setGoals(prev => prev.map(g => g.id === goalId ? {
+        ...g,
+        completed: updated.completed ?? g.completed,
+        total: updated.frequency_per_week ?? g.total,
+        streak: updated.streak ?? g.streak,
+        frequency: `${updated.frequency_per_week ?? g.total} days a week`
+      } : g));
+    }).catch(() => {});
   };
 
   return (

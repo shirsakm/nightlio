@@ -3,67 +3,77 @@ import { Target, Plus } from 'lucide-react';
 import GoalsList from '../components/goals/GoalsList';
 import GoalForm from '../components/goals/GoalForm';
 import Skeleton from '../components/ui/Skeleton';
+import apiService from '../services/api';
 
 const GoalsView = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  // Dummy data for now
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setGoals([
-        {
-          id: 1,
-          title: 'Morning Meditation',
-          description: 'Start each day with 10 minutes of mindfulness meditation to center myself and set positive intentions.',
-          frequency: '7 days a week',
-          completed: 5,
-          total: 7,
-          streak: 3,
-          created_at: '2024-01-01T00:00:00Z'
-        },
-        {
-          id: 2,
-          title: 'Evening Walk',
-          description: 'Take a 30-minute walk to clear my mind and get some fresh air after work.',
-          frequency: '5 days a week',
-          completed: 3,
-          total: 5,
-          streak: 2,
-          created_at: '2024-01-02T00:00:00Z'
-        },
-        {
-          id: 3,
-          title: 'Read Before Bed',
-          description: 'Read for at least 20 minutes before going to sleep to wind down and learn something new.',
-          frequency: '4 days a week',
-          completed: 2,
-          total: 4,
-          streak: 1,
-          created_at: '2024-01-03T00:00:00Z'
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await apiService.getGoals();
+        if (!mounted) return;
+        const mapped = (data || []).map(g => ({
+          id: g.id,
+          title: g.title,
+          description: g.description,
+          frequency: `${g.frequency_per_week} days a week`,
+          completed: g.completed ?? 0,
+          total: g.frequency_per_week ?? 0,
+          streak: g.streak ?? 0,
+          created_at: g.created_at
+        }));
+        setGoals(mapped);
+  } catch {
+        // fallback: keep goals empty; UI can still add
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
   }, []);
 
   const handleAddGoal = (newGoal) => {
-    const goal = {
-      id: Date.now(),
-      ...newGoal,
-      completed: 0,
-      total: parseInt(newGoal.frequency.split(' ')[0]),
-      streak: 0,
-      created_at: new Date().toISOString()
-    };
-    setGoals(prev => [goal, ...prev]);
-    setShowForm(false);
+    (async () => {
+      try {
+        const resp = await apiService.createGoal({
+          title: newGoal.title,
+          description: newGoal.description,
+          frequency: parseInt(newGoal.frequency.split(' ')[0])
+        });
+        const id = resp?.id ?? Date.now();
+        const goal = {
+          id,
+          ...newGoal,
+          completed: 0,
+          total: parseInt(newGoal.frequency.split(' ')[0]),
+          streak: 0,
+          created_at: new Date().toISOString()
+        };
+        setGoals(prev => [goal, ...prev]);
+  } catch {
+        // optimistic add on failure
+        const goal = {
+          id: Date.now(),
+          ...newGoal,
+          completed: 0,
+          total: parseInt(newGoal.frequency.split(' ')[0]),
+          streak: 0,
+          created_at: new Date().toISOString()
+        };
+        setGoals(prev => [goal, ...prev]);
+      } finally {
+        setShowForm(false);
+      }
+    })();
   };
 
   const handleDeleteGoal = (goalId) => {
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
+    apiService.deleteGoal(goalId).catch(() => {});
   };
 
   const handleUpdateProgress = (goalId) => {
@@ -72,6 +82,17 @@ const GoalsView = () => {
         ? { ...goal, completed: Math.min(goal.completed + 1, goal.total) }
         : goal
     ));
+    apiService.incrementGoalProgress(goalId).then(updated => {
+      if (!updated) return;
+      setGoals(prev => prev.map(g => g.id === goalId ? {
+        ...g,
+        completed: updated.completed ?? g.completed,
+        total: updated.frequency_per_week ?? g.total,
+        streak: updated.streak ?? g.streak,
+        // show same label format
+        frequency: `${updated.frequency_per_week ?? g.total} days a week`
+      } : g));
+    }).catch(() => {});
   };
 
   if (showForm) {

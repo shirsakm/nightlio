@@ -200,6 +200,47 @@ class ApiService {
   }
 
   // Web3 minting removed
+
+  // -------- Goals endpoints --------
+  async getGoals() {
+    return this.request('/api/goals');
+  }
+
+  async createGoal(goal) {
+    // Accept { title, description, frequency_per_week } or { title, description, frequency }
+    const payload = { ...goal };
+    if (payload.frequency && !payload.frequency_per_week) {
+      // frequency like '3 days a week' -> 3
+      const n = parseInt(String(payload.frequency).trim(), 10);
+      if (!Number.isNaN(n)) payload.frequency_per_week = n;
+      delete payload.frequency;
+    }
+    return this.request('/api/goals', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updateGoal(goalId, patch) {
+    const payload = { ...patch };
+    if (payload.frequency && !payload.frequency_per_week) {
+      const n = parseInt(String(payload.frequency).trim(), 10);
+      if (!Number.isNaN(n)) payload.frequency_per_week = n;
+      delete payload.frequency;
+    }
+    return this.request(`/api/goals/${goalId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async deleteGoal(goalId) {
+    return this.request(`/api/goals/${goalId}`, { method: 'DELETE' });
+  }
+
+  async incrementGoalProgress(goalId) {
+    return this.request(`/api/goals/${goalId}/progress`, { method: 'POST' });
+  }
 }
 
 const apiService = new ApiService();
