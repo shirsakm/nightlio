@@ -178,7 +178,7 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
           padding: '8px 12px',
           borderRadius: '8px',
           border: 'none',
-          background: isDoneToday ? 'var(--success)' : 'var(--accent-600)',
+          background: isDoneToday ? 'var(--success)' : 'var(--accent-bg)',
           color: 'white',
           fontSize: '0.85rem',
           fontWeight: '500',
@@ -192,7 +192,7 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
         }}
       >
         <CheckCircle size={14} />
-        {isDoneToday ? 'Completed' : 'Mark as Done'}
+        {isDoneToday ? 'Completed' : 'Mark as done'}
       </button>
     </div>
   );
