@@ -16,9 +16,7 @@ function normalizeBaseUrl(raw) {
 const API_BASE_URL = normalizeBaseUrl(
   (typeof import.meta !== 'undefined' && import.meta.env && 'VITE_API_URL' in import.meta.env)
     ? import.meta.env.VITE_API_URL
-    : ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV)
-        ? 'http://localhost:5000'
-        : '') // In production, default to relative paths so nginx proxy handles /api
+    : '' // Use relative /api in both dev and prod; Vite proxy handles dev, nginx handles prod
 );
 
 class ApiService {

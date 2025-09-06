@@ -108,21 +108,39 @@ const GoalsSection = ({ onNavigateToGoals }) => {
       </div>
 
       {goals.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          color: 'var(--text-muted)', 
-          padding: '2rem',
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius)',
-          boxShadow: 'var(--shadow-sm)'
-        }}>
-          <Target size={24} style={{ marginBottom: '8px', opacity: 0.6 }} />
-          <p style={{ marginBottom: 12, fontSize: '1rem' }}>No goals yet.</p>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            padding: '1rem',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)',
+            boxShadow: 'var(--shadow-sm)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text)' }}>
+            <span style={{ 
+              color: 'var(--accent-600)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              width: 28, 
+              height: 28, 
+              borderRadius: '50%', 
+              background: 'var(--accent-bg-softer)', 
+              border: '1px solid var(--border)'
+            }}>
+              <Target size={16} strokeWidth={2} />
+            </span>
+            <p style={{ margin: 0, fontSize: '1rem', opacity: 0.9 }}>No goals yet.</p>
+          </div>
           <button
             onClick={onNavigateToGoals}
             className="primary"
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '0 auto' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
             <Plus size={16} />
             Add First Goal
