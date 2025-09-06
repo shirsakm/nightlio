@@ -16,9 +16,7 @@ function normalizeBaseUrl(raw) {
 const API_BASE_URL = normalizeBaseUrl(
   (typeof import.meta !== 'undefined' && import.meta.env && 'VITE_API_URL' in import.meta.env)
     ? import.meta.env.VITE_API_URL
-    : ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV)
-        ? 'http://localhost:5000'
-        : '') // In production, default to relative paths so nginx proxy handles /api
+    : '' // Use relative /api in both dev and prod; Vite proxy handles dev, nginx handles prod
 );
 
 class ApiService {
@@ -200,6 +198,47 @@ class ApiService {
   }
 
   // Web3 minting removed
+
+  // -------- Goals endpoints --------
+  async getGoals() {
+    return this.request('/api/goals');
+  }
+
+  async createGoal(goal) {
+    // Accept { title, description, frequency_per_week } or { title, description, frequency }
+    const payload = { ...goal };
+    if (payload.frequency && !payload.frequency_per_week) {
+      // frequency like '3 days a week' -> 3
+      const n = parseInt(String(payload.frequency).trim(), 10);
+      if (!Number.isNaN(n)) payload.frequency_per_week = n;
+      delete payload.frequency;
+    }
+    return this.request('/api/goals', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updateGoal(goalId, patch) {
+    const payload = { ...patch };
+    if (payload.frequency && !payload.frequency_per_week) {
+      const n = parseInt(String(payload.frequency).trim(), 10);
+      if (!Number.isNaN(n)) payload.frequency_per_week = n;
+      delete payload.frequency;
+    }
+    return this.request(`/api/goals/${goalId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async deleteGoal(goalId) {
+    return this.request(`/api/goals/${goalId}`, { method: 'DELETE' });
+  }
+
+  async incrementGoalProgress(goalId) {
+    return this.request(`/api/goals/${goalId}/progress`, { method: 'POST' });
+  }
 }
 
 const apiService = new ApiService();

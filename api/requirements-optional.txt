@@ -6,4 +6,7 @@ authlib
 google-auth
 google-auth-oauthlib
 
+# Image processing tools for scripts
+Pillow
+
 # Web3 removed

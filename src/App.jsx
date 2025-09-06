@@ -9,9 +9,11 @@ import BottomNav from "./components/navigation/BottomNav";
 import FAB from "./components/FAB";
 import HistoryView from "./views/HistoryView";
 import HistoryList from "./components/history/HistoryList";
+import GoalsSection from "./components/goals/GoalsSection";
 import EntryView from "./views/EntryView";
 import StatisticsView from "./components/stats/StatisticsView";
 import SettingsView from "./views/SettingsView";
+import GoalsView from "./views/GoalsView";
 import { ToastProvider } from "./components/ui/ToastProvider";
 import AchievementsView from "./views/AchievementsView";
 import { useMoodData } from "./hooks/useMoodData";
@@ -107,8 +109,14 @@ const AppContent = () => {
           )}
 
               {currentView === "achievements" && <AchievementsView />}
+              {currentView === "goals" && <GoalsView />}
               {currentView === "settings" && <SettingsView />}
             </main>
+            {currentView === "history" && (
+              <section className="app-wide" aria-label="Goals section">
+                <GoalsSection onNavigateToGoals={() => handleViewChange('goals')} />
+              </section>
+            )}
             {currentView === "history" && (
               <section className="app-wide" aria-label="History entries">
                 <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>History</h2>

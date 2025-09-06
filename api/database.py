@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Dict, Optional
 
 class MoodDatabase:
-    def __init__(self, db_path: str = None):
+    def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
             # Create database in the data directory
             data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
@@ -118,6 +118,40 @@ class MoodDatabase:
                 # Insert default groups and options if they don't exist
                 self._insert_default_groups()
                 
+                # Create goals table (idempotent)
+                try:
+                    conn.execute('''
+                    CREATE TABLE IF NOT EXISTS goals (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        title TEXT NOT NULL,
+                        description TEXT,
+                        frequency_per_week INTEGER NOT NULL CHECK (frequency_per_week >= 1 AND frequency_per_week <= 7),
+                        completed INTEGER NOT NULL DEFAULT 0,
+                        streak INTEGER NOT NULL DEFAULT 0,
+                        period_start TEXT, -- ISO date (YYYY-MM-DD) for current week start (Monday)
+                        last_completed_date TEXT, -- ISO date of last completion to enforce 1/day
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+                    )
+                    ''')
+                    # Backfill column if database existed before adding last_completed_date
+                    try:
+                        cur = conn.execute('PRAGMA table_info(goals)')
+                        cols = {row[1] for row in cur.fetchall()}
+                        if 'last_completed_date' not in cols:
+                            conn.execute('ALTER TABLE goals ADD COLUMN last_completed_date TEXT')
+                    except Exception:
+                        pass
+                    conn.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_goals_user ON goals(user_id)
+                    ''')
+                    print("✅ Goals table created")
+                except Exception as _:
+                    # Best-effort; continue so app remains usable
+                    pass
+                
         except Exception as e:
             print(f"❌ Database initialization failed: {str(e)}")
             print(f"Database path: {self.db_path}")
@@ -136,8 +170,163 @@ class MoodDatabase:
         except Exception:
             pass
         return conn
+
+    # -------------------- Goals API --------------------
+    @staticmethod
+    def _week_start_iso(date_obj=None) -> str:
+        from datetime import datetime, timedelta, date
+        if date_obj is None:
+            date_obj = datetime.now().date()
+        # Monday as start of the week
+        start = date_obj - timedelta(days=date_obj.weekday())
+        return start.strftime('%Y-%m-%d')
+
+    def create_goal(self, user_id: int, title: str, description: str, frequency_per_week: int) -> int:
+        if not title or not title.strip():
+            raise ValueError('Title is required')
+        if frequency_per_week < 1 or frequency_per_week > 7:
+            raise ValueError('frequency_per_week must be between 1 and 7')
+        period_start = self._week_start_iso()
+        with self._connect() as conn:
+            cursor = conn.execute(
+                '''
+                INSERT INTO goals (user_id, title, description, frequency_per_week, completed, streak, period_start)
+                VALUES (?, ?, ?, ?, 0, 0, ?)
+                ''',
+                (user_id, title.strip(), (description or '').strip(), frequency_per_week, period_start)
+            )
+            conn.commit()
+            return int(cursor.lastrowid or 0)
+
+    def get_goals(self, user_id: int) -> List[Dict]:
+        with self._connect() as conn:
+            conn.row_factory = sqlite3.Row
+            rows = conn.execute(
+                '''
+                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at
+                FROM goals WHERE user_id = ? ORDER BY created_at DESC
+                ''',
+                (user_id,)
+            ).fetchall()
+            from datetime import datetime
+            today_str = datetime.now().strftime('%Y-%m-%d')
+            results: List[Dict] = []
+            for r in rows:
+                d = dict(r)
+                d['already_completed_today'] = (d.get('last_completed_date') == today_str)
+                results.append(d)
+            return results
+
+    def get_goal_by_id(self, user_id: int, goal_id: int) -> Optional[Dict]:
+        with self._connect() as conn:
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                '''
+                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at
+                FROM goals WHERE id = ? AND user_id = ?
+                ''',
+                (goal_id, user_id) 
+            ).fetchone()
+            if not row:
+                return None
+            from datetime import datetime
+            today_str = datetime.now().strftime('%Y-%m-%d')
+            d = dict(row)
+            d['already_completed_today'] = (d.get('last_completed_date') == today_str)
+            return d
+
+    def update_goal(self, user_id: int, goal_id: int, title: Optional[str] = None, description: Optional[str] = None, frequency_per_week: Optional[int] = None) -> bool:
+        updates = []
+        params: List = []
+        if title is not None:
+            updates.append('title = ?')
+            params.append(title.strip())
+        if description is not None:
+            updates.append('description = ?')
+            params.append(description.strip())
+        if frequency_per_week is not None:
+            if frequency_per_week < 1 or frequency_per_week > 7:
+                raise ValueError('frequency_per_week must be between 1 and 7')
+            updates.append('frequency_per_week = ?')
+            params.append(frequency_per_week)
+            # When frequency changes, optionally clamp completed to new total
+            updates.append('completed = MIN(completed, ?)')
+            params.append(frequency_per_week)
+        if not updates:
+            return False
+        updates.append('updated_at = CURRENT_TIMESTAMP')
+        params.extend([goal_id, user_id])
+        with self._connect() as conn:
+            cur = conn.execute(
+                f'''UPDATE goals SET {', '.join(updates)} WHERE id = ? AND user_id = ?''',
+                params
+            )
+            conn.commit()
+            return cur.rowcount > 0
+
+    def delete_goal(self, user_id: int, goal_id: int) -> bool:
+        with self._connect() as conn:
+            cur = conn.execute('DELETE FROM goals WHERE id = ? AND user_id = ?', (goal_id, user_id))
+            conn.commit()
+            return cur.rowcount > 0
+
+    def increment_goal_progress(self, user_id: int, goal_id: int) -> Optional[Dict]:
+        from datetime import datetime
+        today_start = self._week_start_iso()
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        with self._connect() as conn:
+            conn.row_factory = sqlite3.Row
+            row = conn.execute('SELECT * FROM goals WHERE id = ? AND user_id = ?', (goal_id, user_id)).fetchone()
+            if not row:
+                return None
+            goal = dict(row)
+            current_completed = int(goal.get('completed') or 0)
+            freq = int(goal.get('frequency_per_week') or 0)
+            streak = int(goal.get('streak') or 0)
+            period_start = goal.get('period_start')
+            last_completed_date = goal.get('last_completed_date')
+            # If new week, reset completed and update streak based on last week success
+            if period_start != today_start:
+                if current_completed >= freq and freq > 0:
+                    streak += 1
+                else:
+                    streak = 0
+                current_completed = 0
+                period_start = today_start
+            # Enforce once per day per goal
+            did_increment = False
+            if last_completed_date == today_str:
+                # Already completed today; nothing to do
+                pass
+            else:
+                if current_completed < freq:
+                    # Increment count and mark completion date
+                    current_completed += 1
+                    last_completed_date = today_str
+                    did_increment = True
+                else:
+                    # Weekly target already met, but still record today's completion to lock the UI
+                    last_completed_date = today_str
+            conn.execute(
+                '''
+                UPDATE goals
+                SET completed = ?, streak = ?, period_start = ?, last_completed_date = COALESCE(?, last_completed_date), updated_at = CURRENT_TIMESTAMP
+                WHERE id = ? AND user_id = ?
+                ''',
+                (current_completed, streak, period_start, last_completed_date, goal_id, user_id)
+            )
+            conn.commit()
+            updated = conn.execute(
+                'SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at FROM goals WHERE id = ? AND user_id = ?'
+                , (goal_id, user_id)
+            ).fetchone()
+            result = dict(updated) if updated else None
+            if result is not None:
+                # Consider completed today if last_completed_date == today
+                result['already_completed_today'] = (result.get('last_completed_date') == today_str)
+            return result
     
-    def add_mood_entry(self, user_id: int, date: str, mood: int, content: str, time: str = None, selected_options: List[int] = None) -> int:
+    def add_mood_entry(self, user_id: int, date: str, mood: int, content: str, time: Optional[str] = None, selected_options: Optional[List[int]] = None) -> int:
         """Add a new mood entry and return the entry ID"""
         with sqlite3.connect(self.db_path) as conn:
             if time:
@@ -159,7 +348,8 @@ class MoodDatabase:
                     conn.execute('INSERT INTO entry_selections (entry_id, option_id) VALUES (?, ?)', (entry_id, option_id))
             
             conn.commit()
-            return entry_id
+            # lastrowid should always be set after INSERT; assert not None for type checkers
+            return int(entry_id if entry_id is not None else 0)
     
     def get_all_mood_entries(self, user_id: int) -> List[Dict]:
         """Get all mood entries for a user ordered by created_at (newest first)"""
@@ -197,7 +387,7 @@ class MoodDatabase:
             row = cursor.fetchone()
             return dict(row) if row else None
     
-    def update_mood_entry(self, user_id: int, entry_id: int, mood: int = None, content: str = None) -> bool:
+    def update_mood_entry(self, user_id: int, entry_id: int, mood: Optional[int] = None, content: Optional[str] = None) -> bool:
         """Update an existing mood entry for a user"""
         updates = []
         params = []
@@ -407,14 +597,14 @@ class MoodDatabase:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute('INSERT INTO groups (name) VALUES (?)', (name,))
             conn.commit()
-            return cursor.lastrowid
+            return int(cursor.lastrowid or 0)
     
     def create_group_option(self, group_id: int, name: str) -> int:
         """Create a new option for a group and return its ID"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute('INSERT INTO group_options (group_id, name) VALUES (?, ?)', (group_id, name))
             conn.commit()
-            return cursor.lastrowid
+            return int(cursor.lastrowid or 0)
     
     def delete_group(self, group_id: int) -> bool:
         """Delete a group and all its options"""
@@ -451,7 +641,7 @@ class MoodDatabase:
             ''', (entry_id,))
             return [dict(row) for row in cursor.fetchall()] 
     # User management functions
-    def create_user(self, google_id: str, email: str, name: str, avatar_url: str = None) -> int:
+    def create_user(self, google_id: str, email: str, name: str, avatar_url: Optional[str] = None) -> int:
         """Create a new user and return user ID"""
         with self._connect() as conn:
             cursor = conn.execute(
@@ -462,7 +652,7 @@ class MoodDatabase:
                 (google_id, email, name, avatar_url)
             )
             conn.commit()
-            return cursor.lastrowid
+            return int(cursor.lastrowid or 0)
     
     def get_user_by_google_id(self, google_id: str) -> Optional[Dict]:
         """Get user by Google ID"""
@@ -504,7 +694,7 @@ class MoodDatabase:
             ''', (user_id,))
             conn.commit()
 
-    def upsert_user_by_google_id(self, google_id: str, email: Optional[str], name: Optional[str], avatar_url: Optional[str] = None) -> Dict:
+    def upsert_user_by_google_id(self, google_id: str, email: Optional[str], name: Optional[str], avatar_url: Optional[str] = None) -> Optional[Dict]:
         """Idempotently insert or update a user by google_id and return the row.
 
         Uses a single transaction with BEGIN IMMEDIATE and ON CONFLICT upsert to be race-safe.
@@ -555,7 +745,7 @@ class MoodDatabase:
                 raise
     
     # Achievement management functions
-    def add_achievement(self, user_id: int, achievement_type: str) -> int:
+    def add_achievement(self, user_id: int, achievement_type: str) -> Optional[int]:
         """Add an achievement for a user (if not already earned)"""
         with sqlite3.connect(self.db_path) as conn:
             try:
@@ -564,7 +754,7 @@ class MoodDatabase:
                     VALUES (?, ?)
                 ''', (user_id, achievement_type))
                 conn.commit()
-                return cursor.lastrowid
+                return int(cursor.lastrowid or 0)
             except sqlite3.IntegrityError:
                 # Achievement already exists
                 return None

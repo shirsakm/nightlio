@@ -20,7 +20,7 @@ export const config = createConfig({
         name: 'Nightlio',
         description: 'Web3 Mood Tracking App',
         url: appUrl,
-        icons: [`${appUrl}/favicon.ico`]
+  icons: [`${appUrl}/logo.png`]
       }
     }),
   ],
