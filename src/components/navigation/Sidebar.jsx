@@ -23,7 +23,7 @@ const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ width: 36, height: 36, borderRadius: 10, background: 'transparent', display: 'grid', placeItems: 'center', color: 'var(--text)', overflow: 'hidden' }}>
               <img
-                src={window.__nightlioIconTransparent || '/logo.png'}
+                src={'/logo.png'}
                 alt="Nightlio"
                 style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: 'transparent', outline: 'none' }}
               />

@@ -4,7 +4,8 @@ Remove green background from an image by making it transparent.
 
 Two modes:
     1) HSV (default): remove greens by hue band, useful for a range of light greens.
-    2) RGB: remove colors close to a target in RGB space (legacy mode).
+        2) RGB: remove colors close to a target in RGB space (legacy mode).
+        3) RESIZE: only resize, do not modify background.
 
 Usage examples:
     # Default (HSV) tuned for light greens
@@ -12,7 +13,10 @@ Usage examples:
         --mode hsv --hue-min 70 --hue-max 170 --sat-min 0.15 --val-min 0.6 --feather 12
 
     # RGB (near #008000) with tolerance
-    python scripts/remove_bg.py --mode rgb --tolerance 45
+        python scripts/remove_bg.py --mode rgb --tolerance 45
+
+        # Resize only (no background removal)
+        python scripts/remove_bg.py --mode resize --max-dim 512
 
 Defaults:
     input:   ./logo.png
@@ -20,6 +24,7 @@ Defaults:
     mode:    hsv
     hsv defaults: hue [70,170], sat>=0.15, val>=0.6, feather 12°
     rgb default tolerance: 40
+        resize:  optional --max-dim, or --width/--height (preserves aspect if one provided)
 """
 import sys
 import os
@@ -43,7 +48,10 @@ def parse_args(argv):
         'hue_max': 170.0,     # for hsv mode, degrees
         'sat_min': 0.15,      # 0..1
         'val_min': 0.60,      # 0..1
-        'feather': 12.0,      # degrees; soft edge
+    'feather': 12.0,      # degrees; soft edge
+    'max_dim': None,      # e.g., 512
+    'width': None,
+    'height': None,
     }
     i = 0
     while i < len(argv):
@@ -66,6 +74,12 @@ def parse_args(argv):
             args['val_min'] = float(argv[i+1]); i += 2
         elif a == '--feather' and i + 1 < len(argv):
             args['feather'] = float(argv[i+1]); i += 2
+        elif a == '--max-dim' and i + 1 < len(argv):
+            args['max_dim'] = int(argv[i+1]); i += 2
+        elif a in ('-w', '--width') and i + 1 < len(argv):
+            args['width'] = int(argv[i+1]); i += 2
+        elif a in ('-h', '--height') and i + 1 < len(argv):
+            args['height'] = int(argv[i+1]); i += 2
         else:
             i += 1
     return args
@@ -130,7 +144,9 @@ def main():
         sys.exit(1)
     im = Image.open(inp)
     mode = args['mode']
-    if mode == 'rgb':
+    if mode == 'resize':
+        im2 = im.convert('RGBA') if im.mode != 'RGBA' else im
+    elif mode == 'rgb':
         im2 = remove_bg_rgb(im, tolerance=args['tolerance'])
     else:
         im2 = remove_bg_hsv(
@@ -139,6 +155,36 @@ def main():
             sat_min=args['sat_min'], val_min=args['val_min'],
             feather=args['feather']
         )
+    # Optional resize (downscale)
+    w, h = im2.size
+    new_w, new_h = w, h
+    if args['width'] and args['height']:
+        new_w, new_h = int(args['width']), int(args['height'])
+    elif args['width'] and not args['height']:
+        scale = float(args['width']) / float(w)
+        if scale < 1:
+            new_w = int(w * scale)
+            new_h = int(h * scale)
+    elif args['height'] and not args['width']:
+        scale = float(args['height']) / float(h)
+        if scale < 1:
+            new_w = int(w * scale)
+            new_h = int(h * scale)
+    elif args['max_dim']:
+        md = float(args['max_dim'])
+        scale = md / float(max(w, h))
+        if scale < 1:
+            new_w = int(w * scale)
+            new_h = int(h * scale)
+    if (new_w, new_h) != (w, h):
+        # Choose a high-quality resample filter with compatibility across Pillow versions
+        Resampling = getattr(Image, 'Resampling', None)
+        if Resampling is not None:
+            resample_filter = Resampling.LANCZOS
+        else:
+            resample_filter = getattr(Image, 'LANCZOS', getattr(Image, 'ANTIALIAS', 1))
+        im2 = im2.resize((max(1, new_w), max(1, new_h)), resample_filter)
+
     os.makedirs(os.path.dirname(out), exist_ok=True)
     im2.save(out, 'PNG')
     out_path = out

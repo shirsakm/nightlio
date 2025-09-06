@@ -47,11 +47,17 @@ export async function generateTransparentIcon(src, { threshold = 20, scale = 1 }
 
 // Replace the <link rel="icon"> with the generated transparent icon.
 export async function applyTransparentFavicon({ src = '/logo.png', threshold = 20 } = {}) {
-  const dataUrl = await generateTransparentIcon(src, { threshold });
-  if (!dataUrl) return false;
+  // If threshold == 0, just point the favicon to the src without processing
   const link = document.querySelector('link[rel="icon"]') || document.createElement('link');
   link.setAttribute('rel', 'icon');
   link.setAttribute('type', 'image/png');
+  if (threshold === 0) {
+    link.setAttribute('href', src);
+    if (!link.parentNode) document.head.appendChild(link);
+    return true;
+  }
+  const dataUrl = await generateTransparentIcon(src, { threshold });
+  if (!dataUrl) return false;
   link.setAttribute('href', dataUrl);
   if (!link.parentNode) document.head.appendChild(link);
   return true;
