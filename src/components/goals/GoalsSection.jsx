@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Target, Plus, ArrowRight, Calendar, CheckCircle } from 'lucide-react';
 import Skeleton from '../ui/Skeleton';
 import apiService from '../../services/api';
+import AddGoalCard from './AddGoalCard';
 
 const GoalsSection = ({ onNavigateToGoals }) => {
   const [goals, setGoals] = useState([]);
@@ -186,6 +187,7 @@ const GoalsSection = ({ onNavigateToGoals }) => {
         </div>
       ) : (
         <div className="card-grid">
+          <AddGoalCard onAdd={onNavigateToGoals} />
           {goals.map(goal => (
             <GoalPreviewCard 
               key={goal.id} 
