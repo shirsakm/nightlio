@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import { useEffect } from 'react';
 
 const backdropStyle = {
   position: 'fixed',
@@ -46,6 +47,17 @@ const deriveTitleBody = (content = '') => {
 
 const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
   if (!isOpen || !entry) return null;
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
   const onBackdrop = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
