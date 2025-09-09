@@ -61,14 +61,19 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => setShowStats(true)}
       className="entry-card"
       style={{
         border: isHovered ? '1px solid color-mix(in oklab, var(--accent-600), transparent 55%)' : '1px solid var(--border)',
         boxShadow: isHovered ? 'var(--shadow-md)' : 'var(--shadow-sm)',
         position: 'relative',
         opacity: isDeleting ? 0.5 : 1,
-        pointerEvents: isDeleting ? 'none' : 'auto'
+        pointerEvents: isDeleting ? 'none' : 'auto',
+        cursor: 'pointer'
       }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowStats(true); } }}
     >
       {/* Header: icon + delete button */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', position: 'relative' }}>
@@ -109,7 +114,7 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
             </div>
           )}
           <button
-            onClick={handleDelete}
+            onClick={(e) => { e.stopPropagation(); handleDelete(); }}
             style={{
               background: 'none',
               border: 'none',
@@ -174,7 +179,7 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
 
       {/* Action Button */}
       <button
-        onClick={handleMarkComplete}
+        onClick={(e) => { e.stopPropagation(); handleMarkComplete(); }}
         disabled={isDoneToday}
         style={{
           width: '100%',
@@ -197,16 +202,6 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
         <CheckCircle size={14} />
         {isDoneToday ? 'Completed' : 'Mark as done'}
       </button>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button
-          className="secondary"
-          onClick={() => setShowStats(true)}
-          style={{ padding: '8px 12px', borderRadius: 8 }}
-          title="View statistics"
-        >
-          Statistics
-        </button>
-      </div>
       <Modal open={showStats} title="Goal Statistics" onClose={() => setShowStats(false)}>
         <GoalStatsCalendar goalId={goal.id} />
       </Modal>
