@@ -117,7 +117,6 @@ const GoalsSection = ({ onNavigateToGoals }) => {
           paddingTop: 0, 
           paddingBottom: 'calc(var(--space-1) / 2)', 
           color: 'var(--text)',
-          fontSize: '1.25rem',
           fontWeight: '600'
         }}>
           Goals
@@ -267,11 +266,18 @@ const GoalPreviewCard = ({ goal, onMarkComplete }) => {
       </div>
 
       {/* Title */}
-      <div className="entry-card__title" style={{ marginBottom: '16px' }}>
+      <div className="entry-card__title" style={{ marginBottom: goal.description ? '8px' : '16px' }}>
         {goal.title}
       </div>
 
-      {/* Progress Bar */}
+      {/* Description (excerpt) */}
+      {goal.description && (
+        <div className="entry-card__excerpt" style={{ marginBottom: '16px' }}>
+          {goal.description}
+        </div>
+      )}
+
+  {/* Progress Bar */}
       <div style={{ marginBottom: '12px' }}>
         <div style={{ 
           display: 'flex', 
