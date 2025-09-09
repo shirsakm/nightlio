@@ -23,3 +23,6 @@ class GoalService:
 
     def increment_progress(self, user_id: int, goal_id: int) -> Optional[Dict]:
         return self.db.increment_goal_progress(user_id, goal_id)
+
+    def get_completions(self, user_id: int, goal_id: int, start_date: Optional[str] = None, end_date: Optional[str] = None):
+        return self.db.get_goal_completions(user_id, goal_id, start_date, end_date)

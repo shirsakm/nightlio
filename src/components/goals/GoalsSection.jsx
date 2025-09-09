@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Target, Plus, ArrowRight, Calendar, CheckCircle } from 'lucide-react';
 import Skeleton from '../ui/Skeleton';
 import apiService from '../../services/api';
+import AddGoalCard from './AddGoalCard';
 
 const GoalsSection = ({ onNavigateToGoals }) => {
   const [goals, setGoals] = useState([]);
@@ -116,7 +117,6 @@ const GoalsSection = ({ onNavigateToGoals }) => {
           paddingTop: 0, 
           paddingBottom: 'calc(var(--space-1) / 2)', 
           color: 'var(--text)',
-          fontSize: '1.25rem',
           fontWeight: '600'
         }}>
           Goals
@@ -186,6 +186,7 @@ const GoalsSection = ({ onNavigateToGoals }) => {
         </div>
       ) : (
         <div className="card-grid">
+          <AddGoalCard onAdd={onNavigateToGoals} />
           {goals.map(goal => (
             <GoalPreviewCard 
               key={goal.id} 
@@ -265,11 +266,18 @@ const GoalPreviewCard = ({ goal, onMarkComplete }) => {
       </div>
 
       {/* Title */}
-      <div className="entry-card__title" style={{ marginBottom: '16px' }}>
+      <div className="entry-card__title" style={{ marginBottom: goal.description ? '8px' : '16px' }}>
         {goal.title}
       </div>
 
-      {/* Progress Bar */}
+      {/* Description (excerpt) */}
+      {goal.description && (
+        <div className="entry-card__excerpt" style={{ marginBottom: '16px' }}>
+          {goal.description}
+        </div>
+      )}
+
+  {/* Progress Bar */}
       <div style={{ marginBottom: '12px' }}>
         <div style={{ 
           display: 'flex', 
@@ -311,11 +319,12 @@ const GoalPreviewCard = ({ goal, onMarkComplete }) => {
           borderRadius: '8px',
           border: 'none',
           background: isDoneToday ? 'var(--success)' : 'var(--accent-bg)',
-          color: 'white',
+          color: '#fff',
           fontSize: '0.85rem',
           fontWeight: '500',
           cursor: isDoneToday ? 'default' : 'pointer',
-          opacity: isDoneToday ? 0.9 : 1,
+          // Keep text crisp white even when disabled
+          opacity: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

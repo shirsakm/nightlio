@@ -1,4 +1,5 @@
 import HistoryEntry from './HistoryEntry';
+import AddEntryCard from './AddEntryCard';
 import Skeleton from '../ui/Skeleton';
 
 const HistoryList = ({ entries, loading, error, onDelete }) => {
@@ -35,6 +36,9 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
         >
           Create first entry
         </button>
+        <div className="card-grid" style={{ marginTop: '1rem' }}>
+          <AddEntryCard />
+        </div>
       </div>
     );
   }
@@ -42,6 +46,7 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
   return (
     <div style={{ textAlign: 'left', marginTop: 0 }}>
       <div className="card-grid">
+        <AddEntryCard />
         {entries.map(entry => (
           <HistoryEntry 
             key={entry.id || entry.date} 

@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Target, Trash2, CheckCircle, Calendar } from 'lucide-react';
 import { useToast } from '../ui/ToastProvider';
+import GoalStatsCalendar from './GoalStatsCalendar';
+import Modal from '../ui/Modal';
 
 const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const { show } = useToast();
 
   const handleDelete = async () => {
@@ -58,14 +61,19 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => setShowStats(true)}
       className="entry-card"
       style={{
         border: isHovered ? '1px solid color-mix(in oklab, var(--accent-600), transparent 55%)' : '1px solid var(--border)',
         boxShadow: isHovered ? 'var(--shadow-md)' : 'var(--shadow-sm)',
         position: 'relative',
         opacity: isDeleting ? 0.5 : 1,
-        pointerEvents: isDeleting ? 'none' : 'auto'
+        pointerEvents: isDeleting ? 'none' : 'auto',
+        cursor: 'pointer'
       }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowStats(true); } }}
     >
       {/* Header: icon + delete button */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', position: 'relative' }}>
@@ -106,7 +114,7 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
             </div>
           )}
           <button
-            onClick={handleDelete}
+            onClick={(e) => { e.stopPropagation(); handleDelete(); }}
             style={{
               background: 'none',
               border: 'none',
@@ -171,7 +179,7 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
 
       {/* Action Button */}
       <button
-        onClick={handleMarkComplete}
+        onClick={(e) => { e.stopPropagation(); handleMarkComplete(); }}
         disabled={isDoneToday}
         style={{
           width: '100%',
@@ -179,11 +187,12 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
           borderRadius: '8px',
           border: 'none',
           background: isDoneToday ? 'var(--success)' : 'var(--accent-bg)',
-          color: 'white',
+          color: '#fff',
           fontSize: '0.85rem',
           fontWeight: '500',
           cursor: isDoneToday ? 'default' : 'pointer',
-          opacity: isDoneToday ? 0.9 : 1,
+          // Keep text crisp white even when disabled
+          opacity: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -194,6 +203,9 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
         <CheckCircle size={14} />
         {isDoneToday ? 'Completed' : 'Mark as done'}
       </button>
+      <Modal open={showStats} title="Goal Statistics" onClose={() => setShowStats(false)}>
+        <GoalStatsCalendar goalId={goal.id} />
+      </Modal>
     </div>
   );
 };

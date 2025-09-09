@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import { useEffect } from 'react';
 
 const backdropStyle = {
   position: 'fixed',
@@ -46,6 +47,17 @@ const deriveTitleBody = (content = '') => {
 
 const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
   if (!isOpen || !entry) return null;
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        if (typeof onClose === 'function') onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
   const onBackdrop = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
@@ -58,7 +70,7 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
             <div style={{ fontWeight: 600, color: 'var(--text)' }}>{entry.date}</div>
             {entry.created_at && (
               <div style={{ fontSize: '0.85rem', color: 'color-mix(in oklab, var(--text), transparent 30%)' }}>
-                {new Date(entry.created_at).toLocaleString()}
+                {new Date(entry.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             )}
           </div>
@@ -81,9 +93,6 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </button>
             )}
-            <button className="primary" onClick={(e) => { e.stopPropagation(); onClose(); }} aria-label="Close">
-              Close
-            </button>
           </div>
         </div>
         {title && (

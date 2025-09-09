@@ -280,6 +280,7 @@ const GoalsView = () => {
           goals={goals} 
           onDelete={handleDeleteGoal}
           onUpdateProgress={handleUpdateProgress}
+          onAdd={() => setShowForm(true)}
         />
       )}
     </div>

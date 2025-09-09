@@ -239,6 +239,14 @@ class ApiService {
   async incrementGoalProgress(goalId) {
     return this.request(`/api/goals/${goalId}/progress`, { method: 'POST' });
   }
+
+  async getGoalCompletions(goalId, { start, end } = {}) {
+    const params = new URLSearchParams();
+    if (start) params.set('start', start);
+    if (end) params.set('end', end);
+    const q = params.toString();
+    return this.request(`/api/goals/${goalId}/completions${q ? `?${q}` : ''}`);
+  }
 }
 
 const apiService = new ApiService();
