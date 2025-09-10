@@ -2,6 +2,15 @@
 
 **Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
 
+<div align="center">
+
+[![GitHub license](https://img.shields.io/github/license/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/stargazers)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/shirsakm/nightlio/ci.yml?branch=main&style=flat-square)](https://github.com/shirsakm/nightlio/actions)
+[![GitHub forks](https://img.shields.io/github/forks/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/network/members)
+
+</div>
+
 <img width="1366" height="645" alt="image" src="https://github.com/user-attachments/assets/dd50ec1f-4c3f-4588-907c-dca6ac1f7f98" />
 
 ### Why Nightlio?
@@ -50,21 +59,21 @@ Alternatively, give it a try without cloning!
 ```bash
 docker network create nightlio-test || true
 docker run -d --name nightlio-api \
-	--network nightlio-test --network-alias api \
-	-e SECRET_KEY=$(openssl rand -hex 32) \
-	-e JWT_SECRET=$(openssl rand -hex 32) \
-	-e CORS_ORIGINS=http://localhost:5173 \
-	-e ENABLE_GOOGLE_OAUTH=0 \
-	-e DEFAULT_SELF_HOST_ID=selfhost_default_user \
-	-e DATABASE_PATH=/app/data/nightlio.db \
-	-e PORT=5000 \
-	-v nightlio_data:/app/data \
-	ghcr.io/shirsakm/nightlio-api:latest
+    --network nightlio-test --network-alias api \
+    -e SECRET_KEY=$(openssl rand -hex 32) \
+    -e JWT_SECRET=$(openssl rand -hex 32) \
+    -e CORS_ORIGINS=http://localhost:5173 \
+    -e ENABLE_GOOGLE_OAUTH=0 \
+    -e DEFAULT_SELF_HOST_ID=selfhost_default_user \
+    -e DATABASE_PATH=/app/data/nightlio.db \
+    -e PORT=5000 \
+    -v nightlio_data:/app/data \
+    ghcr.io/shirsakm/nightlio-api:latest
 
 docker run -d --name nightlio-frontend \
-	--network nightlio-test \
-	-p 5173:80 \
-	ghcr.io/shirsakm/nightlio-frontend:latest
+    --network nightlio-test \
+    -p 5173:80 \
+    ghcr.io/shirsakm/nightlio-frontend:latest
 ```
 
 Your instance is now live!
@@ -73,7 +82,7 @@ Your instance is now live!
 
 ## 🏠 Self-hosting
 
-Two easy paths using the published GHCR images.
+Here are two easy paths for self-hosting using the published GHCR images.
 
 ### Option A — Use the repo’s production compose (nginx + TLS)
 
@@ -262,9 +271,6 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header unless o
 **Achievements**
 * `GET /api/achievements` → user achievements (with metadata)
 * `POST /api/achievements/check` → { new_achievements, count }
-	(NFT minting removed)
-
-Web3 endpoints removed.
 
 </details>
 
@@ -288,6 +294,14 @@ Web3 endpoints removed.
 * **No Telemetry:** This application does not collect any usage data or send information to third-party services.
 * **Secure Authentication:** API endpoints are protected using JSON Web Tokens (JWT).
 * **Configurable CORS:** Restrict API access to trusted domains via environment variables.
+
+### 🗺️ Roadmap
+
+Nightlio is actively developed. Here are some of the features planned for the future:
+- [ ] **Multi-User Support:** Full support for multiple user accounts on a single instance.
+- [ ] **Data Import/Export:** Tools to import data from other services (like Daylio) and export your data to standard formats (JSON, CSV).
+- [ ] **More Themes & Customization:** Additional themes and more options to personalize the look and feel of your journal.
+- [ ] **Advanced Analytics:** Deeper insights into your data, including correlations between tags and mood.
 
 ### 🤝 Contributing
 
