@@ -1,13 +1,13 @@
-# 🌙 Nightlio
-
-**Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
-
 <div align="center">
+
+# 🌙 Nightlio
 
 [![GitHub license](https://img.shields.io/github/license/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/stargazers)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/shirsakm/nightlio/ci.yml?branch=main&style=flat-square)](https://github.com/shirsakm/nightlio/actions)
-[![GitHub forks](https://img.shields.io/github/forks/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/network/members)
+![GitHub Tag](https://img.shields.io/github/v/tag/shirsakm/nightlio)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/shirsakm/nightlio/publish.yml?branch=master&style=flat-square)](https://github.com/shirsakm/nightlio/actions)
+
+**Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
 
 </div>
 
