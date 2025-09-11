@@ -79,9 +79,7 @@ docker run -d --name nightlio-frontend \
     ghcr.io/shirsakm/nightlio-frontend:latest
 ```
 
-Your instance is now live!
-* Frontend: http://localhost:5173
-* API: http://localhost:5000
+Your instance is now live at http://localhost:5173/.
 
 ## 🏠 Self-hosting
 
@@ -164,8 +162,8 @@ docker compose up -d
 ```
 
 > [!NOTE]
-> 1. Persistent data lives in ./data/nightlio.db — include it in backups.
-> 2. Pin to a version (0.1.1) for predictable upgrades; switch to newer tags when ready.
+> 1. Persistent data lives in `./data/nightlio.db` — include it in backups.
+> 2. Pin to a version for predictable upgrades; switch to newer tags when ready.
 
 <div align="center">🌙</div>
 
