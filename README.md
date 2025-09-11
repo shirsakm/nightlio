@@ -13,7 +13,8 @@
 
 </div>
 
-<img width="1366" height="645" alt="image" src="https://github.com/user-attachments/assets/dd50ec1f-4c3f-4588-907c-dca6ac1f7f98" />
+<!-- <img width="1366" height="645" alt="image" src="https://github.com/user-attachments/assets/dd50ec1f-4c3f-4588-907c-dca6ac1f7f98" /> -->
+![Preview](https://github.com/user-attachments/assets/77f52abc-b4f8-439d-9bb2-772e3996256c)
 
 ## Why Nightlio?
 
