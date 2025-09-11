@@ -2,17 +2,14 @@
 
 # 🌙 Nightlio
 
-![GitHub Tag](https://img.shields.io/github/v/tag/shirsakm/nightlio)
 [![GitHub license](https://img.shields.io/github/license/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/stargazers)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/shirsakm/nightlio/publish.yml?branch=master&style=flat-square)](https://github.com/shirsakm/nightlio/actions)
 ![GitHub last commit](https://img.shields.io/github/last-commit/shirsakm/nightlio)
+![GitHub Tag](https://img.shields.io/github/v/tag/shirsakm/nightlio)
 
-
-
-
-
-**Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
+**Privacy-first mood tracker and daily journal, designed for effortless self-hosting.** <br/>
+**Your data, your server, your rules.**
 
 </div>
 
