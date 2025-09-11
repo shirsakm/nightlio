@@ -2,10 +2,15 @@
 
 # 🌙 Nightlio
 
+![GitHub Tag](https://img.shields.io/github/v/tag/shirsakm/nightlio)
 [![GitHub license](https://img.shields.io/github/license/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/stargazers)
-![GitHub Tag](https://img.shields.io/github/v/tag/shirsakm/nightlio)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/shirsakm/nightlio/publish.yml?branch=master&style=flat-square)](https://github.com/shirsakm/nightlio/actions)
+![GitHub last commit](https://img.shields.io/github/last-commit/shirsakm/nightlio)
+
+
+
+
 
 **Privacy-first mood tracker and daily journal, designed for effortless self-hosting. Your data, your server, your rules.**
 
@@ -13,7 +18,7 @@
 
 <img width="1366" height="645" alt="image" src="https://github.com/user-attachments/assets/dd50ec1f-4c3f-4588-907c-dca6ac1f7f98" />
 
-### Why Nightlio?
+## Why Nightlio?
 
 Nightlio was inspired by awesome mood-tracking apps like Daylio, but born out of frustration with aggressive subscription models, paywalls, and a lack of cross-platform access. I wanted a beautiful, effective tool to log my mood and journal my thoughts without compromising on privacy or being locked into a single device.
 
@@ -84,7 +89,7 @@ Your instance is now live!
 
 Here are two easy paths for self-hosting using the published GHCR images.
 
-### Option A — Use the repo’s production compose (nginx + TLS)
+### Use the repo’s production compose (nginx + TLS)
 
 1) Clone and configure
 
@@ -121,7 +126,7 @@ docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-### Option B — Minimal compose
+### Minimal compose
 
 Create docker-compose.yml in an empty folder with:
 
@@ -288,14 +293,14 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header unless o
 
 <div align="center">🌙</div>
 
-### 🔐 Security & Privacy
+## 🔐 Security & Privacy
 
 * **Data Ownership:** Your data is stored in a local SQLite file. You can back it up, move it, or delete it at any time.
 * **No Telemetry:** This application does not collect any usage data or send information to third-party services.
 * **Secure Authentication:** API endpoints are protected using JSON Web Tokens (JWT).
 * **Configurable CORS:** Restrict API access to trusted domains via environment variables.
 
-### 🗺️ Roadmap
+## 🗺️ Roadmap
 
 Nightlio is actively developed. Here are some of the features planned for the future:
 - [ ] **Multi-User Support:** Full support for multiple user accounts on a single instance.
@@ -303,14 +308,10 @@ Nightlio is actively developed. Here are some of the features planned for the fu
 - [ ] **More Themes & Customization:** Additional themes and more options to personalize the look and feel of your journal.
 - [ ] **Advanced Analytics:** Deeper insights into your data, including correlations between tags and mood.
 
-### 🤝 Contributing
+## 🤝 Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change. Please ensure you add tests for any new API functionality.
 
-### 📄 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-<div align="center">🌙</div>
-
-If this project helps you, please consider starring the repository. Stay well 💙
