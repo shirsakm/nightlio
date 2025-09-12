@@ -1,6 +1,7 @@
 <div align="center">
 
-# 🌙 Nightlio
+<img src="https://raw.githubusercontent.com/shirsakm/nightlio/refs/heads/dev/public/logo.png" height="60px" />
+<h1>Nightlio</h1>
 
 [![GitHub license](https://img.shields.io/github/license/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/shirsakm/nightlio?style=flat-square)](https://github.com/shirsakm/nightlio/stargazers)
@@ -8,7 +9,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/shirsakm/nightlio)
 ![GitHub Tag](https://img.shields.io/github/v/tag/shirsakm/nightlio)
 
-**Privacy-first mood tracker and daily journal, designed for effortless self-hosting.** <br/>
+**Privacy-first mood tracker and daily journal, designed for effortless self-hosting.** <br />
 **Your data, your server, your rules.**
 
 </div>
