@@ -9,26 +9,28 @@ import sys
 api_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(api_dir)
 if project_root not in sys.path:
-  sys.path.insert(0, project_root)
+    sys.path.insert(0, project_root)
 
 try:
-  from api.app import create_app
+    from api.app import create_app
 except Exception:
-  from app import create_app
+    from app import create_app
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Get environment
-    env = os.getenv('RAILWAY_ENVIRONMENT', 'production')
-    
+    env = os.getenv("RAILWAY_ENVIRONMENT", "production")
+
     # Create app
     app = create_app(env)
-    
+
     # Get port from Railway
-    port = int(os.getenv('PORT', 5000))
-    
+    port = int(os.getenv("PORT", 5000))
+
     print(f"🚀 Starting Nightlio API on port {port}")
     print(f"📍 Environment: {env}")
-    print(f"🔑 Google Client ID: {'✅ Set' if app.config.get('GOOGLE_CLIENT_ID') else '❌ Missing'}")
-    
+    print(
+        f"🔑 Google Client ID: {'✅ Set' if app.config.get('GOOGLE_CLIENT_ID') else '❌ Missing'}"
+    )
+
     # Run the app
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)

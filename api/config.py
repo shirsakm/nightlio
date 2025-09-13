@@ -7,7 +7,7 @@ from pathlib import Path
 try:
     from dotenv import load_dotenv  # type: ignore
 
-    _ENV_PATH = Path(__file__).parent.parent / '.env'
+    _ENV_PATH = Path(__file__).parent.parent / ".env"
     if _ENV_PATH.exists():
         # Load from project root so simple self-host works OOTB.
         load_dotenv(_ENV_PATH)
@@ -22,54 +22,59 @@ class Config:
     Note: New features should prefer the typed config via get_config().
     """
 
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key-change-in-production"
 
     # Database configuration
-    DATABASE_PATH = os.environ.get('DATABASE_PATH') or os.path.join(
-        Path(__file__).parent.parent, 'data', 'nightlio.db'
+    DATABASE_PATH = os.environ.get("DATABASE_PATH") or os.path.join(
+        Path(__file__).parent.parent, "data", "nightlio.db"
     )
 
     # CORS configuration
-    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173,https://nightlio.vercel.app').split(',')
+    CORS_ORIGINS = os.environ.get(
+        "CORS_ORIGINS", "http://localhost:5173,https://nightlio.vercel.app"
+    ).split(",")
 
     # Google OAuth configuration
-    GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
-    GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 
     # JWT configuration (legacy)
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or SECRET_KEY
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY") or SECRET_KEY
     JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
 
 
 class DevelopmentConfig(Config):
     """Development configuration"""
+
     DEBUG = True
     TESTING = False
 
 
 class ProductionConfig(Config):
     """Production configuration"""
+
     DEBUG = False
     TESTING = False
 
     # Use Railway's writable directory for database
-    DATABASE_PATH = os.environ.get('DATABASE_PATH') or '/tmp/nightlio.db'
+    DATABASE_PATH = os.environ.get("DATABASE_PATH") or "/tmp/nightlio.db"
 
 
 class TestingConfig(Config):
     """Testing configuration"""
+
     DEBUG = True
     TESTING = True
     # Use a file-backed SQLite DB so multiple connections see the same data
-    DATABASE_PATH = '/tmp/nightlio_test.db'
+    DATABASE_PATH = "/tmp/nightlio_test.db"
 
 
 # Configuration mapping (legacy app factory still uses this).
 config = {
-    'development': DevelopmentConfig,
-    'production': ProductionConfig,
-    'testing': TestingConfig,
-    'default': DevelopmentConfig,
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
+    "testing": TestingConfig,
+    "default": DevelopmentConfig,
 }
 
 
@@ -85,7 +90,7 @@ except Exception:
     def is_truthy(value: Optional[str]) -> bool:  # type: ignore
         if value is None:
             return False
-        return str(value).strip().lower() in {'1', 'true', 'yes', 'on'}
+        return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
 
 @dataclass(frozen=True)
@@ -110,7 +115,7 @@ class ConfigData:
 
     # Auth
     JWT_SECRET: str
-    DEFAULT_SELF_HOST_ID: str = 'selfhost_default_user'
+    DEFAULT_SELF_HOST_ID: str = "selfhost_default_user"
     # Optional friendly defaults for the self-hosted user display
     SELFHOST_USER_NAME: Optional[str] = None
     SELFHOST_USER_EMAIL: Optional[str] = None
@@ -127,27 +132,28 @@ def _load_config_from_env() -> ConfigData:
     - JWT_SECRET falls back to JWT_SECRET_KEY/SECRET_KEY/dev default.
     """
 
-    enable_google = is_truthy(os.getenv('ENABLE_GOOGLE_OAUTH'))
+    enable_google = is_truthy(os.getenv("ENABLE_GOOGLE_OAUTH"))
     # Web3 removed
 
     # Secrets pulled from env; don't default to empty string.
     jwt_secret = (
-        os.getenv('JWT_SECRET')
-        or os.getenv('JWT_SECRET_KEY')
-        or os.getenv('SECRET_KEY')
-        or 'dev-secret-key-change-in-production'
+        os.getenv("JWT_SECRET")
+        or os.getenv("JWT_SECRET_KEY")
+        or os.getenv("SECRET_KEY")
+        or "dev-secret-key-change-in-production"
     )
 
     return ConfigData(
-    ENABLE_GOOGLE_OAUTH=enable_google,
-        GOOGLE_CLIENT_ID=os.getenv('GOOGLE_CLIENT_ID'),
-        GOOGLE_CLIENT_SECRET=os.getenv('GOOGLE_CLIENT_SECRET'),
-        GOOGLE_CALLBACK_URL=os.getenv('GOOGLE_CALLBACK_URL'),
-    # Web3 fields removed
+        ENABLE_GOOGLE_OAUTH=enable_google,
+        GOOGLE_CLIENT_ID=os.getenv("GOOGLE_CLIENT_ID"),
+        GOOGLE_CLIENT_SECRET=os.getenv("GOOGLE_CLIENT_SECRET"),
+        GOOGLE_CALLBACK_URL=os.getenv("GOOGLE_CALLBACK_URL"),
+        # Web3 fields removed
         JWT_SECRET=jwt_secret,
-    DEFAULT_SELF_HOST_ID=os.getenv('DEFAULT_SELF_HOST_ID') or 'selfhost_default_user',
-    SELFHOST_USER_NAME=os.getenv('SELFHOST_USER_NAME') or 'Me',
-    SELFHOST_USER_EMAIL=os.getenv('SELFHOST_USER_EMAIL') or None,
+        DEFAULT_SELF_HOST_ID=os.getenv("DEFAULT_SELF_HOST_ID")
+        or "selfhost_default_user",
+        SELFHOST_USER_NAME=os.getenv("SELFHOST_USER_NAME") or "Me",
+        SELFHOST_USER_EMAIL=os.getenv("SELFHOST_USER_EMAIL") or None,
     )
 
 
@@ -168,5 +174,5 @@ def config_to_public_dict(cfg: ConfigData) -> Dict[str, Any]:
     Only returns non-secret feature flags.
     """
     return {
-        'enable_google_oauth': bool(cfg.ENABLE_GOOGLE_OAUTH),
+        "enable_google_oauth": bool(cfg.ENABLE_GOOGLE_OAUTH),
     }

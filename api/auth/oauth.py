@@ -27,7 +27,9 @@ def login_google():
         client_kwargs={"scope": "openid email profile"},
     )
 
-    redirect_uri = cfg.get("GOOGLE_CALLBACK_URL") or url_for("oauth.google_callback", _external=True)
+    redirect_uri = cfg.get("GOOGLE_CALLBACK_URL") or url_for(
+        "oauth.google_callback", _external=True
+    )
     return oauth.google.authorize_redirect(redirect_uri)
 
 
@@ -71,7 +73,9 @@ def google_callback():
 
     # Reuse the existing method for now; a dedicated handler will be added later
     # Use idempotent upsert path
-    user = user_service.handle_oauth_login('google', provider_user_id, email, name, avatar)
+    user = user_service.handle_oauth_login(
+        "google", provider_user_id, email, name, avatar
+    )
 
     # Issue JWT using existing app config (legacy)
     try:
@@ -79,21 +83,35 @@ def google_callback():
         from datetime import datetime, timedelta
 
         payload = {
-            'user_id': user['id'],
-            'exp': datetime.utcnow() + timedelta(seconds=current_app.config['JWT_ACCESS_TOKEN_EXPIRES']),
-            'iat': datetime.utcnow()
+            "user_id": user["id"],
+            "exp": datetime.utcnow()
+            + timedelta(seconds=current_app.config["JWT_ACCESS_TOKEN_EXPIRES"]),
+            "iat": datetime.utcnow(),
         }
-        token = jwt.encode(payload, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
+        token = jwt.encode(
+            payload, current_app.config["JWT_SECRET_KEY"], algorithm="HS256"
+        )
     except Exception:
         return jsonify({"error": "Token issuance failed"}), 500
 
     # Return token in JSON; optionally switch to HttpOnly cookie in future
-    return jsonify({"token": token, "user": {"id": user["id"], "name": user["name"], "email": user["email"], "avatar_url": user.get("avatar_url")}})
+    return jsonify(
+        {
+            "token": token,
+            "user": {
+                "id": user["id"],
+                "name": user["name"],
+                "email": user["email"],
+                "avatar_url": user.get("avatar_url"),
+            },
+        }
+    )
 
 
 def _get_runtime_config():
     # Importing here avoids import cycles at module import time
     from api.config import get_config, config_to_public_dict
+
     cfg = get_config()
     public = config_to_public_dict(cfg)
     # Merge select private fields required for OAuth flow (not exposed to client)
