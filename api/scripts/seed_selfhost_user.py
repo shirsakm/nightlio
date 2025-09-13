@@ -26,8 +26,9 @@ def seed_selfhost_user() -> dict:
     user_service = UserService(db)
     user = user_service.ensure_local_user(
         cfg.DEFAULT_SELF_HOST_ID,
-        default_name=cfg.SELFHOST_USER_NAME or 'Me',
-        default_email=cfg.SELFHOST_USER_EMAIL or f"{cfg.DEFAULT_SELF_HOST_ID}@localhost",
+        default_name=cfg.SELFHOST_USER_NAME or "Me",
+        default_email=cfg.SELFHOST_USER_EMAIL
+        or f"{cfg.DEFAULT_SELF_HOST_ID}@localhost",
     )
     return user
 
@@ -35,9 +36,9 @@ def seed_selfhost_user() -> dict:
 def main() -> int:
     user = seed_selfhost_user()
     # Print only the user id as required by the prompt
-    print(user.get('id'))
+    print(user.get("id"))
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     raise SystemExit(main())

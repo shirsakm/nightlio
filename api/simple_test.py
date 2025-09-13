@@ -7,22 +7,27 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=['https://nightlio.vercel.app', 'http://localhost:5173'])
+CORS(app, origins=["https://nightlio.vercel.app", "http://localhost:5173"])
 
-@app.route('/')
+
+@app.route("/")
 def health():
-    return jsonify({
-        'status': 'healthy',
-        'message': 'Simple test app is running',
-        'port': os.getenv('PORT', 'not set'),
-        'railway_env': os.getenv('RAILWAY_ENVIRONMENT', 'not set')
-    })
+    return jsonify(
+        {
+            "status": "healthy",
+            "message": "Simple test app is running",
+            "port": os.getenv("PORT", "not set"),
+            "railway_env": os.getenv("RAILWAY_ENVIRONMENT", "not set"),
+        }
+    )
 
-@app.route('/api/test')
+
+@app.route("/api/test")
 def test():
-    return jsonify({'test': 'success'})
+    return jsonify({"test": "success"})
 
-if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 5000))
     print(f"Starting simple test app on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
