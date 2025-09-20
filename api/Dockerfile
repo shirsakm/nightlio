@@ -39,4 +39,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 CMD ["python", "docker_start.py"]
 
 # Alternative production command with Gunicorn (uncomment for production)
-# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "docker_start:app"]
+# CMD ["gunicorn", "--bind", "[::]:5000", "--workers", "4", "docker_start:app"]

@@ -31,9 +31,9 @@ try:
 
     port = int(os.getenv("PORT", 8080))
     print(f"\n=== STARTING FLASK APP ===")
-    print(f"Attempting to start on 0.0.0.0:{port}")
+    print(f"Attempting to start on [::]:{port}")
 
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="::", port=port, debug=True)
 
 except Exception as e:
     print(f"ERROR: Failed to start Flask app: {e}")

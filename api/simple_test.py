@@ -30,4 +30,4 @@ def test():
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     print(f"Starting simple test app on port {port}")
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="::", port=port, debug=False)
