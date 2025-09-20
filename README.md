@@ -23,18 +23,20 @@ Nightlio was inspired by awesome mood-tracking apps like Daylio, but born out of
 
 Nightlio is the result: a feature-complete, open-source alternative that you can run anywhere. It's fully web-based and responsive for use on both desktop and mobile. No ads, no subscriptions, and absolutely no data mining. Just you and your data.
 
-### ✨ Key Features
+### Key Features
 
-* **✍️ Rich Journaling with Markdown:** Write detailed notes for every entry using Markdown for formatting, lists, and links.
-* **📊 Track Your Mood & Find Patterns:** Log your daily mood on a simple 5-point scale and use customizable tags (e.g., 'Sleep', 'Productivity') to discover what influences your state of mind.
-* **📈 Insightful Analytics:** View your mood history on a calendar, see your average mood over time, and track your journaling streak to stay motivated.
-* **🔒 Privacy First, Always:** Built from the ground up to be self-hosted. Your sensitive data is stored in a simple SQLite database file on *your* server. No third-party trackers or analytics.
-* **🚀 Simple Self-Hosting with Docker:** Get up and running in minutes with a single `docker compose up` command.
-* **🎮 Gamified Achievements:** Stay consistent with built-in achievements that unlock as you build your journaling habit.
+* **Rich Journaling with Markdown:** Write detailed notes for every entry using Markdown for formatting, lists, and links.
+* **Track Your Mood & Find Patterns:** Log your daily mood on a simple 5-point scale and use customizable tags (e.g., 'Sleep', 'Productivity') to discover what influences your state of mind.
+* **Insightful Analytics:** View your mood history on a calendar, see your average mood over time, and track your journaling streak to stay motivated.
+* **Privacy First, Always:** Built from the ground up to be self-hosted. Your sensitive data is stored in a simple SQLite database file on *your* server. No third-party trackers or analytics.
+* **Simple Self-Hosting with Docker:** Get up and running in minutes with a single `docker compose up` command.
+* **Gamified Achievements:** Stay consistent with built-in achievements that unlock as you build your journaling habit.
 
 <div align="center">🌙</div>
 
-## 🐳 Docker Quickstart (Recommended)
+## Usage
+
+### Docker Quickstart (Recommended)
 
 > [!NOTE]
 > By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
@@ -82,11 +84,11 @@ docker run -d --name nightlio-frontend \
 
 Your instance is now live at http://localhost:5173/.
 
-## 🏠 Self-hosting
+### Self-hosting
 
 Here are two easy paths for self-hosting using the published GHCR images.
 
-### Use the repo’s production compose (nginx + TLS)
+#### Use the repo’s production compose (nginx + TLS)
 
 1) Clone and configure
 
@@ -123,7 +125,7 @@ docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-### Minimal compose
+#### Minimal compose
 
 Create docker-compose.yml in an empty folder with:
 
@@ -168,7 +170,7 @@ docker compose up -d
 
 <div align="center">🌙</div>
 
-## 🔧 Configuration (`.env`)
+### 🔧 Configuration (`.env`)
 
 You can customize your Nightlio instance using environment variables in the `.env` file.
 
@@ -202,12 +204,12 @@ VITE_GOOGLE_CLIENT_ID=
 
 <div align="center">🌙</div>
 
-## 🛠️ For Developers
+## Developer Reference
 
 Interested in contributing or running the project without Docker? Here's what you need to know.
 
 <details>
-<summary><strong>🧭 Architecture Overview</strong></summary>
+<summary><strong>Architecture Overview</strong></summary>
 
 * **Frontend:** React 19 + Vite, served by Nginx.
 * **Backend:** Flask (Python) serving a JSON API.
@@ -216,7 +218,7 @@ Interested in contributing or running the project without Docker? Here's what yo
 </details>
 
 <details>
-<summary><strong>🧪 Local Development Setup</strong></summary>
+<summary><strong>Local Development Setup</strong></summary>
 
 **Prerequisites:** Node.js v18+, Python v3.11+
 
@@ -239,7 +241,7 @@ The frontend will be available at `http://localhost:5173`.
 </details>
 
 <details>
-<summary><strong>📊 API Reference</strong></summary>
+<summary><strong>API Reference</strong></summary>
 
 All protected endpoints require an `Authorization: Bearer <jwt>` header unless otherwise noted.
 
@@ -277,7 +279,7 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header unless o
 </details>
 
 <details>
-<summary><strong>🗃️ Data Model</strong></summary>
+<summary><strong>Data Model</strong></summary>
 
 **Tables (SQLite):**
 * `users`: id, google_id, email, name, avatar_url, ...
@@ -290,14 +292,14 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header unless o
 
 <div align="center">🌙</div>
 
-## 🔐 Security & Privacy
+## Security & Privacy
 
 * **Data Ownership:** Your data is stored in a local SQLite file. You can back it up, move it, or delete it at any time.
 * **No Telemetry:** This application does not collect any usage data or send information to third-party services.
 * **Secure Authentication:** API endpoints are protected using JSON Web Tokens (JWT).
 * **Configurable CORS:** Restrict API access to trusted domains via environment variables.
 
-## 🗺️ Roadmap
+## Roadmap
 
 Nightlio is actively developed. Here are some of the features planned for the future:
 - [ ] **Multi-User Support:** Full support for multiple user accounts on a single instance.
@@ -305,10 +307,10 @@ Nightlio is actively developed. Here are some of the features planned for the fu
 - [ ] **More Themes & Customization:** Additional themes and more options to personalize the look and feel of your journal.
 - [ ] **Advanced Analytics:** Deeper insights into your data, including correlations between tags and mood.
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change. Please ensure you add tests for any new API functionality.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
