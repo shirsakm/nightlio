@@ -1,5 +1,5 @@
 server {
-    listen 80;
+    listen ${PORT};
     server_name localhost;
     root /usr/share/nginx/html;
     index index.html;
@@ -24,7 +24,7 @@ server {
 
     # Proxy API requests to backend
     location /api/ {
-        proxy_pass http://api:5000;
+        proxy_pass ${API_URL};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
