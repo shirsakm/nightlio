@@ -14,11 +14,36 @@ const Header = ({ currentStreak }) => {
 
   // Focus search on '/' and show ephemeral toast
   useEffect(() => {
+    const shouldSkipShortcut = (target) => {
+      if (!target) return false;
+
+      const element =
+        typeof Node !== 'undefined' && target.nodeType === Node.TEXT_NODE
+          ? target.parentElement
+          : target;
+
+      if (!element) return false;
+
+      const tagName = element.tagName || '';
+      if (/^(INPUT|TEXTAREA|SELECT)$/i.test(tagName)) return true;
+
+      if (element.isContentEditable) return true;
+      if (element.closest('[contenteditable="true"]')) return true;
+
+      const markdownContainer = element.closest('.mdx-editor');
+      if (markdownContainer) {
+        const editableSurface = markdownContainer.querySelector(
+          '[data-lexical-editor], [contenteditable="true"]'
+        );
+        if (editableSurface && editableSurface.contains(element)) return true;
+      }
+
+      return false;
+    };
+
     const onKey = (e) => {
       if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        const targetTag = (e.target && e.target.tagName) || '';
-        // Avoid hijacking when typing in inputs/textareas
-        if (/^(INPUT|TEXTAREA)$/.test(targetTag)) return;
+        if (shouldSkipShortcut(e.target)) return;
         e.preventDefault();
         const input = document.getElementById('global-search-input');
         if (input) {
