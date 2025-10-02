@@ -28,16 +28,14 @@ const Header = ({ currentStreak }) => {
       if (/^(INPUT|TEXTAREA|SELECT)$/i.test(tagName)) return true;
 
       if (element.isContentEditable) return true;
-      if (typeof element.closest === 'function') {
-        if (element.closest('[contenteditable="true"]')) return true;
+      if (element.closest('[contenteditable="true"]')) return true;
 
-        const markdownContainer = element.closest('.mdx-editor');
-        if (markdownContainer) {
-          const editableSurface = markdownContainer.querySelector(
-            '[data-lexical-editor], [contenteditable="true"]'
-          );
-          if (editableSurface && editableSurface.contains(element)) return true;
-        }
+      const markdownContainer = element.closest('.mdx-editor');
+      if (markdownContainer) {
+        const editableSurface = markdownContainer.querySelector(
+          '[data-lexical-editor], [contenteditable="true"]'
+        );
+        if (editableSurface && editableSurface.contains(element)) return true;
       }
 
       return false;
