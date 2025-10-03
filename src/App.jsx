@@ -61,6 +61,10 @@ const AppContent = () => {
     setCurrentView("entry");
   };
 
+  const handleEditMoodSelect = (moodValue) => {
+    setSelectedMood(moodValue);
+  };
+
   const handleEntryUpdated = (updatedEntry) => {
     setPastEntries(prev => prev.map(entry => (
       entry.id === updatedEntry.id ? { ...entry, ...updatedEntry } : entry
@@ -118,7 +122,8 @@ const AppContent = () => {
               onEntrySubmitted={handleEntrySubmitted}
               editingEntry={editingEntry}
               onEntryUpdated={handleEntryUpdated}
-        onSelectMood={(m) => setSelectedMood(m)}
+              onEditMoodSelect={handleEditMoodSelect}
+              onSelectMood={handleMoodSelect}
             />
           )}
 

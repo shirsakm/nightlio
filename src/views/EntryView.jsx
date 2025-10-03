@@ -21,6 +21,7 @@ const EntryView = ({
   onSelectMood,
   editingEntry = null,
   onEntryUpdated,
+  onEditMoodSelect,
 }) => {
   const isEditing = Boolean(editingEntry);
   const [selectedOptions, setSelectedOptions] = useState(
@@ -28,6 +29,7 @@ const EntryView = ({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [showMoodPicker, setShowMoodPicker] = useState(false);
   const markdownRef = useRef();
   const { show } = useToast();
 
@@ -48,8 +50,25 @@ const EntryView = ({
     }
   }, [isEditing]);
 
+  useEffect(() => {
+    if (!isEditing) {
+      setShowMoodPicker(false);
+    }
+  }, [isEditing]);
+
   const handleOptionToggle = (optionId) => {
     setSelectedOptions(prev => (prev.includes(optionId) ? prev.filter(id => id !== optionId) : [...prev, optionId]));
+  };
+
+  const handleMoodSelection = (moodValue) => {
+    if (isEditing) {
+      if (typeof onEditMoodSelect === 'function') {
+        onEditMoodSelect(moodValue);
+      }
+      setShowMoodPicker(false);
+    } else if (typeof onSelectMood === 'function') {
+      onSelectMood(moodValue);
+    }
   };
 
   const handleSubmit = async () => {
@@ -134,7 +153,7 @@ const EntryView = ({
     }
   };
 
-  if (!selectedMood) {
+  if (!selectedMood && !isEditing) {
     return (
       <div style={{ marginTop: '1rem' }}>
         <div style={{ marginBottom: '1rem' }}>
@@ -159,7 +178,7 @@ const EntryView = ({
         <h3 style={{ marginTop: 0 }}>
           {isEditing ? 'Pick a new mood for this entry' : 'Pick your mood to start an entry'}
         </h3>
-        <MoodPicker onMoodSelect={onSelectMood} />
+        <MoodPicker onMoodSelect={handleMoodSelection} />
       </div>
     );
   }
@@ -202,7 +221,7 @@ const EntryView = ({
             {isEditing && (
               <button
                 type="button"
-                onClick={() => onSelectMood(null)}
+                onClick={() => setShowMoodPicker(true)}
                 style={{
                   marginTop: '0.75rem',
                   padding: '0.4rem 0.9rem',
@@ -220,6 +239,40 @@ const EntryView = ({
               </button>
             )}
           </div>
+          {isEditing && showMoodPicker && (
+            <div
+              style={{
+                marginBottom: '1rem',
+                padding: '1rem',
+                borderRadius: '16px',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                boxShadow: 'var(--shadow-sm)'
+              }}
+            >
+              <p style={{ marginTop: 0, marginBottom: '0.75rem', fontWeight: 600, color: 'var(--text)' }}>
+                Pick a new mood
+              </p>
+              <MoodPicker onMoodSelect={handleMoodSelection} />
+              <div style={{ marginTop: '0.75rem', textAlign: 'right' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowMoodPicker(false)}
+                  style={{
+                    padding: '0.35rem 0.85rem',
+                    borderRadius: '999px',
+                    border: '1px solid var(--border)',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    color: 'color-mix(in oklab, var(--text), transparent 30%)'
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
           <GroupSelector
             groups={groups}
             selectedOptions={selectedOptions}
