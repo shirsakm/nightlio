@@ -13,8 +13,8 @@ class MoodService:
         date: str,
         mood: int,
         content: str,
-        time: str = None,
-        selected_options: List[int] = None,
+    time: Optional[str] = None,
+    selected_options: Optional[List[int]] = None,
     ) -> Dict:
         """Create a new mood entry and check for achievements"""
         if not (1 <= mood <= 5):
@@ -47,13 +47,42 @@ class MoodService:
         return self.db.get_mood_entry_by_id(user_id, entry_id)
 
     def update_entry(
-        self, user_id: int, entry_id: int, mood: int = None, content: str = None
-    ) -> bool:
-        """Update an existing mood entry for a user"""
+        self,
+        user_id: int,
+        entry_id: int,
+        mood: Optional[int] = None,
+        content: Optional[str] = None,
+        date: Optional[str] = None,
+        time: Optional[str] = None,
+        selected_options: Optional[List[int]] = None,
+    ) -> Optional[Dict]:
+        """Update an existing mood entry for a user and return the updated record"""
         if mood is not None and not (1 <= mood <= 5):
             raise ValueError("Mood must be between 1 and 5")
 
-        return self.db.update_mood_entry(user_id, entry_id, mood, content)
+        if content is not None and not content.strip():
+            raise ValueError("Content cannot be empty")
+
+        updated = self.db.update_mood_entry(
+            user_id,
+            entry_id,
+            mood=mood,
+            content=content,
+            date=date,
+            time=time,
+            selected_options=selected_options,
+        )
+
+        if not updated:
+            return None
+
+        entry = self.db.get_mood_entry_by_id(user_id, entry_id)
+        if not entry:
+            return None
+
+        selections = self.db.get_entry_selections(entry_id)
+        entry["selections"] = selections
+        return entry
 
     def delete_entry(self, user_id: int, entry_id: int) -> bool:
         """Delete a mood entry for a user"""

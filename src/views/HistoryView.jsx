@@ -1,7 +1,7 @@
 import MoodPicker from '../components/mood/MoodPicker';
 import HistoryList from '../components/history/HistoryList';
 
-const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, renderOnlyHeader = false }) => {
+const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEdit, renderOnlyHeader = false }) => {
   const currentDate = new Date();
   const dateString = currentDate.toLocaleDateString('en-US', { 
     weekday: 'long', 
@@ -35,6 +35,7 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, rend
         loading={loading} 
         error={error} 
         onDelete={onDelete}
+        onEdit={onEdit}
       />
   )}
     </>

@@ -538,10 +538,13 @@ class MoodDatabase:
         entry_id: int,
         mood: Optional[int] = None,
         content: Optional[str] = None,
+        date: Optional[str] = None,
+        time: Optional[str] = None,
+        selected_options: Optional[List[int]] = None,
     ) -> bool:
         """Update an existing mood entry for a user"""
-        updates = []
-        params = []
+        updates: List[str] = []
+        params: List[object] = []
 
         if mood is not None:
             updates.append("mood = ?")
@@ -551,23 +554,63 @@ class MoodDatabase:
             updates.append("content = ?")
             params.append(content)
 
-        if not updates:
-            return False
+        if date is not None:
+            updates.append("date = ?")
+            params.append(date)
 
-        updates.append("updated_at = CURRENT_TIMESTAMP")
-        params.extend([entry_id, user_id])
+        if time is not None:
+            updates.append("created_at = ?")
+            params.append(time)
 
         with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+
             cursor = conn.execute(
-                f"""
-                UPDATE mood_entries 
-                SET {", ".join(updates)}
-                WHERE id = ? AND user_id = ?
-            """,
-                params,
+                "SELECT id FROM mood_entries WHERE id = ? AND user_id = ?",
+                (entry_id, user_id),
             )
+            row = cursor.fetchone()
+            if not row:
+                return False
+
+            updated = False
+
+            if updates:
+                updates.append("updated_at = CURRENT_TIMESTAMP")
+                update_cursor = conn.execute(
+                    f"""
+                    UPDATE mood_entries
+                    SET {", ".join(updates)}
+                    WHERE id = ? AND user_id = ?
+                """,
+                    params + [entry_id, user_id],
+                )
+                updated = True
+            else:
+                # Even if only selections change, bump updated_at for auditing
+                conn.execute(
+                    """
+                    UPDATE mood_entries
+                    SET updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ? AND user_id = ?
+                """,
+                    (entry_id, user_id),
+                )
+
+            if selected_options is not None:
+                conn.execute(
+                    "DELETE FROM entry_selections WHERE entry_id = ?",
+                    (entry_id,),
+                )
+                if selected_options:
+                    conn.executemany(
+                        "INSERT INTO entry_selections (entry_id, option_id) VALUES (?, ?)",
+                        [(entry_id, option_id) for option_id in selected_options],
+                    )
+                updated = True
+
             conn.commit()
-            return cursor.rowcount > 0
+            return updated or bool(selected_options is not None)
 
     def delete_mood_entry(self, user_id: int, entry_id: int) -> bool:
         """Delete a mood entry by ID for a user"""
