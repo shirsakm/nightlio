@@ -85,6 +85,10 @@ const EntryView = ({
           });
         }
 
+        if (typeof onBack === 'function') {
+          onBack();
+        }
+
         show('Entry updated successfully!', 'success');
         return;
       }
