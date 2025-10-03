@@ -2,7 +2,7 @@ import HistoryEntry from './HistoryEntry';
 import AddEntryCard from './AddEntryCard';
 import Skeleton from '../ui/Skeleton';
 
-const HistoryList = ({ entries, loading, error, onDelete }) => {
+const HistoryList = ({ entries, loading, error, onDelete, onEdit }) => {
   if (loading) {
     return (
       <div style={{ textAlign: 'left', padding: '1rem 0' }}>
@@ -52,6 +52,7 @@ const HistoryList = ({ entries, loading, error, onDelete }) => {
             key={entry.id || entry.date} 
             entry={entry} 
             onDelete={onDelete}
+            onEdit={onEdit}
           />
         ))}
       </div>

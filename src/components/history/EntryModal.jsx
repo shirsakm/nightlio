@@ -45,7 +45,7 @@ const deriveTitleBody = (content = '') => {
   return { title: first, body: '' };
 };
 
-const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
+const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) => {
   if (!isOpen || !entry) return null;
   useEffect(() => {
     if (!isOpen) return;
@@ -75,6 +75,24 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting }) => {
             )}
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
+            {onEdit && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                disabled={isDeleting}
+                style={{
+                  background: 'var(--accent-bg)',
+                  color: '#fff',
+                  border: '1px solid var(--accent-bg)',
+                  borderRadius: 10,
+                  padding: '8px 12px',
+                  fontWeight: 600,
+                  boxShadow: 'var(--shadow-sm)'
+                }}
+                aria-label="Edit entry"
+              >
+                Edit
+              </button>
+            )}
             {onDelete && (
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(); }}

@@ -24,6 +24,7 @@ import "./App.css";
 const AppContent = () => {
   const [currentView, setCurrentView] = useState("history");
   const [selectedMood, setSelectedMood] = useState(null);
+  const [editingEntry, setEditingEntry] = useState(null);
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
@@ -31,6 +32,7 @@ const AppContent = () => {
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
   const handleMoodSelect = (moodValue) => {
+    setEditingEntry(null);
     setSelectedMood(moodValue);
     setCurrentView("entry");
   };
@@ -38,17 +40,39 @@ const AppContent = () => {
   const handleBackToHistory = () => {
     setCurrentView("history");
     setSelectedMood(null);
+    setEditingEntry(null);
   };
 
   const handleEntrySubmitted = () => {
     setCurrentView("history");
     setSelectedMood(null);
+    setEditingEntry(null);
     refreshHistory();
   };
 
   const handleEntryDeleted = (deletedEntryId) => {
     // Remove the deleted entry from the local state
     setPastEntries(prev => prev.filter(entry => entry.id !== deletedEntryId));
+  };
+
+  const handleStartEdit = (entry) => {
+    setEditingEntry(entry);
+    setSelectedMood(entry.mood);
+    setCurrentView("entry");
+  };
+
+  const handleEditMoodSelect = (moodValue) => {
+    setSelectedMood(moodValue);
+  };
+
+  const handleEntryUpdated = (updatedEntry) => {
+    setPastEntries(prev => prev.map(entry => (
+      entry.id === updatedEntry.id ? { ...entry, ...updatedEntry } : entry
+    )));
+    setEditingEntry(null);
+    setSelectedMood(null);
+    setCurrentView("history");
+    refreshHistory();
   };
 
   const handleViewChange = (view) => {
@@ -83,6 +107,7 @@ const AppContent = () => {
               error={historyError}
               onMoodSelect={handleMoodSelect}
               onDelete={handleEntryDeleted}
+              onEdit={handleStartEdit}
               renderOnlyHeader={true}
             />
           )}
@@ -95,7 +120,10 @@ const AppContent = () => {
               onCreateGroup={createGroup}
               onCreateOption={createGroupOption}
               onEntrySubmitted={handleEntrySubmitted}
-        onSelectMood={(m) => setSelectedMood(m)}
+              editingEntry={editingEntry}
+              onEntryUpdated={handleEntryUpdated}
+              onEditMoodSelect={handleEditMoodSelect}
+              onSelectMood={handleMoodSelect}
             />
           )}
 
@@ -125,6 +153,7 @@ const AppContent = () => {
                   loading={historyLoading}
                   error={historyError}
                   onDelete={handleEntryDeleted}
+                  onEdit={handleStartEdit}
                 />
               </section>
             )}

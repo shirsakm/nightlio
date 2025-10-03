@@ -4,7 +4,7 @@ import apiService from '../../services/api';
 import { useToast } from '../ui/ToastProvider';
 import EntryModal from './EntryModal';
 
-const HistoryEntry = ({ entry, onDelete }) => {
+const HistoryEntry = ({ entry, onDelete, onEdit }) => {
   const { icon: IconComponent, color } = getMoodIcon(entry.mood);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -70,6 +70,12 @@ const HistoryEntry = ({ entry, onDelete }) => {
     }
   };
 
+  const handleEdit = () => {
+    if (typeof onEdit === 'function') {
+      onEdit(entry);
+    }
+  };
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -132,6 +138,10 @@ const HistoryEntry = ({ entry, onDelete }) => {
           if (ok) setOpen(false);
         }}
         isDeleting={isDeleting}
+        onEdit={onEdit ? () => {
+          setOpen(false);
+          handleEdit();
+        } : undefined}
       />
     </div>
   );

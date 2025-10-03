@@ -1,6 +1,20 @@
+from typing import Any, List, Optional
 from flask import Blueprint, request, jsonify
 from api.services.mood_service import MoodService
 from api.utils.auth_middleware import require_auth, get_current_user_id
+
+
+def _normalise_selected_options(raw: Any, *, allow_none: bool = False) -> Optional[List[int]]:
+    if raw is None:
+        return None if allow_none else []
+
+    if not isinstance(raw, list):
+        raise ValueError("selected_options must be an array")
+
+    try:
+        return [int(option_id) for option_id in raw]
+    except (TypeError, ValueError) as exc:
+        raise ValueError("selected_options must contain integers") from exc
 
 
 def create_mood_routes(mood_service: MoodService):
@@ -11,19 +25,41 @@ def create_mood_routes(mood_service: MoodService):
     def create_mood_entry():
         try:
             user_id = get_current_user_id()
-            data = request.json
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
+            data = request.get_json(silent=True) or {}
             mood = data.get("mood")
             date = data.get("date")
             content = data.get("content")
             time = data.get("time")
-            selected_options = data.get("selected_options", [])
+            selected_options_raw = data.get("selected_options", [])
 
             # Validate input
             if not all([mood, date, content]):
                 return jsonify({"error": "Missing required fields"}), 400
 
+            raw_mood: Any = mood
+            try:
+                mood_value = int(raw_mood)
+            except (TypeError, ValueError):
+                return jsonify({"error": "Mood must be an integer"}), 400
+
+            date_value = str(date)
+            content_value = str(content)
+            time_value = str(time) if time else None
+
+            try:
+                selected_options = _normalise_selected_options(selected_options_raw)
+            except ValueError as exc:
+                return jsonify({"error": str(exc)}), 400
+
             result = mood_service.create_mood_entry(
-                user_id, date, mood, content, time, selected_options
+                user_id,
+                date_value,
+                mood_value,
+                content_value,
+                time_value,
+                selected_options,
             )
 
             return (
@@ -48,6 +84,8 @@ def create_mood_routes(mood_service: MoodService):
     def get_mood_entries():
         try:
             user_id = get_current_user_id()
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
             start_date = request.args.get("start_date")
             end_date = request.args.get("end_date")
 
@@ -67,6 +105,8 @@ def create_mood_routes(mood_service: MoodService):
     def get_mood_entry(entry_id):
         try:
             user_id = get_current_user_id()
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
             entry = mood_service.get_entry_by_id(user_id, entry_id)
             if entry:
                 return jsonify(entry)
@@ -81,18 +121,67 @@ def create_mood_routes(mood_service: MoodService):
     def update_mood_entry(entry_id):
         try:
             user_id = get_current_user_id()
-            data = request.json
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
+            data = request.json or {}
+
             mood = data.get("mood")
             content = data.get("content")
+            date = data.get("date")
+            time = data.get("time")
+            selected_options = None
+            if "selected_options" in data:
+                try:
+                    normalised_options = _normalise_selected_options(
+                        data.get("selected_options"), allow_none=True
+                    )
+                except ValueError as exc:
+                    return jsonify({"error": str(exc)}), 400
+                selected_options = [] if normalised_options is None else normalised_options
 
-            success = mood_service.update_entry(user_id, entry_id, mood, content)
+            if (
+                mood is None
+                and content is None
+                and date is None
+                and time is None
+                and "selected_options" not in data
+            ):
+                return jsonify({"error": "No update fields provided"}), 400
 
-            if success:
-                return jsonify(
-                    {"status": "success", "message": "Mood entry updated successfully"}
-                )
-            else:
+            mood_value = None
+            if mood is not None:
+                try:
+                    mood_value = int(mood)
+                except (TypeError, ValueError):
+                    return jsonify({"error": "Mood must be an integer"}), 400
+
+            content_value = str(content) if content is not None else None
+            date_value = str(date) if date is not None else None
+            time_value = str(time) if time else None
+
+            updated_entry = mood_service.update_entry(
+                user_id,
+                entry_id,
+                mood=mood_value,
+                content=content_value,
+                date=date_value,
+                time=time_value,
+                selected_options=selected_options,
+            )
+
+            if updated_entry is None:
                 return jsonify({"error": "Entry not found or no changes made"}), 404
+
+            return (
+                jsonify(
+                    {
+                        "status": "success",
+                        "message": "Mood entry updated successfully",
+                        "entry": updated_entry,
+                    }
+                ),
+                200,
+            )
 
         except ValueError as e:
             return jsonify({"error": str(e)}), 400
@@ -104,6 +193,8 @@ def create_mood_routes(mood_service: MoodService):
     def delete_mood_entry(entry_id):
         try:
             user_id = get_current_user_id()
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
             success = mood_service.delete_entry(user_id, entry_id)
 
             if success:
@@ -121,6 +212,8 @@ def create_mood_routes(mood_service: MoodService):
     def get_mood_statistics():
         try:
             user_id = get_current_user_id()
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
             stats = mood_service.get_statistics(user_id)
             return jsonify(stats)
 
@@ -132,6 +225,8 @@ def create_mood_routes(mood_service: MoodService):
     def get_current_streak():
         try:
             user_id = get_current_user_id()
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
             streak = mood_service.get_current_streak(user_id)
             return jsonify(
                 {
@@ -148,6 +243,8 @@ def create_mood_routes(mood_service: MoodService):
     def get_entry_selections(entry_id):
         try:
             user_id = get_current_user_id()
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
             selections = mood_service.get_entry_selections(user_id, entry_id)
             return jsonify(selections)
 
