@@ -233,6 +233,62 @@ class MoodDatabase:
         start = date_obj - timedelta(days=date_obj.weekday())
         return start.strftime("%Y-%m-%d")
 
+    def _rollover_goal_if_needed(self, conn: sqlite3.Connection, goal_row: sqlite3.Row) -> Dict:
+        """If the stored period_start is from a previous week, roll the goal forward.
+
+        - Resets `completed` to 0 for the new week.
+        - Updates `streak` if the previous week met the target; otherwise resets streak to 0.
+        - Sets `period_start` to current week start.
+
+        Returns a dict for the up-to-date goal (and persists the change).
+        """
+        from datetime import datetime
+
+        today_start = self._week_start_iso()
+        d = dict(goal_row)
+        # No rollover needed
+        if (d.get("period_start") or "") == today_start:
+            # Maintain derived flag for convenience
+            today_str = datetime.now().strftime("%Y-%m-%d")
+            d["already_completed_today"] = d.get("last_completed_date") == today_str
+            return d
+
+        # Compute next state based on previous week's performance
+        current_completed = int(d.get("completed") or 0)
+        freq = int(d.get("frequency_per_week") or 0)
+        streak = int(d.get("streak") or 0)
+
+        if freq > 0 and current_completed >= freq:
+            streak += 1
+        else:
+            streak = 0
+
+        # Reset for new week
+        new_completed = 0
+        conn.execute(
+            """
+            UPDATE goals
+            SET completed = ?, streak = ?, period_start = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ? AND user_id = ?
+            """,
+            (new_completed, streak, today_start, d["id"], d["user_id"]),
+        )
+        conn.commit()
+
+        # Return fresh row
+        conn.row_factory = sqlite3.Row
+        updated = conn.execute(
+            """
+            SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at
+            FROM goals WHERE id = ? AND user_id = ?
+            """,
+            (d["id"], d["user_id"]),
+        ).fetchone()
+        out = dict(updated) if updated else d
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        out["already_completed_today"] = out.get("last_completed_date") == today_str
+        return out
+
     def create_goal(
         self, user_id: int, title: str, description: str, frequency_per_week: int
     ) -> int:
@@ -268,14 +324,11 @@ class MoodDatabase:
                 """,
                 (user_id,),
             ).fetchall()
-            from datetime import datetime
-
-            today_str = datetime.now().strftime("%Y-%m-%d")
             results: List[Dict] = []
             for r in rows:
-                d = dict(r)
-                d["already_completed_today"] = d.get("last_completed_date") == today_str
-                results.append(d)
+                # Ensure week rollover so UI resets at new week start without user action
+                updated = self._rollover_goal_if_needed(conn, r)
+                results.append(updated)
             return results
 
     def get_goal_by_id(self, user_id: int, goal_id: int) -> Optional[Dict]:
@@ -290,12 +343,8 @@ class MoodDatabase:
             ).fetchone()
             if not row:
                 return None
-            from datetime import datetime
-
-            today_str = datetime.now().strftime("%Y-%m-%d")
-            d = dict(row)
-            d["already_completed_today"] = d.get("last_completed_date") == today_str
-            return d
+            # Apply rollover so single-goal fetch is also up-to-date
+            return self._rollover_goal_if_needed(conn, row)
 
     def update_goal(
         self,
@@ -353,20 +402,13 @@ class MoodDatabase:
             ).fetchone()
             if not row:
                 return None
-            goal = dict(row)
+            # Ensure rollover first so increment logic always works on current week
+            goal = self._rollover_goal_if_needed(conn, row)
             current_completed = int(goal.get("completed") or 0)
             freq = int(goal.get("frequency_per_week") or 0)
             streak = int(goal.get("streak") or 0)
             period_start = goal.get("period_start")
             last_completed_date = goal.get("last_completed_date")
-            # If new week, reset completed and update streak based on last week success
-            if period_start != today_start:
-                if current_completed >= freq and freq > 0:
-                    streak += 1
-                else:
-                    streak = 0
-                current_completed = 0
-                period_start = today_start
             # Enforce once per day per goal
             did_increment = False
             if last_completed_date == today_str:
