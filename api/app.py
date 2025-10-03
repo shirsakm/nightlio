@@ -64,6 +64,9 @@ def create_app(config_name="default"):
         # Ensure JWT verification uses the same secret that issuance uses
         if getattr(cfg, "JWT_SECRET", None):
             app.config["JWT_SECRET_KEY"] = getattr(cfg, "JWT_SECRET")
+        # Ensure Google client ID is available to routes expecting it
+        if getattr(cfg, "GOOGLE_CLIENT_ID", None):
+            app.config["GOOGLE_CLIENT_ID"] = getattr(cfg, "GOOGLE_CLIENT_ID")
     except Exception:
         cfg = None  # fallback if typed config fails
 

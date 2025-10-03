@@ -175,4 +175,6 @@ def config_to_public_dict(cfg: ConfigData) -> Dict[str, Any]:
     """
     return {
         "enable_google_oauth": bool(cfg.ENABLE_GOOGLE_OAUTH),
+        # Expose the Google Client ID so the frontend can initialize GSI correctly
+        "google_client_id": cfg.GOOGLE_CLIENT_ID,
     }
