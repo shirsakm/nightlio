@@ -80,10 +80,17 @@ const AppContent = () => {
   };
 
   useEffect(() => {
-    const handler = () => setCurrentView('entry');
+    const handler = () => {
+      if (currentView !== 'history') {
+        setCurrentView('history');
+        return;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     window.addEventListener('nightlio:new-entry', handler);
     return () => window.removeEventListener('nightlio:new-entry', handler);
-  }, []);
+  }, [currentView]);
 
   return (
     <>
@@ -167,7 +174,16 @@ const AppContent = () => {
         onLoadStatistics={loadStatistics}
       />
 
-      <FAB onClick={() => handleViewChange("entry")} />
+      <FAB
+        onClick={() => {
+          if (currentView === 'history') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            setCurrentView('history');
+          }
+        }}
+        label="Scroll to top"
+      />
     </>
   );
 };
