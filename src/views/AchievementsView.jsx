@@ -49,6 +49,7 @@ const AchievementsView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [active, setActive] = useState(null);
+  const [progress, setProgress] = useState({});
 
   useEffect(() => {
     loadAchievements();
@@ -57,8 +58,12 @@ const AchievementsView = () => {
   const loadAchievements = async () => {
     try {
       setLoading(true);
-      const data = await apiService.getUserAchievements();
+      const [data, prog] = await Promise.all([
+        apiService.getUserAchievements(),
+        apiService.getAchievementsProgress(),
+      ]);
       setAchievements(data);
+      setProgress(prog || {});
     } catch (err) {
       setError('Failed to load achievements');
       console.error('Failed to load achievements:', err);
@@ -103,8 +108,9 @@ const AchievementsView = () => {
         {getAllAchievements().map((achievement, index) => {
           const unlockedAchievement = achievements.find(a => a.achievement_type === achievement.achievement_type);
           const isUnlocked = !!unlockedAchievement;
-          const progressValue = isUnlocked ? undefined : Math.floor(Math.random() * 7);
-          const progressMax = 7;
+          const p = progress[achievement.achievement_type] || null;
+          const progressValue = isUnlocked ? undefined : (p ? p.current : 0);
+          const progressMax = p ? p.max : 7;
           return (
             <div
               key={index}
@@ -130,9 +136,10 @@ const AchievementsView = () => {
 
       <Modal open={!!active} onClose={() => setActive(null)} title={active?.name || 'Achievement'}>
         <p style={{ marginTop: 0 }}>{active?.description}</p>
-        {!achievements.find(a => a.achievement_type === active?.achievement_type) && (
-          <ProgressBar value={Math.floor(Math.random()*7)} max={7} label="Progress to unlock" />
-        )}
+        {!achievements.find(a => a.achievement_type === active?.achievement_type) && (() => {
+          const p = progress[active?.achievement_type] || { current: 0, max: 7 };
+          return <ProgressBar value={p.current || 0} max={p.max || 7} label="Progress to unlock" />;
+        })()}
         <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text-muted)' }}>
           Tips: Log daily to maintain your streak. Viewing statistics contributes to "Data Lover".
         </div>
