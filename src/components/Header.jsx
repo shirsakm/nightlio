@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
 import { useTheme } from '../contexts/ThemeContext';
 import SearchPlaceholder from './search/SearchPlaceholder';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from './ui/ToastProvider';
 
 const Header = ({ currentStreak }) => {
@@ -11,6 +11,7 @@ const Header = ({ currentStreak }) => {
   useConfig();
   const { theme, cycle } = useTheme();
   const { show } = useToast();
+  const [showAvatar, setShowAvatar] = useState(true);
 
   // Focus search on '/' and show ephemeral toast
   useEffect(() => {
@@ -145,7 +146,7 @@ const Header = ({ currentStreak }) => {
 
             {/* User Profile */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {user.avatar_url && (
+              {user.avatar_url && showAvatar && (
                 <img
                   src={user.avatar_url}
                   alt={user.name}
@@ -155,6 +156,7 @@ const Header = ({ currentStreak }) => {
                     borderRadius: '50%',
                     border: '2px solid var(--accent-600)'
                   }}
+                  onError={() => setShowAvatar(false)}
                 />
               )}
               <span style={{ 
