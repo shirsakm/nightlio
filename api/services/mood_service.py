@@ -90,6 +90,12 @@ class MoodService:
 
     def get_statistics(self, user_id: int) -> Dict:
         """Get mood statistics for a user"""
+        # Track statistics view for achievements (Data Lover)
+        try:
+            self.db.increment_stats_view(user_id)
+        except Exception:
+            # Metrics should not break stats
+            pass
         stats = self.db.get_mood_statistics(user_id)
         mood_counts = self.db.get_mood_counts(user_id)
         current_streak = self.db.get_current_streak(user_id)

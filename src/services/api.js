@@ -197,6 +197,10 @@ class ApiService {
     });
   }
 
+  async getAchievementsProgress() {
+    return this.request('/api/achievements/progress');
+  }
+
   // Web3 minting removed
 
   // -------- Goals endpoints --------

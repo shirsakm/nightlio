@@ -199,6 +199,22 @@ class MoodDatabase:
                 except Exception:
                     pass
 
+                # Create user_metrics table to track counters such as statistics views
+                try:
+                    conn.execute(
+                        """
+                    CREATE TABLE IF NOT EXISTS user_metrics (
+                        user_id INTEGER PRIMARY KEY,
+                        stats_views INTEGER NOT NULL DEFAULT 0,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+                    )
+                    """
+                    )
+                    print("✅ User metrics table created")
+                except Exception:
+                    pass
+
         except Exception as e:
             print(f"❌ Database initialization failed: {str(e)}")
             print(f"Database path: {self.db_path}")
@@ -704,6 +720,26 @@ class MoodDatabase:
                     "last_entry_date": None,
                 }
 
+    # ---- User metrics (for achievements like Data Lover) ----
+    def increment_stats_view(self, user_id: int) -> None:
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(
+                "INSERT INTO user_metrics (user_id, stats_views) VALUES (?, 1) ON CONFLICT(user_id) DO UPDATE SET stats_views = stats_views + 1, updated_at = CURRENT_TIMESTAMP",
+                (user_id,),
+            )
+            conn.commit()
+
+    def get_user_metrics(self, user_id: int) -> Dict:
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                "SELECT user_id, stats_views, updated_at FROM user_metrics WHERE user_id = ?",
+                (user_id,),
+            ).fetchone()
+            if not row:
+                return {"user_id": user_id, "stats_views": 0}
+            return dict(row)
+
     def get_mood_counts(self, user_id: int) -> Dict[int, int]:
         """Get count of each mood level for a specific user"""
         with sqlite3.connect(self.db_path) as conn:
@@ -1128,13 +1164,16 @@ class MoodDatabase:
             current_streak = self.get_current_streak(user_id)
 
             # Get stats views (we'll need to track this separately)
-            # For now, we'll skip this achievement
+            # Tracked in user_metrics
+            metrics = self.get_user_metrics(user_id)
+            stats_views = int(metrics.get("stats_views") or 0)
 
             # Check achievements
             achievements_to_check = [
                 ("first_entry", total_entries >= 1),
                 ("week_warrior", current_streak >= 7),
                 ("consistency_king", current_streak >= 30),
+                ("data_lover", stats_views >= 10),
                 ("mood_master", total_entries >= 100),
             ]
 
@@ -1145,3 +1184,25 @@ class MoodDatabase:
                         new_achievements.append(achievement_type)
 
         return new_achievements
+
+    # Progress summary for achievements
+    def get_achievements_progress(self, user_id: int) -> Dict[str, Dict[str, int]]:
+        """Return progress/current-max per achievement for the user."""
+        # Totals and streak
+        stats = self.get_mood_statistics(user_id)
+        total_entries = int(stats.get("total_entries") or 0)
+        current_streak = int(self.get_current_streak(user_id) or 0)
+        metrics = self.get_user_metrics(user_id)
+        stats_views = int(metrics.get("stats_views") or 0)
+
+        def clamp(v, m):
+            return max(0, min(int(v), int(m)))
+
+        progress = {
+            "first_entry": {"current": clamp(total_entries, 1), "max": 1},
+            "week_warrior": {"current": clamp(current_streak, 7), "max": 7},
+            "consistency_king": {"current": clamp(current_streak, 30), "max": 30},
+            "data_lover": {"current": clamp(stats_views, 10), "max": 10},
+            "mood_master": {"current": clamp(total_entries, 100), "max": 100},
+        }
+        return progress
