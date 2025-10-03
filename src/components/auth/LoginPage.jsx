@@ -3,8 +3,10 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Lock } from "lucide-react";
 import { useConfig } from "../../contexts/ConfigContext";
 
-const GOOGLE_CLIENT_ID =
-  import.meta.env.VITE_GOOGLE_CLIENT_ID || "your-google-client-id";
+// Prefer runtime config-provided client ID to avoid build-time mismatch
+// Falls back to Vite env only if present; otherwise null to block incorrect init
+const FALLBACK_GOOGLE_CLIENT_ID =
+  (import.meta.env && import.meta.env.VITE_GOOGLE_CLIENT_ID) || null;
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -39,6 +41,11 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (!config.enable_google_oauth) return; // skip loading Google in self-host mode
+    const GOOGLE_CLIENT_ID = config.google_client_id || FALLBACK_GOOGLE_CLIENT_ID;
+    if (!GOOGLE_CLIENT_ID) {
+      setMessage("Google OAuth is enabled but GOOGLE_CLIENT_ID is not configured.");
+      return;
+    }
 
     // Check if Google script is already loaded
     if (window.google) {
