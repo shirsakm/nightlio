@@ -61,10 +61,8 @@ def create_app(config_name="default"):
     cfg = None
     try:
         cfg = get_config()
-        # Ensure JWT verification uses the same secret that issuance uses
         if getattr(cfg, "JWT_SECRET", None):
             app.config["JWT_SECRET_KEY"] = getattr(cfg, "JWT_SECRET")
-        # Ensure Google client ID is available to routes expecting it
         if getattr(cfg, "GOOGLE_CLIENT_ID", None):
             app.config["GOOGLE_CLIENT_ID"] = getattr(cfg, "GOOGLE_CLIENT_ID")
     except Exception:
@@ -157,14 +155,16 @@ if __name__ == "__main__":
 
     print("Starting Flask app...")
     print(f"Environment: {env}")
-    print(f"Google Client ID loaded: {app.config.get('GOOGLE_CLIENT_ID', 'NOT FOUND')}")
+    print(f"🔑 Google Client ID: {'✅ Set' if app.config.get('GOOGLE_CLIENT_ID') else '❌ Missing'}")
 
-    # Use Railway's PORT or default to 5000
+
     port = int(os.getenv("PORT", 5000))
-    print(f"Starting server on port: {port}")
-    print(f"Host: {'[::]' if env == 'production' else '127.0.0.1'}")
-
+    print(f"🚀 Starting Flask app on port {port}")
     if env == "production":
+        print("⚠️  WARNING: Running in production mode with Flask development server!")
+        print("⚠️  For production deployments, use: gunicorn wsgi:application")
+        print("⚠️  Or run: python3 wsgi.py")
         app.run(host="::", port=port, debug=False)
     else:
+        print("🔧 Using Flask development server (debug mode on)")
         app.run(debug=True, host="127.0.0.1", port=port)

@@ -103,6 +103,8 @@ class ConfigData:
     module's surface the same and swap underlying DB access in services.
     """
 
+    PORT: int
+
     # Feature flags
     ENABLE_GOOGLE_OAUTH: bool
 
@@ -143,7 +145,13 @@ def _load_config_from_env() -> ConfigData:
         or "dev-secret-key-change-in-production"
     )
 
+    port = int(
+        os.getenv("PORT")
+        or "5000"
+    )
+
     return ConfigData(
+        PORT=port,
         ENABLE_GOOGLE_OAUTH=enable_google,
         GOOGLE_CLIENT_ID=os.getenv("GOOGLE_CLIENT_ID"),
         GOOGLE_CLIENT_SECRET=os.getenv("GOOGLE_CLIENT_SECRET"),

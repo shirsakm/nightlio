@@ -4,6 +4,7 @@ Railway startup script for Nightlio API
 """
 import os
 import sys
+import subprocess
 
 # Ensure project root is on sys.path so `import api.app` works when cwd=api/
 api_dir = os.path.dirname(os.path.abspath(__file__))
@@ -22,15 +23,27 @@ if __name__ == "__main__":
 
     # Create app
     app = create_app(env)
-
-    # Get port from Railway
+    
     port = int(os.getenv("PORT", 5000))
-
     print(f"🚀 Starting Nightlio API on port {port}")
     print(f"📍 Environment: {env}")
     print(
         f"🔑 Google Client ID: {'✅ Set' if app.config.get('GOOGLE_CLIENT_ID') else '❌ Missing'}"
     )
 
-    # Run the app
-    app.run(host="::", port=port, debug=False)
+    if env == "production":
+        cmd = [
+            "gunicorn",
+            "--bind", f"[::]:{port}",
+            "--workers", "4",
+            "--timeout", "120",
+            "--worker-class", "sync",
+            "--access-logfile", "-",
+            "--error-logfile", "-",
+            "wsgi:application"
+        ]
+        print(f"🔧 Using Gunicorn")
+        subprocess.run(cmd)
+    else:
+        print("🔧 Using Flask development server")
+        app.run(debug=True, host="127.0.0.1", port=port)

@@ -1,1 +1,1 @@
-web: python app.py
+web: gunicorn --bind [::]:$PORT --workers 4 --timeout 120 --worker-class sync --access-logfile - --error-logfile - wsgi:application
