@@ -1,4 +1,5 @@
 """Group and selection helpers."""
+
 from __future__ import annotations
 
 import sqlite3
@@ -29,7 +30,9 @@ class GroupsMixin(DatabaseConnectionMixin):
                     """,
                     (group["id"],),
                 )
-                group["options"] = [dict(option_row) for option_row in options_cursor.fetchall()]
+                group["options"] = [
+                    dict(option_row) for option_row in options_cursor.fetchall()
+                ]
                 groups.append(group)
             return groups
 

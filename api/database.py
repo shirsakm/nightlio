@@ -1,4 +1,5 @@
 """Nightlio database facade built from modular mixins."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -48,7 +49,9 @@ class MoodDatabase(
         data_dir = Path(__file__).resolve().parent.parent / "data"
         data_dir.mkdir(parents=True, exist_ok=True)
 
-        resolved_path = Path(db_path) if db_path is not None else data_dir / "nightlio.db"
+        resolved_path = (
+            Path(db_path) if db_path is not None else data_dir / "nightlio.db"
+        )
         self.db_path = str(resolved_path)
 
         logger.debug("MoodDatabase configured with db_path=%s", self.db_path)

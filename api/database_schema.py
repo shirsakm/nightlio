@@ -1,4 +1,5 @@
 """Database schema helpers for Nightlio."""
+
 from __future__ import annotations
 
 import sqlite3
@@ -197,7 +198,9 @@ class DatabaseSchemaMixin(DatabaseConnectionMixin):
             )
             logger.info("Goal completions table ready")
         except sqlite3.Error as exc:
-            logger.warning("Goal completions table creation failed (non-critical): %s", exc)
+            logger.warning(
+                "Goal completions table creation failed (non-critical): %s", exc
+            )
 
     def _create_user_metrics_table(self, conn: sqlite3.Connection) -> None:
         try:

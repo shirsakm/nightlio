@@ -13,8 +13,8 @@ class MoodService:
         date: str,
         mood: int,
         content: str,
-    time: Optional[str] = None,
-    selected_options: Optional[List[int]] = None,
+        time: Optional[str] = None,
+        selected_options: Optional[List[int]] = None,
     ) -> Dict:
         """Create a new mood entry and check for achievements"""
         if not (1 <= mood <= 5):

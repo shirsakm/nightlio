@@ -1,4 +1,5 @@
 """Shared database utilities and definitions for Nightlio."""
+
 from __future__ import annotations
 
 import logging

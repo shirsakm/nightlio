@@ -1,4 +1,5 @@
 """Achievements and analytics helpers."""
+
 from __future__ import annotations
 
 import sqlite3

@@ -1,4 +1,5 @@
 """User management helpers."""
+
 from __future__ import annotations
 
 import sqlite3
@@ -67,8 +68,8 @@ class UsersMixin(DatabaseConnectionMixin):
             try:
                 try:
                     cursor = conn.execute(
-                        SQLQueries.UPSERT_USER +
-                        " RETURNING id, google_id, email, name, avatar_url, created_at, last_login",
+                        SQLQueries.UPSERT_USER
+                        + " RETURNING id, google_id, email, name, avatar_url, created_at, last_login",
                         (google_id, email, name, avatar_url),
                     )
                     row = cursor.fetchone()

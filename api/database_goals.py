@@ -1,4 +1,5 @@
 """Goal management mixin for Nightlio."""
+
 from __future__ import annotations
 
 import sqlite3
@@ -6,7 +7,12 @@ from datetime import datetime, timedelta, date
 from typing import Dict, List, Optional
 
 try:  # pragma: no cover - support both package and script imports
-    from .database_common import DatabaseConnectionMixin, DatabaseError, SQLQueries, logger
+    from .database_common import (
+        DatabaseConnectionMixin,
+        DatabaseError,
+        SQLQueries,
+        logger,
+    )
 except ImportError:  # pragma: no cover - script fallback
     from database_common import (  # type: ignore
         DatabaseConnectionMixin,
@@ -90,7 +96,9 @@ class GoalsMixin(DatabaseConnectionMixin):
             raise ValueError("user_id must be a positive integer")
         if not title or not title.strip():
             raise ValueError("Title is required and cannot be empty")
-        if not isinstance(frequency_per_week, int) or not (1 <= frequency_per_week <= 7):
+        if not isinstance(frequency_per_week, int) or not (
+            1 <= frequency_per_week <= 7
+        ):
             raise ValueError("frequency_per_week must be between 1 and 7")
 
         period_start = self._week_start_iso()
