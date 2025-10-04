@@ -1,10 +1,107 @@
 import sqlite3
 import os
-from datetime import datetime
+import logging
+import time
+from datetime import datetime, timedelta, date
 from typing import List, Dict, Optional
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class DatabaseError(Exception):
+    """Custom exception for database operations."""
+    pass
+
+
+# SQL Query Constants
+class SQLQueries:
+    """Constants for SQL queries to improve maintainability."""
+    
+    # User queries
+    CREATE_USER = """
+        INSERT INTO users (google_id, email, name, avatar_url)
+        VALUES (?, ?, ?, ?)
+    """
+    
+    GET_USER_BY_GOOGLE_ID = """
+        SELECT id, google_id, email, name, avatar_url, created_at, last_login
+        FROM users WHERE google_id = ?
+    """
+    
+    GET_USER_BY_ID = """
+        SELECT id, google_id, email, name, avatar_url, created_at, last_login
+        FROM users WHERE id = ?
+    """
+    
+    UPSERT_USER = """
+        INSERT INTO users (google_id, email, name, avatar_url)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(google_id) DO UPDATE SET
+          email=COALESCE(excluded.email, users.email),
+          name=COALESCE(excluded.name, users.name),
+          avatar_url=COALESCE(excluded.avatar_url, users.avatar_url),
+          last_login=CURRENT_TIMESTAMP
+    """
+    
+    # Goals queries
+    GET_GOALS_BY_USER = """
+        SELECT id, user_id, title, description, frequency_per_week, completed, 
+               streak, period_start, last_completed_date, created_at, updated_at
+        FROM goals WHERE user_id = ? ORDER BY created_at DESC
+    """
+    
+    GET_GOAL_BY_ID = """
+        SELECT id, user_id, title, description, frequency_per_week, completed, 
+               streak, period_start, last_completed_date, created_at, updated_at
+        FROM goals WHERE id = ? AND user_id = ?
+    """
+    
+    # Mood entries queries
+    GET_USER_ENTRY_DATES = """
+        SELECT DISTINCT date
+        FROM mood_entries
+        WHERE user_id = ?
+        ORDER BY date DESC
+    """
+    
+    GET_MOOD_STATISTICS = """
+        SELECT 
+            COUNT(*) as total_entries,
+            AVG(mood) as average_mood,
+            MIN(mood) as lowest_mood,
+            MAX(mood) as highest_mood,
+            MIN(date) as first_entry_date,
+            MAX(date) as last_entry_date
+        FROM mood_entries
+        WHERE user_id = ?
+    """
 
 
 class MoodDatabase:
+    """
+    Main database class for the Nightlio mood tracking application.
+    
+    This class provides a comprehensive interface for managing users, mood entries,
+    goals, achievements, and related data. It uses SQLite as the underlying database
+    and provides methods for CRUD operations, analytics, and data integrity.
+    
+    Features:
+    - User management with Google OAuth integration
+    - Mood entry tracking with customizable groups and options
+    - Goal setting and progress tracking with weekly rollover
+    - Achievement system with progress calculation
+    - Comprehensive error handling and logging
+    
+    Attributes:
+        db_path (str): Path to the SQLite database file
+    
+    Example:
+        >>> db = MoodDatabase()
+        >>> user_id = db.create_user("google123", "user@example.com", "John Doe")
+        >>> goal_id = db.create_goal(user_id, "Exercise", "Daily workout", 5)
+    """
     def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
             # Create database in the data directory
@@ -27,193 +124,28 @@ class MoodDatabase:
             print(f"Initializing database at: {self.db_path}")
             with sqlite3.connect(self.db_path) as conn:
                 print("Database connection successful. Creating tables...")
-                # Create users table
-                conn.execute(
-                    """
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    google_id TEXT UNIQUE NOT NULL,
-                    email TEXT NOT NULL,
-                    name TEXT NOT NULL,
-                    avatar_url TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """
-                )
-                print("✅ Users table created")
-
-                # Create mood_entries table with user_id
-                conn.execute(
-                    """
-                CREATE TABLE IF NOT EXISTS mood_entries (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    date TEXT NOT NULL,
-                    mood INTEGER NOT NULL CHECK (mood >= 1 AND mood <= 5),
-                    content TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-                )
-            """
-                )
-                print("✅ Mood entries table created")
-
-                # Create groups table
-                conn.execute(
-                    """
-                CREATE TABLE IF NOT EXISTS groups (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL UNIQUE,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """
-                )
-                print("✅ Groups table created")
-
-                # Create group options table
-                conn.execute(
-                    """
-                CREATE TABLE IF NOT EXISTS group_options (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    group_id INTEGER NOT NULL,
-                    name TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
-                )
-            """
-                )
-                print("✅ Group options table created")
-
-                # Create table to store selected options for each entry
-                conn.execute(
-                    """
-                CREATE TABLE IF NOT EXISTS entry_selections (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    entry_id INTEGER NOT NULL,
-                    option_id INTEGER NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (entry_id) REFERENCES mood_entries (id) ON DELETE CASCADE,
-                    FOREIGN KEY (option_id) REFERENCES group_options (id) ON DELETE CASCADE
-                )
-            """
-                )
-                print("✅ Entry selections table created")
-
-                # Create achievements table
-                conn.execute(
-                    """
-                CREATE TABLE IF NOT EXISTS achievements (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    achievement_type TEXT NOT NULL,
-                    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    nft_minted BOOLEAN DEFAULT FALSE,
-                    nft_token_id INTEGER,
-                    nft_tx_hash TEXT,
-                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-                    UNIQUE(user_id, achievement_type)
-                )
-            """
-                )
-                print("✅ Achievements table created")
-
-                # Create index for faster date queries
-                conn.execute(
-                    """
-                CREATE INDEX IF NOT EXISTS idx_mood_entries_date 
-                ON mood_entries(date)
-            """
-                )
-                print("✅ Database indexes created")
+                
+                # Create core tables
+                self._create_users_table(conn)
+                self._create_mood_entries_table(conn)
+                self._create_groups_table(conn)
+                self._create_group_options_table(conn)
+                self._create_entry_selections_table(conn)
+                self._create_achievements_table(conn)
+                
+                # Create goals related tables
+                self._create_goals_table(conn)
+                self._create_goal_completions_table(conn)
+                self._create_user_metrics_table(conn)
+                
+                # Create indexes
+                self._create_database_indexes(conn)
+                
                 conn.commit()
                 print("✅ Database initialization complete")
 
                 # Insert default groups and options if they don't exist
                 self._insert_default_groups()
-
-                # Create goals table (idempotent)
-                try:
-                    conn.execute(
-                        """
-                    CREATE TABLE IF NOT EXISTS goals (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        user_id INTEGER NOT NULL,
-                        title TEXT NOT NULL,
-                        description TEXT,
-                        frequency_per_week INTEGER NOT NULL CHECK (frequency_per_week >= 1 AND frequency_per_week <= 7),
-                        completed INTEGER NOT NULL DEFAULT 0,
-                        streak INTEGER NOT NULL DEFAULT 0,
-                        period_start TEXT, -- ISO date (YYYY-MM-DD) for current week start (Monday)
-                        last_completed_date TEXT, -- ISO date of last completion to enforce 1/day
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-                    )
-                    """
-                    )
-                    # Backfill column if database existed before adding last_completed_date
-                    try:
-                        cur = conn.execute("PRAGMA table_info(goals)")
-                        cols = {row[1] for row in cur.fetchall()}
-                        if "last_completed_date" not in cols:
-                            conn.execute(
-                                "ALTER TABLE goals ADD COLUMN last_completed_date TEXT"
-                            )
-                    except Exception:
-                        pass
-                    conn.execute(
-                        """
-                    CREATE INDEX IF NOT EXISTS idx_goals_user ON goals(user_id)
-                    """
-                    )
-                    print("✅ Goals table created")
-                except Exception as _:
-                    # Best-effort; continue so app remains usable
-                    pass
-
-                # Create goal_completions table to track per-day completions
-                try:
-                    conn.execute(
-                        """
-                    CREATE TABLE IF NOT EXISTS goal_completions (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        user_id INTEGER NOT NULL,
-                        goal_id INTEGER NOT NULL,
-                        date TEXT NOT NULL, -- ISO date YYYY-MM-DD
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-                        FOREIGN KEY (goal_id) REFERENCES goals (id) ON DELETE CASCADE,
-                        UNIQUE(user_id, goal_id, date)
-                    )
-                    """
-                    )
-                    conn.execute(
-                        "CREATE INDEX IF NOT EXISTS idx_goal_completions_user_goal ON goal_completions(user_id, goal_id)"
-                    )
-                    conn.execute(
-                        "CREATE INDEX IF NOT EXISTS idx_goal_completions_date ON goal_completions(date)"
-                    )
-                    print("✅ Goal completions table created")
-                except Exception:
-                    pass
-
-                # Create user_metrics table to track counters such as statistics views
-                try:
-                    conn.execute(
-                        """
-                    CREATE TABLE IF NOT EXISTS user_metrics (
-                        user_id INTEGER PRIMARY KEY,
-                        stats_views INTEGER NOT NULL DEFAULT 0,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-                    )
-                    """
-                    )
-                    print("✅ User metrics table created")
-                except Exception:
-                    pass
 
         except Exception as e:
             print(f"❌ Database initialization failed: {str(e)}")
@@ -226,17 +158,250 @@ class MoodDatabase:
             )
             raise
 
+    def _create_users_table(self, conn: sqlite3.Connection):
+        """Create the users table."""
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                google_id TEXT UNIQUE NOT NULL,
+                email TEXT NOT NULL,
+                name TEXT NOT NULL,
+                avatar_url TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """
+        )
+        print("✅ Users table created")
+
+    def _create_mood_entries_table(self, conn: sqlite3.Connection):
+        """Create the mood_entries table."""
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS mood_entries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                date TEXT NOT NULL,
+                mood INTEGER NOT NULL CHECK (mood >= 1 AND mood <= 5),
+                content TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+            )
+        """
+        )
+        print("✅ Mood entries table created")
+
+    def _create_groups_table(self, conn: sqlite3.Connection):
+        """Create the groups table."""
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS groups (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """
+        )
+        print("✅ Groups table created")
+
+    def _create_group_options_table(self, conn: sqlite3.Connection):
+        """Create the group_options table."""
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS group_options (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                group_id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
+            )
+        """
+        )
+        print("✅ Group options table created")
+
+    def _create_entry_selections_table(self, conn: sqlite3.Connection):
+        """Create the entry_selections table."""
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS entry_selections (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                entry_id INTEGER NOT NULL,
+                option_id INTEGER NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (entry_id) REFERENCES mood_entries (id) ON DELETE CASCADE,
+                FOREIGN KEY (option_id) REFERENCES group_options (id) ON DELETE CASCADE
+            )
+        """
+        )
+        print("✅ Entry selections table created")
+
+    def _create_achievements_table(self, conn: sqlite3.Connection):
+        """Create the achievements table."""
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS achievements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                achievement_type TEXT NOT NULL,
+                earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                nft_minted BOOLEAN DEFAULT FALSE,
+                nft_token_id INTEGER,
+                nft_tx_hash TEXT,
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                UNIQUE(user_id, achievement_type)
+            )
+        """
+        )
+        print("✅ Achievements table created")
+
+    def _create_goals_table(self, conn: sqlite3.Connection):
+        """Create the goals table with proper error handling."""
+        try:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS goals (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    frequency_per_week INTEGER NOT NULL CHECK (frequency_per_week >= 1 AND frequency_per_week <= 7),
+                    completed INTEGER NOT NULL DEFAULT 0,
+                    streak INTEGER NOT NULL DEFAULT 0,
+                    period_start TEXT, -- ISO date (YYYY-MM-DD) for current week start (Monday)
+                    last_completed_date TEXT, -- ISO date of last completion to enforce 1/day
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+                )
+                """
+            )
+            
+            # Handle schema migration for existing databases
+            self._migrate_goals_table_schema(conn)
+            
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_goals_user ON goals(user_id)"
+            )
+            print("✅ Goals table created")
+        except Exception:
+            # Best-effort; continue so app remains usable
+            print("⚠️  Goals table creation failed (non-critical)")
+
+    def _migrate_goals_table_schema(self, conn: sqlite3.Connection):
+        """Handle schema migration for goals table."""
+        try:
+            cur = conn.execute("PRAGMA table_info(goals)")
+            cols = {row[1] for row in cur.fetchall()}
+            if "last_completed_date" not in cols:
+                conn.execute(
+                    "ALTER TABLE goals ADD COLUMN last_completed_date TEXT"
+                )
+        except Exception:
+            pass
+
+    def _create_goal_completions_table(self, conn: sqlite3.Connection):
+        """Create the goal_completions table."""
+        try:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS goal_completions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    goal_id INTEGER NOT NULL,
+                    date TEXT NOT NULL, -- ISO date YYYY-MM-DD
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                    FOREIGN KEY (goal_id) REFERENCES goals (id) ON DELETE CASCADE,
+                    UNIQUE(user_id, goal_id, date)
+                )
+                """
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_goal_completions_user_goal ON goal_completions(user_id, goal_id)"
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_goal_completions_date ON goal_completions(date)"
+            )
+            print("✅ Goal completions table created")
+        except Exception:
+            print("⚠️  Goal completions table creation failed (non-critical)")
+
+    def _create_user_metrics_table(self, conn: sqlite3.Connection):
+        """Create the user_metrics table."""
+        try:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS user_metrics (
+                    user_id INTEGER PRIMARY KEY,
+                    stats_views INTEGER NOT NULL DEFAULT 0,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+                )
+                """
+            )
+            print("✅ User metrics table created")
+        except Exception:
+            print("⚠️  User metrics table creation failed (non-critical)")
+
+    def _create_database_indexes(self, conn: sqlite3.Connection):
+        """Create database indexes for performance."""
+        try:
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_mood_entries_date ON mood_entries(date)"
+            )
+            print("✅ Database indexes created")
+        except Exception:
+            print("⚠️  Index creation failed (non-critical)")
+
     def _connect(self) -> sqlite3.Connection:
         """Create a SQLite connection with safe defaults.
 
-        - Enables foreign keys.
+        Returns:
+            sqlite3.Connection: Database connection with foreign keys enabled.
+            
+        Raises:
+            DatabaseError: If connection fails.
         """
-        conn = sqlite3.connect(self.db_path)
         try:
+            conn = sqlite3.connect(self.db_path)
             conn.execute("PRAGMA foreign_keys=ON")
-        except Exception:
-            pass
-        return conn
+            return conn
+        except sqlite3.Error as e:
+            logger.error(f"Failed to connect to database: {e}")
+            raise DatabaseError(f"Database connection failed: {e}")
+
+    def _execute_with_retry(self, query: str, params: tuple = (), retries: int = 3) -> sqlite3.Cursor:
+        """Execute a query with retry logic for handling database locks.
+        
+        Args:
+            query: SQL query to execute
+            params: Query parameters
+            retries: Number of retries for locked database
+            
+        Returns:
+            sqlite3.Cursor: Result cursor
+            
+        Raises:
+            DatabaseError: If all retries fail
+        """
+        for attempt in range(retries):
+            try:
+                with self._connect() as conn:
+                    return conn.execute(query, params)
+            except sqlite3.OperationalError as e:
+                if "database is locked" in str(e) and attempt < retries - 1:
+                    logger.warning(f"Database locked, retrying... (attempt {attempt + 1})")
+                    time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+                    continue
+                logger.error(f"Database operation failed: {e}")
+                raise DatabaseError(f"Database operation failed: {e}")
+            except sqlite3.Error as e:
+                logger.error(f"Database error: {e}")
+                raise DatabaseError(f"Database error: {e}")
+        
+        raise DatabaseError("Database operation failed after all retries")
 
     # -------------------- Goals API --------------------
     @staticmethod
@@ -308,38 +473,68 @@ class MoodDatabase:
     def create_goal(
         self, user_id: int, title: str, description: str, frequency_per_week: int
     ) -> int:
+        """Create a new goal for a user.
+        
+        Args:
+            user_id: The user ID
+            title: Goal title (required, non-empty)
+            description: Goal description (optional)
+            frequency_per_week: Target completions per week (1-7)
+            
+        Returns:
+            int: The ID of the created goal
+            
+        Raises:
+            ValueError: If validation fails
+            DatabaseError: If database operation fails
+        """
+        # Validate inputs
+        if not isinstance(user_id, int) or user_id <= 0:
+            raise ValueError("user_id must be a positive integer")
         if not title or not title.strip():
-            raise ValueError("Title is required")
-        if frequency_per_week < 1 or frequency_per_week > 7:
+            raise ValueError("Title is required and cannot be empty")
+        if not isinstance(frequency_per_week, int) or not (1 <= frequency_per_week <= 7):
             raise ValueError("frequency_per_week must be between 1 and 7")
+            
         period_start = self._week_start_iso()
-        with self._connect() as conn:
-            cursor = conn.execute(
-                """
-                INSERT INTO goals (user_id, title, description, frequency_per_week, completed, streak, period_start)
-                VALUES (?, ?, ?, ?, 0, 0, ?)
-                """,
-                (
-                    user_id,
-                    title.strip(),
-                    (description or "").strip(),
-                    frequency_per_week,
-                    period_start,
-                ),
-            )
-            conn.commit()
-            return int(cursor.lastrowid or 0)
+        
+        try:
+            with self._connect() as conn:
+                cursor = conn.execute(
+                    """
+                    INSERT INTO goals (user_id, title, description, frequency_per_week, completed, streak, period_start)
+                    VALUES (?, ?, ?, ?, 0, 0, ?)
+                    """,
+                    (
+                        user_id,
+                        title.strip(),
+                        (description or "").strip(),
+                        frequency_per_week,
+                        period_start,
+                    ),
+                )
+                conn.commit()
+                goal_id = cursor.lastrowid
+                if goal_id is None:
+                    raise DatabaseError("Failed to get goal ID after creation")
+                return int(goal_id)
+        except sqlite3.Error as e:
+            logger.error(f"Failed to create goal for user {user_id}: {e}")
+            raise DatabaseError(f"Failed to create goal: {e}")
 
     def get_goals(self, user_id: int) -> List[Dict]:
+        """Get all goals for a user with automatic week rollover.
+        
+        Args:
+            user_id: The user ID
+            
+        Returns:
+            List[Dict]: List of goal dictionaries with current progress
+        """
         with self._connect() as conn:
             conn.row_factory = sqlite3.Row
-            rows = conn.execute(
-                """
-                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at
-                FROM goals WHERE user_id = ? ORDER BY created_at DESC
-                """,
-                (user_id,),
-            ).fetchall()
+            rows = conn.execute(SQLQueries.GET_GOALS_BY_USER, (user_id,)).fetchall()
+            
             results: List[Dict] = []
             for r in rows:
                 # Ensure week rollover so UI resets at new week start without user action
@@ -348,15 +543,18 @@ class MoodDatabase:
             return results
 
     def get_goal_by_id(self, user_id: int, goal_id: int) -> Optional[Dict]:
+        """Get a specific goal by ID with automatic week rollover.
+        
+        Args:
+            user_id: The user ID
+            goal_id: The goal ID
+            
+        Returns:
+            Optional[Dict]: Goal dictionary or None if not found
+        """
         with self._connect() as conn:
             conn.row_factory = sqlite3.Row
-            row = conn.execute(
-                """
-                SELECT id, user_id, title, description, frequency_per_week, completed, streak, period_start, last_completed_date, created_at, updated_at
-                FROM goals WHERE id = ? AND user_id = ?
-                """,
-                (goal_id, user_id),
-            ).fetchone()
+            row = conn.execute(SQLQueries.GET_GOAL_BY_ID, (goal_id, user_id)).fetchone()
             if not row:
                 return None
             # Apply rollover so single-goal fetch is also up-to-date
@@ -683,22 +881,16 @@ class MoodDatabase:
             return cursor.rowcount > 0
 
     def get_mood_statistics(self, user_id: int) -> Dict:
-        """Get mood statistics for a specific user"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.execute(
-                """
-                SELECT 
-                    COUNT(*) as total_entries,
-                    AVG(mood) as average_mood,
-                    MIN(mood) as lowest_mood,
-                    MAX(mood) as highest_mood,
-                    MIN(date) as first_entry_date,
-                    MAX(date) as last_entry_date
-                FROM mood_entries
-                WHERE user_id = ?
-            """,
-                (user_id,),
-            )
+        """Get mood statistics for a specific user.
+        
+        Args:
+            user_id: The user ID
+            
+        Returns:
+            Dict: Statistics including total entries, averages, etc.
+        """
+        with self._connect() as conn:
+            cursor = conn.execute(SQLQueries.GET_MOOD_STATISTICS, (user_id,))
             row = cursor.fetchone()
 
             if row and row[0] > 0:  # total_entries > 0
@@ -756,81 +948,79 @@ class MoodDatabase:
             return {row[0]: row[1] for row in cursor.fetchall()}
 
     def get_current_streak(self, user_id: int) -> int:
-        """Calculate the current consecutive days streak for a specific user"""
-        with sqlite3.connect(self.db_path) as conn:
-            # Get distinct dates with entries, ordered by date descending
-            cursor = conn.execute(
-                """
-                SELECT DISTINCT date
-                FROM mood_entries
-                WHERE user_id = ?
-                ORDER BY date DESC
-            """,
-                (user_id,),
-            )
-            dates = [row[0] for row in cursor.fetchall()]
-
+        """Calculate the current consecutive days streak for a specific user.
+        
+        Args:
+            user_id: The user ID to calculate streak for
+            
+        Returns:
+            int: Number of consecutive days with mood entries
+        """
+        try:
+            dates = self._get_user_entry_dates(user_id)
             if not dates:
                 return 0
-
-            # Convert date strings to date objects for comparison
-            from datetime import datetime, timedelta
-
-            try:
-                # Parse dates - handle different formats
-                parsed_dates = []
-                for date_str in dates:
-                    try:
-                        # Try MM/DD/YYYY format first
-                        parsed_date = datetime.strptime(date_str, "%m/%d/%Y").date()
-                        parsed_dates.append(parsed_date)
-                    except ValueError:
-                        try:
-                            # Try M/D/YYYY format
-                            parsed_date = datetime.strptime(date_str, "%m/%d/%Y").date()
-                            parsed_dates.append(parsed_date)
-                        except ValueError:
-                            try:
-                                # Try YYYY-MM-DD format
-                                parsed_date = datetime.strptime(
-                                    date_str, "%Y-%m-%d"
-                                ).date()
-                                parsed_dates.append(parsed_date)
-                            except ValueError:
-                                # Skip invalid dates
-                                continue
-
-                if not parsed_dates:
-                    return 0
-
-                # Sort dates in descending order
-                parsed_dates.sort(reverse=True)
-
-                today = datetime.now().date()
-                streak = 0
-
-                # Check if there's an entry today or yesterday (to account for different timezones)
-                most_recent = parsed_dates[0]
-                days_since_last = (today - most_recent).days
-
-                if days_since_last > 1:
-                    # No recent entries, streak is broken
-                    return 0
-
-                # Count consecutive days
-                expected_date = most_recent
-                for date in parsed_dates:
-                    if date == expected_date:
-                        streak += 1
-                        expected_date = date - timedelta(days=1)
-                    else:
-                        break
-
-                return streak
-
-            except Exception:
-                # If there's any error in date parsing, return 0
+                
+            parsed_dates = self._parse_date_strings(dates)
+            if not parsed_dates:
                 return 0
+                
+            return self._calculate_streak_from_dates(parsed_dates)
+            
+        except Exception as e:
+            logger.warning(f"Error calculating streak for user {user_id}: {e}")
+            return 0
+
+    def _get_user_entry_dates(self, user_id: int) -> List[str]:
+        """Get all distinct entry dates for a user."""
+        with self._connect() as conn:
+            cursor = conn.execute(SQLQueries.GET_USER_ENTRY_DATES, (user_id,))
+            return [row[0] for row in cursor.fetchall()]
+
+    def _parse_date_strings(self, date_strings: List[str]) -> List[date]:
+        """Parse date strings in various formats to date objects."""
+        parsed_dates = []
+        date_formats = ["%m/%d/%Y", "%Y-%m-%d"]
+        
+        for date_str in date_strings:
+            for fmt in date_formats:
+                try:
+                    parsed_date = datetime.strptime(date_str, fmt).date()
+                    parsed_dates.append(parsed_date)
+                    break
+                except ValueError:
+                    continue
+            else:
+                # Log unparseable dates but continue
+                logger.debug(f"Could not parse date: {date_str}")
+                
+        return sorted(parsed_dates, reverse=True)
+
+    def _calculate_streak_from_dates(self, parsed_dates: List[date]) -> int:
+        """Calculate consecutive days streak from parsed dates."""
+        if not parsed_dates:
+            return 0
+            
+        today = datetime.now().date()
+        most_recent = parsed_dates[0]
+        
+        # Check if streak is broken (no entry today or yesterday)
+        days_since_last = (today - most_recent).days
+        if days_since_last > 1:
+            return 0
+            
+        # Count consecutive days
+        streak = 0
+        expected_date = most_recent
+        
+        for date in parsed_dates:
+            if date == expected_date:
+                streak += 1
+                expected_date = date - timedelta(days=1)
+            else:
+                break
+                
+        return streak
 
     def _insert_default_groups(self):
         """Insert default groups and options if they don't exist"""
