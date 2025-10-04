@@ -214,6 +214,7 @@ Interested in contributing or running the project without Docker? Here's what yo
 * **Frontend:** React 19 + Vite, served by Nginx.
 * **Backend:** Flask (Python) serving a JSON API.
 * **Database:** SQLite, with auto-migrations on startup.
+* **Database layer:** Modular mixins live in `api/database_*.py` with `api/database.py` acting as the facade.
 * **Authentication:** JWT-based. Supports a default local user and optional Google OAuth.
 </details>
 
