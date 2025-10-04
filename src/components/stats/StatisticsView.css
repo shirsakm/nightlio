@@ -1,0 +1,259 @@
+.statistics-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.statistics-view__status {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.statistics-view__status--error {
+  color: var(--danger);
+}
+
+.statistics-view__overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.statistics-view__card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+}
+
+.statistics-view__overview-card {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  text-align: center;
+}
+
+.statistics-view__overview-value {
+  color: var(--accent-600);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.statistics-view__overview-label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.statistics-view__overview-value--danger {
+  color: var(--danger);
+}
+
+.statistics-view__overview-value--neutral {
+  color: var(--text);
+}
+
+.statistics-view__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statistics-view__section-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.statistics-view__section-title {
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.statistics-view__button-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.statistics-view__range-buttons {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.statistics-view__range-button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statistics-view__range-button.is-active {
+  background: linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2));
+  border: none;
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.statistics-view__ghost-button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.statistics-view__ghost-button:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--accent-200);
+  transform: translateY(-1px);
+}
+
+.statistics-view__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.statistics-view__legend-item {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  font-size: 0.8rem;
+  gap: 0.3rem;
+}
+
+.statistics-view__tag-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-top: 12px;
+}
+
+.statistics-view__tag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statistics-view__tag-heading {
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.statistics-view__tag-heading--positive {
+  color: var(--mood-4);
+}
+
+.statistics-view__tag-heading--negative {
+  color: var(--mood-1);
+}
+
+.statistics-view__tag-item {
+  border-bottom: 1px dashed var(--border);
+  display: flex;
+  font-size: 0.9rem;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.statistics-view__tag-empty {
+  color: var(--text-muted);
+}
+
+.statistics-view__tag-note {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.statistics-view__calendar-card {
+  padding: 32px;
+}
+
+.statistics-view__calendar-title {
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 24px;
+}
+
+.statistics-view__calendar-grid {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(7, 1fr);
+  font-size: 0.8rem;
+}
+
+.statistics-view__calendar-label {
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.statistics-view__calendar-day {
+  align-items: center;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  color: var(--text-muted);
+  display: flex;
+  font-size: 0.9rem;
+  font-weight: 400;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statistics-view__calendar-day.has-entry {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.statistics-view__calendar-day.is-outside {
+  opacity: 0.3;
+}
+
+.statistics-view__calendar-day.is-today {
+  outline: 2px solid var(--accent-600);
+  outline-offset: -2px;
+}
+
+.statistics-view__calendar-day:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .statistics-view {
+    gap: 20px;
+  }
+
+  .statistics-view__calendar-card {
+    padding: 24px;
+  }
+
+  .statistics-view__section-title {
+    font-size: 1.2rem;
+  }
+}

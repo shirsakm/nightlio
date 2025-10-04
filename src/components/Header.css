@@ -1,0 +1,131 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-2) var(--gutter-page);
+  margin-bottom: 0;
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header__streakBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2));
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  letter-spacing: 0.005em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.header__search {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header__searchInner {
+  width: 100%;
+  max-width: 600px;
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header__button:hover,
+.header__button:focus-visible {
+  background: var(--accent-bg-soft);
+  outline: none;
+}
+
+.header__iconButton {
+  justify-content: center;
+}
+
+.header__profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+}
+
+.header__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-600);
+  object-fit: cover;
+}
+
+.header__profileName {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  .header {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .header__inner {
+    flex-wrap: wrap;
+  }
+
+  .header__search {
+    order: 3;
+    width: 100%;
+  }
+
+  .header__searchInner {
+    max-width: none;
+  }
+
+  .header__right {
+    order: 2;
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  .header__left {
+    order: 1;
+  }
+}
