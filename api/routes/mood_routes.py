@@ -4,7 +4,9 @@ from api.services.mood_service import MoodService
 from api.utils.auth_middleware import require_auth, get_current_user_id
 
 
-def _normalise_selected_options(raw: Any, *, allow_none: bool = False) -> Optional[List[int]]:
+def _normalise_selected_options(
+    raw: Any, *, allow_none: bool = False
+) -> Optional[List[int]]:
     if raw is None:
         return None if allow_none else []
 
@@ -137,7 +139,9 @@ def create_mood_routes(mood_service: MoodService):
                     )
                 except ValueError as exc:
                     return jsonify({"error": str(exc)}), 400
-                selected_options = [] if normalised_options is None else normalised_options
+                selected_options = (
+                    [] if normalised_options is None else normalised_options
+                )
 
             if (
                 mood is None

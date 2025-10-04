@@ -37,13 +37,21 @@ def create_achievement_routes(achievement_service: AchievementService):
             return jsonify({"error": str(e)}), 500
 
     # CORS preflight should not require auth
-    @achievement_bp.route("/achievements/progress", methods=["OPTIONS"], strict_slashes=False)
-    @achievement_bp.route("/achievements/progress/", methods=["OPTIONS"], strict_slashes=False)
+    @achievement_bp.route(
+        "/achievements/progress", methods=["OPTIONS"], strict_slashes=False
+    )
+    @achievement_bp.route(
+        "/achievements/progress/", methods=["OPTIONS"], strict_slashes=False
+    )
     def achievements_progress_options():
         return ("", 204)
 
-    @achievement_bp.route("/achievements/progress", methods=["GET"], strict_slashes=False)
-    @achievement_bp.route("/achievements/progress/", methods=["GET"], strict_slashes=False)
+    @achievement_bp.route(
+        "/achievements/progress", methods=["GET"], strict_slashes=False
+    )
+    @achievement_bp.route(
+        "/achievements/progress/", methods=["GET"], strict_slashes=False
+    )
     @require_auth
     def achievements_progress():
         try:
