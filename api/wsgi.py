@@ -14,7 +14,7 @@ if project_root not in sys.path:
 
 try:
     from api.app import create_app
-except Exception:
+except ImportError:
     from app import create_app
 
 env = os.getenv("RAILWAY_ENVIRONMENT", "production")
