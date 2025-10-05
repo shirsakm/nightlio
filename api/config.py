@@ -145,10 +145,11 @@ def _load_config_from_env() -> ConfigData:
         or "dev-secret-key-change-in-production"
     )
 
-    port = int(
-        os.getenv("PORT")
-        or "5000"
-    )
+    port_str = os.getenv("PORT", "5000")
+    try:
+        port = int(port_str)
+    except (TypeError, ValueError):
+        port = 5000
 
     return ConfigData(
         PORT=port,
