@@ -150,6 +150,23 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Ensure MDX select trigger adopts theme colors (class names are CSS module hashed) */
+.mdx-editor .mdxeditor-toolbar [class*="toolbarButtonSelectTrigger"],
+.mdx-editor .mdxeditor-toolbar [class*="toolbarNodeKindSelectTrigger"],
+.mdx-editor .mdxeditor-toolbar [class*="selectTrigger"] {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+.mdx-editor .mdxeditor-toolbar [class*="toolbarButtonSelectTrigger"][data-state="open"],
+.mdx-editor .mdxeditor-toolbar [class*="toolbarNodeKindSelectTrigger"][data-state="open"],
+.mdx-editor .mdxeditor-toolbar [class*="selectTrigger"][data-state="open"] {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
 /* Dropdown menu/popover base (role-based selectors to catch portal) */
 .mdx-editor [role="listbox"],
 .mdx-editor [role="menu"],
