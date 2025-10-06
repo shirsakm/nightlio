@@ -18,6 +18,15 @@ import { exportSVGToPNG, exportDataToCSV } from '../../utils/exportUtils';
 import './StatisticsView.css';
 
 const RANGE_OPTIONS = [7, 30, 90];
+const TOOLTIP_STYLE = Object.freeze({
+  backgroundColor: 'var(--bg-card)',
+  border: '1px solid var(--border)',
+  borderRadius: '8px',
+  boxShadow: 'var(--shadow-md)',
+});
+const DEFAULT_METRICS = Object.freeze({ total_entries: 0, average_mood: 0 });
+const EMPTY_OBJECT = Object.freeze({});
+const MIN_TAG_OCCURRENCES = 2;
 
 const MOOD_LEGEND = [
   { value: 1, icon: Frown, color: 'var(--mood-1)', label: 'Terrible', shorthand: 'T' },
@@ -39,15 +48,163 @@ const MOOD_SHORTHANDS = MOOD_LEGEND.reduce((acc, { value, shorthand }) => {
 
 const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+const formatTrendTooltip = (value, _name, props) => {
+  if (props?.dataKey === 'ma') {
+    if (value == null || Number.isNaN(value)) {
+      return ['No data', 'Moving Avg'];
+    }
+    return [Number(value).toFixed(2), 'Moving Avg'];
+  }
+
+  if (value == null) {
+    return ['No entry', 'Mood'];
+  }
+
+  const label = MOOD_FULL_LABELS[value] ?? '';
+  return [label, 'Mood'];
+};
+
+const normalizeDateKey = (date) => {
+  if (!date) return null;
+  const instance = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(instance.getTime())) return null;
+  return instance.toLocaleDateString();
+};
+
+const buildMoodDistributionData = (moodDistribution) =>
+  MOOD_LEGEND.map(({ value, label, shorthand, color }) => ({
+    key: value,
+    label,
+    mood: shorthand,
+    count: moodDistribution?.[value] ?? 0,
+    fill: color,
+  }));
+
+const aggregateTagStats = (entries) => {
+  if (!entries?.length) {
+    return { topPositive: [], topNegative: [], all: [] };
+  }
+
+  const map = new Map();
+
+  for (const entry of entries) {
+    const mood = Number(entry.mood);
+    if (!entry.selections?.length) continue;
+
+    for (const selection of entry.selections) {
+      const key = selection.name || selection.label || String(selection.id);
+      const aggregate = map.get(key) ?? { tag: key, count: 0, sum: 0 };
+      aggregate.count += 1;
+      aggregate.sum += mood;
+      map.set(key, aggregate);
+    }
+  }
+
+  const rows = Array.from(map.values()).map(({ tag, count, sum }) => ({
+    tag,
+    count,
+    avgMood: count ? sum / count : 0,
+  }));
+
+  const ranked = rows.filter((row) => row.count >= MIN_TAG_OCCURRENCES).sort((a, b) => b.avgMood - a.avgMood);
+
+  return {
+    topPositive: ranked.slice(0, 5),
+    topNegative: ranked.slice(-5).reverse(),
+    all: rows,
+  };
+};
+
+const buildCalendarDays = (entries) => {
+  const today = new Date();
+  const todayKey = today.toDateString();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const startDate = new Date(firstDay);
+  startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+  const lookup = new Map();
+  for (const entry of entries ?? []) {
+    const key = normalizeDateKey(entry.date);
+    if (key) {
+      lookup.set(key, entry);
+    }
+  }
+
+  const days = [];
+  const current = new Date(startDate);
+  while (current <= lastDay || current.getDay() !== 0) {
+    const dateKey = normalizeDateKey(current);
+    const entry = dateKey ? lookup.get(dateKey) : null;
+    const moodInfo = entry ? getMoodIcon(entry.mood) : null;
+
+    days.push({
+      key: current.toISOString(),
+      label: current.getDate(),
+      entry,
+      IconComponent: moodInfo?.icon ?? null,
+      iconColor: moodInfo?.color ?? null,
+      isCurrentMonth: current.getMonth() === today.getMonth(),
+      isToday: current.toDateString() === todayKey,
+    });
+
+    current.setDate(current.getDate() + 1);
+  }
+
+  return days;
+};
+
+const buildOverviewCards = ({ totalEntries, averageMood, currentStreak, bestDayCount }) => [
+  {
+    key: 'totalEntries',
+    value: totalEntries,
+    label: 'Total Entries',
+    tone: 'default',
+  },
+  {
+    key: 'averageMood',
+    value:
+      typeof averageMood === 'number' ? averageMood.toFixed(1) : averageMood ?? '0.0',
+    label: 'Average Mood',
+    tone: 'default',
+  },
+  {
+    key: 'currentStreak',
+    value: currentStreak,
+    label: 'Current Streak',
+    tone: 'danger',
+  },
+  {
+    key: 'bestDay',
+    value: bestDayCount,
+    label: 'Best Day',
+    tone: 'default',
+  },
+];
+
+const MoodLegend = () => (
+  <div className="statistics-view__legend">
+    {MOOD_LEGEND.map(({ value, icon, color, label }) => {
+      const LegendIcon = icon;
+      return (
+        <div key={value} className="statistics-view__legend-item">
+          <LegendIcon size={16} style={{ color }} />
+          <span>{label}</span>
+        </div>
+      );
+    })}
+  </div>
+);
+
 const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
   const [range, setRange] = useState(7);
   const trendRef = useRef(null);
   const distributionRef = useRef(null);
 
   const hasStatistics = Boolean(statistics);
-  const metrics = statistics?.statistics ?? { total_entries: 0, average_mood: 0 };
+  const metrics = statistics?.statistics ?? DEFAULT_METRICS;
   const moodDistribution = useMemo(
-    () => statistics?.mood_distribution ?? {},
+    () => statistics?.mood_distribution ?? EMPTY_OBJECT,
     [statistics?.mood_distribution],
   );
   const currentStreak = statistics?.current_streak ?? 0;
@@ -60,80 +217,13 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
   );
 
   const moodDistributionData = useMemo(
-    () =>
-      MOOD_LEGEND.map(({ value, label, shorthand, color }) => ({
-        key: value,
-        label,
-        mood: shorthand,
-        count: moodDistribution?.[value] ?? 0,
-        fill: color,
-      })),
+    () => buildMoodDistributionData(moodDistribution),
     [moodDistribution],
   );
 
-  const tagStats = useMemo(() => {
-    const map = new Map();
-    for (const entry of pastEntries ?? []) {
-      const mood = Number(entry.mood);
-      if (!entry.selections?.length) continue;
-      for (const selection of entry.selections) {
-        const key = selection.name || selection.label || String(selection.id);
-        const aggregate = map.get(key) ?? { tag: key, count: 0, sum: 0 };
-        aggregate.count += 1;
-        aggregate.sum += mood;
-        map.set(key, aggregate);
-      }
-    }
+  const tagStats = useMemo(() => aggregateTagStats(pastEntries), [pastEntries]);
 
-    const rows = Array.from(map.values()).map(({ tag, count, sum }) => ({
-      tag,
-      count,
-      avgMood: count ? sum / count : 0,
-    }));
-    const ranked = rows.filter((row) => row.count >= 2).sort((a, b) => b.avgMood - a.avgMood);
-
-    return {
-      topPositive: ranked.slice(0, 5),
-      topNegative: ranked.slice(-5).reverse(),
-      all: rows,
-    };
-  }, [pastEntries]);
-
-  const calendarDays = useMemo(() => {
-    const today = new Date();
-    const todayKey = today.toDateString();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-    const lookup = new Map();
-    for (const entry of pastEntries ?? []) {
-      lookup.set(entry.date, entry);
-    }
-
-    const days = [];
-    const current = new Date(startDate);
-    while (current <= lastDay || current.getDay() !== 0) {
-      const dateKey = current.toLocaleDateString();
-      const entry = lookup.get(dateKey);
-      const moodInfo = entry ? getMoodIcon(entry.mood) : null;
-
-      days.push({
-        key: current.toISOString(),
-        label: current.getDate(),
-        entry,
-        IconComponent: moodInfo?.icon ?? null,
-        iconColor: moodInfo?.color ?? null,
-        isCurrentMonth: current.getMonth() === today.getMonth(),
-        isToday: current.toDateString() === todayKey,
-      });
-
-      current.setDate(current.getDate() + 1);
-    }
-
-    return days;
-  }, [pastEntries]);
+  const calendarDays = useMemo(() => buildCalendarDays(pastEntries), [pastEntries]);
   const handleExportTrendPNG = useCallback(() => {
     const svg = trendRef.current?.querySelector('svg');
     if (svg) {
@@ -169,33 +259,16 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
     return counts.length ? Math.max(...counts) : 0;
   }, [moodDistribution]);
 
-  const overviewCards = [
-    {
-      key: 'totalEntries',
-      value: metrics.total_entries ?? 0,
-      label: 'Total Entries',
-      tone: 'default',
-    },
-    {
-      key: 'averageMood',
-      value:
-        typeof metrics.average_mood === 'number' ? metrics.average_mood.toFixed(1) : metrics.average_mood ?? '0.0',
-      label: 'Average Mood',
-      tone: 'default',
-    },
-    {
-      key: 'currentStreak',
-      value: currentStreak,
-      label: 'Current Streak',
-      tone: 'danger',
-    },
-    {
-      key: 'bestDay',
-      value: bestDayCount,
-      label: 'Best Day',
-      tone: 'default',
-    },
-  ];
+  const overviewCards = useMemo(
+    () =>
+      buildOverviewCards({
+        totalEntries: metrics.total_entries ?? 0,
+        averageMood: metrics.average_mood,
+        currentStreak,
+        bestDayCount,
+      }),
+    [metrics.total_entries, metrics.average_mood, currentStreak, bestDayCount],
+  );
 
   if (loading) {
     return (
@@ -277,18 +350,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               width={20}
               tickFormatter={(value) => MOOD_SHORTHANDS[value] || ''}
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-                boxShadow: 'var(--shadow-md)',
-              }}
-              formatter={(value) => {
-                if (value == null) return ['No entry', ''];
-                return [MOOD_FULL_LABELS[value] ?? '', ''];
-              }}
-            />
+            <Tooltip contentStyle={TOOLTIP_STYLE} formatter={formatTrendTooltip} />
             <Line
               type="monotone"
               dataKey="mood"
@@ -309,17 +371,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           </LineChart>
         </ResponsiveContainer>
 
-        <div className="statistics-view__legend">
-          {MOOD_LEGEND.map(({ value, icon, color, label }) => {
-            const IconComponent = icon;
-            return (
-              <div key={value} className="statistics-view__legend-item">
-                <IconComponent size={16} style={{ color }} />
-                <span>{label}</span>
-              </div>
-            );
-          })}
-        </div>
+        <MoodLegend />
       </div>
 
       <div ref={distributionRef} className="statistics-view__card statistics-view__section" id="mood-distribution">
@@ -347,12 +399,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
               width={20}
             />
             <Tooltip
-              contentStyle={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-                boxShadow: 'var(--shadow-md)',
-              }}
+              contentStyle={TOOLTIP_STYLE}
               formatter={(value, _name, props) => [`${value} entries`, props.payload.label]}
             />
             <Bar
@@ -367,17 +414,7 @@ const StatisticsView = ({ statistics, pastEntries, loading, error }) => {
           </BarChart>
         </ResponsiveContainer>
 
-        <div className="statistics-view__legend">
-          {MOOD_LEGEND.map(({ value, icon, color, label }) => {
-            const IconComponent = icon;
-            return (
-              <div key={value} className="statistics-view__legend-item">
-                <IconComponent size={16} style={{ color }} />
-                <span>{label}</span>
-              </div>
-            );
-          })}
-        </div>
+        <MoodLegend />
       </div>
 
       {(tagStats.topPositive.length > 0 || tagStats.topNegative.length > 0) && (
