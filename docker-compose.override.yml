@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: nightlio-api:local
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nightlio-frontend:local

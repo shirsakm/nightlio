@@ -134,6 +134,25 @@
 .mdx-editor .mdxeditor-toolbar button svg * { stroke: currentColor !important; fill: currentColor; }
 .mdx-editor .mdxeditor-toolbar button[disabled] { color: color-mix(in oklab, var(--text), transparent 60%); opacity: 0.7; }
 .mdx-editor .mdxeditor-toolbar button[aria-pressed="true"] { background: var(--accent-600); color: #fff; }
+.mdx-editor .mdxeditor-toolbar button[aria-pressed="true"],
+.mdx-editor .mdxeditor-toolbar [class*="toolbarButton"][aria-pressed="true"],
+.mdx-editor .mdxeditor-toolbar [class*="toolbarToggleItem"][aria-pressed="true"],
+.mdx-editor .mdxeditor-toolbar [class*="activeToolbarButton"],
+.mdx-editor .mdxeditor-toolbar [class*="activeToolbarButton"] svg,
+.mdx-editor .mdxeditor-toolbar button[aria-pressed="true"] svg {
+  background: var(--accent-600) !important;
+  color: #fff !important;
+  fill: #fff !important;
+  stroke: #fff !important;
+}
+.mdx-editor .mdxeditor-toolbar [data-state="on"],
+.mdx-editor .mdxeditor-toolbar [data-state="on"] *,
+.mdx-editor .mdxeditor-toolbar [data-state="on"] svg {
+  background: var(--accent-600) !important;
+  color: #fff !important;
+  fill: #fff !important;
+  stroke: #fff !important;
+}
 .mdx-editor .mdxeditor-toolbar button:hover { background: var(--accent-600); color: white; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
 .mdx-editor .mdxeditor-rich-text-editor { padding: 24px; min-height: 350px; line-height: 1.7; background: var(--surface); color: var(--text); font-size: 16px; }
 
@@ -148,6 +167,23 @@
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow-sm);
+}
+
+/* Ensure MDX select trigger adopts theme colors (class names are CSS module hashed) */
+.mdx-editor .mdxeditor-toolbar [class*="toolbarButtonSelectTrigger"],
+.mdx-editor .mdxeditor-toolbar [class*="toolbarNodeKindSelectTrigger"],
+.mdx-editor .mdxeditor-toolbar [class*="selectTrigger"] {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+.mdx-editor .mdxeditor-toolbar [class*="toolbarButtonSelectTrigger"][data-state="open"],
+.mdx-editor .mdxeditor-toolbar [class*="toolbarNodeKindSelectTrigger"][data-state="open"],
+.mdx-editor .mdxeditor-toolbar [class*="selectTrigger"][data-state="open"] {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 /* Dropdown menu/popover base (role-based selectors to catch portal) */
