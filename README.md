@@ -102,8 +102,8 @@ cp .env.docker .env
 2) Pin images (recommended) and mount data for backups
 
 ```bash
-export API_IMAGE=ghcr.io/shirsakm/nightlio-api:0.1.1
-export WEB_IMAGE=ghcr.io/shirsakm/nightlio-frontend:0.1.1
+export API_IMAGE=ghcr.io/shirsakm/nightlio-api:latest
+export WEB_IMAGE=ghcr.io/shirsakm/nightlio-frontend:latest
 mkdir -p data
 # Add a bind mount for your DB by editing docker-compose.prod.yml (api service):
 #   volumes:
@@ -132,7 +132,7 @@ Create docker-compose.yml in an empty folder with:
 ```yaml
 services:
   api:
-    image: ghcr.io/shirsakm/nightlio-api:0.1.1
+    image: ghcr.io/shirsakm/nightlio-api:latest
     restart: unless-stopped
     environment:
       - SECRET_KEY=change-me
@@ -148,7 +148,7 @@ services:
       - "5000"
     networks: { nightlio: { aliases: [api] } }
   web:
-    image: ghcr.io/shirsakm/nightlio-frontend:0.1.1
+    image: ghcr.io/shirsakm/nightlio-frontend:latest
     restart: unless-stopped
     depends_on: [api]
       ports:
