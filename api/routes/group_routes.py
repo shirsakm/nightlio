@@ -17,8 +17,7 @@ def create_group_routes(group_service: GroupService):
     @group_bp.route("/groups", methods=["POST"])
     def create_group():
         try:
-            data = request.json
-            name = data.get("name")
+            name = request.json
 
             if not name:
                 return jsonify({"error": "Group name is required"}), 400
