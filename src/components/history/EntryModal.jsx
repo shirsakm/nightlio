@@ -46,7 +46,6 @@ const deriveTitleBody = (content = '') => {
 };
 
 const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) => {
-  if (!isOpen || !entry) return null;
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e) => {
@@ -58,6 +57,9 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) =>
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
+  
+  if (!isOpen || !entry) return null;
+  
   const onBackdrop = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
