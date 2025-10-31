@@ -32,15 +32,15 @@ def test_database_creation():
             with sqlite3.connect(db_path) as conn:
                 conn.execute("CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY)")
                 conn.commit()
-                print(f"  ✅ SUCCESS: Database created at {db_path}")
+                print(f"  SUCCESS: Database created at {db_path}")
 
                 # Clean up
                 if os.path.exists(db_path):
                     os.remove(db_path)
-                    print(f"  🧹 Cleaned up test database")
+                    print(f"  Cleaned up test database")
 
         except Exception as e:
-            print(f"  ❌ FAILED: {str(e)}")
+            print(f"  FAILED: {str(e)}")
 
     print("\n=== Environment Info ===")
     print(f"Current working directory: {os.getcwd()}")

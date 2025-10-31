@@ -3,7 +3,7 @@
 # Nightlio Test Script
 # This script tests if your Docker deployment is working correctly
 
-echo "🧪 Testing Nightlio Docker deployment..."
+echo "Testing Nightlio Docker deployment..."
 echo
 
 # Function to test endpoint
@@ -17,10 +17,10 @@ test_endpoint() {
     response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null)
     
     if [ "$response" = "$expected_code" ]; then
-        echo "✅ OK ($response)"
+        echo "OK ($response)"
         return 0
     else
-        echo "❌ FAILED ($response)"
+        echo "FAILED ($response)"
         return 1
     fi
 }
@@ -32,7 +32,7 @@ if ! command -v docker-compose &> /dev/null; then
 fi
 
 # Wait for services to be ready
-echo "⏳ Waiting for services to start (30 seconds)..."
+echo "Waiting for services to start (30 seconds)..."
 sleep 30
 
 # Test API health endpoint
@@ -48,29 +48,29 @@ test_endpoint "http://localhost:5173/api/" "API via Frontend Proxy"
 proxy_status=$?
 
 echo
-echo "📊 Test Results:"
+echo "Test Results:"
 echo "=================="
 
 if [ $api_status -eq 0 ]; then
-    echo "✅ API is running correctly"
+    echo "API is running correctly"
 else
-    echo "❌ API failed - check logs: $COMPOSE_CMD logs api"
+    echo "API failed - check logs: $COMPOSE_CMD logs api"
 fi
 
 if [ $frontend_status -eq 0 ]; then
-    echo "✅ Frontend is running correctly"
+    echo "Frontend is running correctly"
 else
-    echo "❌ Frontend failed - check logs: $COMPOSE_CMD logs frontend"
+    echo "Frontend failed - check logs: $COMPOSE_CMD logs frontend"
 fi
 
 if [ $proxy_status -eq 0 ]; then
-    echo "✅ API proxy is working correctly"
+    echo "API proxy is working correctly"
 else
-    echo "❌ API proxy failed - check nginx configuration"
+    echo "API proxy failed - check nginx configuration"
 fi
 
 echo
-echo "🔍 Additional Information:"
+echo "Additional Information:"
 echo "=========================="
 
 # Check if containers are running
@@ -91,10 +91,10 @@ docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsa
 
 echo
 if [ $api_status -eq 0 ] && [ $frontend_status -eq 0 ] && [ $proxy_status -eq 0 ]; then
-    echo "🎉 All tests passed! Nightlio is working correctly."
-    echo "🌐 Access your app at: http://localhost:5173"
+    echo "All tests passed! Nightlio is working correctly."
+    echo "Access your app at: http://localhost:5173"
     echo
-    echo "📝 Next steps:"
+    echo "Next steps:"
     echo "  1. Create your first mood entry"
     echo "  2. Explore the analytics dashboard"
     echo "  3. Set up regular backups (see DEPLOYMENT.md)"
