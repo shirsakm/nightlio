@@ -155,8 +155,9 @@ if __name__ == "__main__":
 
     print("Starting Flask app...")
     print(f"Environment: {env}")
-    print(f"Google Client ID: {'Set' if app.config.get('GOOGLE_CLIENT_ID') else 'Missing'}")
-
+    print(
+        f"Google Client ID: {'Set' if app.config.get('GOOGLE_CLIENT_ID') else 'Missing'}"
+    )
 
     port = int(os.getenv("PORT", 5000))
     print(f"Starting Flask app on port {port}")

@@ -200,9 +200,7 @@ Still buzzing with excitement. Music has such a powerful way of lifting your spi
     # Get the existing self-host user by google_id
     self_host_user = db.get_user_by_google_id("selfhost_default_user")
     if not self_host_user:
-        print(
-            "Self-host user not found. Please run the self-host seed script first."
-        )
+        print("Self-host user not found. Please run the self-host seed script first.")
         return
 
     demo_user_id = self_host_user["id"]

@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     # Create app
     app = create_app(env)
-    
+
     port = int(os.getenv("PORT", 5000))
     print(f"Starting Nightlio API on port {port}")
     print(f"Environment: {env}")
@@ -34,13 +34,19 @@ if __name__ == "__main__":
     if env == "production":
         cmd = [
             "gunicorn",
-            "--bind", f"[::]:{port}",
-            "--workers", "4",
-            "--timeout", "120",
-            "--worker-class", "sync",
-            "--access-logfile", "-",
-            "--error-logfile", "-",
-            "wsgi:application"
+            "--bind",
+            f"[::]:{port}",
+            "--workers",
+            "4",
+            "--timeout",
+            "120",
+            "--worker-class",
+            "sync",
+            "--access-logfile",
+            "-",
+            "--error-logfile",
+            "-",
+            "wsgi:application",
         ]
         print("Using Gunicorn")
         subprocess.run(cmd)
