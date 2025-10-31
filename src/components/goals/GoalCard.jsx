@@ -31,7 +31,9 @@ const GoalCard = ({ goal, onDelete, onUpdateProgress }) => {
         show('Already completed for today', 'info');
         return;
       }
-    } catch {}
+    } catch {
+      // localStorage access failed
+    }
     if (goal.last_completed_date === today) {
       show('Already completed for today', 'info');
       return;

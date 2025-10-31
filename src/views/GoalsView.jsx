@@ -110,7 +110,9 @@ const GoalsView = () => {
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem(`goal_done_${goalId}`);
       }
-    } catch {}
+    } catch {
+      // localStorage access failed
+    }
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
     apiService.deleteGoal(goalId).catch(() => {});
   };
@@ -127,7 +129,9 @@ const GoalsView = () => {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(`goal_done_${goalId}`, today);
     }
-  } catch {}
+  } catch {
+    // localStorage access failed
+  }
   setGoals(prev => prev.map(g => g.id === goalId ? { ...g, last_completed_date: today, _doneToday: true } : g));
     apiService.incrementGoalProgress(goalId).then(updated => {
       if (!updated) return;
@@ -157,7 +161,9 @@ const GoalsView = () => {
           const existing = localStorage.getItem(`goal_done_${goalId}`);
           if (existing === today) localStorage.removeItem(`goal_done_${goalId}`);
         }
-      } catch {}
+      } catch {
+        // localStorage access failed
+      }
       setGoals(prev => prev.map(g => g.id === goalId ? { ...g, last_completed_date: target.last_completed_date || null, _doneToday: target.last_completed_date === today } : g));
     });
   };

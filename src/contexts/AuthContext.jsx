@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import apiService from '../services/api';
 import { useConfig } from './ConfigContext';
 
@@ -18,36 +18,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('nightlio_token'));
 
-  useEffect(() => {
-    if (configLoading) return; // wait for config
-    if (token) {
-      verifyToken();
-    } else if (!config.enable_google_oauth) {
-      // In self-host mode, auto-login to local account on first visit
-      localLogin();
-    } else {
-      setLoading(false);
-    }
-  }, [token, configLoading, config.enable_google_oauth]);
+  const logout = useCallback(() => {
+    localStorage.removeItem('nightlio_token');
+    setToken(null);
+    setUser(null);
+    apiService.setAuthToken(null);
+  }, []);
 
-  const verifyToken = async () => {
-    try {
-      const userData = await apiService.verifyToken(token);
-      setUser(userData.user);
-      apiService.setAuthToken(token);
-  } catch {
-      // If verify fails, clear token and in self-host mode immediately local-login
-      logout();
-      if (!config.enable_google_oauth) {
-        await localLogin();
-        return;
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const localLogin = async () => {
+  const localLogin = useCallback(async () => {
     try {
       setLoading(true);
       const response = await apiService.localLogin();
@@ -64,7 +42,36 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const verifyToken = useCallback(async () => {
+    try {
+      const userData = await apiService.verifyToken(token);
+      setUser(userData.user);
+      apiService.setAuthToken(token);
+  } catch {
+      // If verify fails, clear token and in self-host mode immediately local-login
+      logout();
+      if (!config.enable_google_oauth) {
+        await localLogin();
+        return;
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [token, config.enable_google_oauth, logout, localLogin]);
+
+  useEffect(() => {
+    if (configLoading) return;
+    if (token) {
+      verifyToken();
+    } else if (!config.enable_google_oauth) {
+      // In self-host mode, auto-login to local account on first visit
+      localLogin();
+    } else {
+      setLoading(false);
+    }
+  }, [token, configLoading, config.enable_google_oauth, verifyToken, localLogin]);
 
   const login = async (googleToken) => {
     try {
@@ -81,13 +88,6 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('nightlio_token');
-    setToken(null);
-    setUser(null);
-    apiService.setAuthToken(null);
   };
 
   const value = {

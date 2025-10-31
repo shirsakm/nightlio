@@ -15,30 +15,36 @@ from app import create_app
 if __name__ == "__main__":
     # Get environment
     env = os.getenv("RAILWAY_ENVIRONMENT", "production")
-    
+
     port = int(os.getenv("PORT", 5000))
 
-    print(f"🚀 Starting Nightlio API on port {port}")
-    print(f"📍 Environment: {env}")
-    
+    print(f"Starting Nightlio API on port {port}")
+    print(f"Environment: {env}")
+
     app = create_app(env)
     print(
-        f"🔑 Google Client ID: {'✅ Set' if app.config.get('GOOGLE_CLIENT_ID') else '❌ Missing'}"
+        f"Google Client ID: {'Set' if app.config.get('GOOGLE_CLIENT_ID') else 'Missing'}"
     )
 
     if env == "production":
         cmd = [
             "gunicorn",
-            "--bind", f"[::]:{port}",
-            "--workers", "4",
-            "--timeout", "120",
-            "--worker-class", "sync",
-            "--access-logfile", "-",
-            "--error-logfile", "-",
-            "wsgi:application"
+            "--bind",
+            f"[::]:{port}",
+            "--workers",
+            "4",
+            "--timeout",
+            "120",
+            "--worker-class",
+            "sync",
+            "--access-logfile",
+            "-",
+            "--error-logfile",
+            "-",
+            "wsgi:application",
         ]
-        print(f"🔧 Using Gunicorn: {' '.join(cmd)}")
+        print(f"Using Gunicorn: {' '.join(cmd)}")
         subprocess.run(cmd)
     else:
-        print("🔧 Using Flask development server")
+        print("Using Flask development server")
         app.run(debug=True, host="::", port=port)

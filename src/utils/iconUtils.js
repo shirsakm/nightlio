@@ -39,7 +39,7 @@ export async function generateTransparentIcon(src, { threshold = 20, scale = 1 }
 
     ctx.putImageData(imgData, 0, 0);
     return canvas.toDataURL('image/png');
-  } catch (e) {
+  } catch {
     // Fail silently and let caller fallback
     return null;
   }

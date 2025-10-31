@@ -155,16 +155,17 @@ if __name__ == "__main__":
 
     print("Starting Flask app...")
     print(f"Environment: {env}")
-    print(f"🔑 Google Client ID: {'✅ Set' if app.config.get('GOOGLE_CLIENT_ID') else '❌ Missing'}")
-
+    print(
+        f"Google Client ID: {'Set' if app.config.get('GOOGLE_CLIENT_ID') else 'Missing'}"
+    )
 
     port = int(os.getenv("PORT", 5000))
-    print(f"🚀 Starting Flask app on port {port}")
+    print(f"Starting Flask app on port {port}")
     if env == "production":
-        print("⚠️  WARNING: Running in production mode with Flask development server!")
-        print("⚠️  For production deployments, use: gunicorn wsgi:application")
-        print("⚠️  Or run: python3 wsgi.py")
+        print("WARNING: Running in production mode with Flask development server!")
+        print("For production deployments, use: gunicorn wsgi:application")
+        print("Or run: python3 wsgi.py")
         app.run(host="::", port=port, debug=False)
     else:
-        print("🔧 Using Flask development server (debug mode on)")
+        print("Using Flask development server (debug mode on)")
         app.run(debug=True, host="127.0.0.1", port=port)

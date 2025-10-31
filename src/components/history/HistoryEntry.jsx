@@ -13,11 +13,11 @@ const HistoryEntry = ({ entry, onDelete, onEdit }) => {
   // helpers to split title/body and strip markdown for previews
   const stripMd = (s = '') => s
     .replace(/`{1,3}[^`]*`{1,3}/g, ' ')
-    .replace(/!\[[^\]]*\]\([^\)]*\)/g, ' ')
-    .replace(/\[(.*?)\]\([^\)]*\)/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[(.*?)\]\([^)]*\)/g, '$1')
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/^[>\-+*]\s+/gm, '')
-    .replace(/[*_~`>#\[\]()]/g, ' ')
+    .replace(/[*_~`>#[\]()]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
