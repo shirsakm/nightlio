@@ -38,13 +38,13 @@
     "test": "./test.sh"
   },
   "dependencies": {
-  "@mdxeditor/editor": "^3.11.6",
+    "@mdxeditor/editor": "^3.11.6",
     "@tanstack/react-query": "^5.85.3",
     "lucide-react": "^0.460.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^9.0.1",
-  "recharts": "^2.12.7"
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
@@ -55,6 +55,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "rollup-plugin-visualizer": "^6.0.5",
     "vite": "^7.1.0"
   }
 }
