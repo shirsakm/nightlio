@@ -260,15 +260,6 @@ const GoalsView = () => {
             </p>
           </div>
         </div>
-        
-        <button 
-          onClick={() => setShowForm(true)}
-          className="primary"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <Plus size={16} />
-          Add Goal
-        </button>
       </div>
 
       {loading ? (

@@ -28,15 +28,8 @@ const HistoryList = ({ entries, loading, error, onDelete, onEdit }) => {
 
   if (entries.length === 0) {
     return (
-      <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
-        <p style={{ marginBottom: 12 }}>No entries yet.</p>
-        <button
-          onClick={() => window.dispatchEvent(new CustomEvent('nightlio:new-entry'))}
-          className="primary"
-        >
-          Create first entry
-        </button>
-        <div className="card-grid" style={{ marginTop: '1rem' }}>
+      <div style={{ textAlign: 'left', marginTop: 0 }}>
+        <div className="card-grid">
           <AddEntryCard />
         </div>
       </div>
