@@ -39,7 +39,7 @@ Nightlio is the result: a feature-complete, open-source alternative that you can
 ### Docker Quickstart (Recommended)
 
 > [!NOTE]
-> By default, Nightlio runs in a **single-user mode**. The "local login" endpoint is designed for personal use and automatically logs you into the single, default user account. Multi-user support is planned for a future release.
+> By default, Nightlio runs in **single-user mode**. Enable Google OAuth for multi-user support.
 
 Get your own Nightlio instance running in under 5 minutes.
 
@@ -303,6 +303,7 @@ All protected endpoints require an `Authorization: Bearer <jwt>` header unless o
 ## Roadmap
 
 Nightlio is actively developed. Here are some of the features planned for the future:
+- [ ] **Responsive Design:** Full support for usage on mobile devices.
 - [ ] **Multi-User Support:** Full support for multiple user accounts on a single instance.
 - [ ] **Data Import/Export:** Tools to import data from other services (like Daylio) and export your data to standard formats (JSON, CSV).
 - [ ] **More Themes & Customization:** Additional themes and more options to personalize the look and feel of your journal.
