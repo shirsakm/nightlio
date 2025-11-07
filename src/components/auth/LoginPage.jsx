@@ -214,17 +214,27 @@ const LoginPage = () => {
     <div className="login-page">
       <div className="login-page__card">
         <div>
-          <h1 className="login-page__brand-title">🌙 Nightlio</h1>
+          <h1 className="login-page__brand-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+            <img 
+              src="/logo.png" 
+              alt="Nightlio logo"
+              style={{ 
+                width: '1em', 
+                height: '1em', 
+                objectFit: 'contain',
+                display: 'block'
+              }} 
+            />
+            Nightlio
+          </h1>
           <p className="login-page__brand-subtitle">Your daily mood companion</p>
-          <p className="login-page__brand-tagline">Track your emotions, build healthy habits</p>
         </div>
 
-        <div>
-          <h2 className="login-page__headline">{isSelfHost ? 'Welcome' : 'Welcome Back'}</h2>
-          <p className="login-page__description">
+        <div style={{ marginTop: '1.5rem' }}>
+          <p className="login-page__description" style={{ marginBottom: '1.25rem' }}>
             {isSelfHost
-              ? 'Self-host mode is enabled. Click continue to use Nightlio locally.'
-              : 'Sign in with your Google account to continue your mood tracking journey.'}
+              ? 'Click continue to start using Nightlio locally.'
+              : 'Sign in to continue tracking your mood journey.'}
           </p>
 
           {message && <p className="login-page__message">{message}</p>}
@@ -251,15 +261,15 @@ const LoginPage = () => {
               <span>{isLoading ? 'Signing in…' : 'Continue with Google'}</span>
             </button>
           )}
-        </div>
 
-        <div className="login-page__footer">
-          <Lock size={14} aria-hidden="true" />
-          <span>
-            {isSelfHost
-              ? 'Local-only mode. No external auth is used.'
-              : 'Your data is private and secure. We only use your Google account for authentication.'}
-          </span>
+          <div className="login-page__footer" style={{ marginTop: '1.5rem', fontSize: '0.85rem', opacity: 0.7 }}>
+            <Lock size={12} aria-hidden="true" />
+            <span>
+              {isSelfHost
+                ? 'No external authentication required'
+                : 'We only use your Google account for authentication.'}
+            </span>
+          </div>
         </div>
       </div>
     </div>
