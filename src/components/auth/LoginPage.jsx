@@ -16,22 +16,22 @@ const LoadingSpinner = () => (
 );
 
 const GoogleIcon = () => (
-  <svg className="login-page__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
     <path
-      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-      fill="white"
+      d="M17.64 9.20454C17.64 8.56636 17.5827 7.95272 17.4764 7.36363H9V10.845H13.8436C13.635 11.97 13.0009 12.9231 12.0477 13.5613V15.8195H14.9564C16.6582 14.2527 17.64 11.9454 17.64 9.20454Z"
+      fill="#4285F4"
     />
     <path
-      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-      fill="white"
+      d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5613C11.2418 14.1013 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8372 3.96409 10.71H0.957275V13.0418C2.43818 15.9831 5.48182 18 9 18Z"
+      fill="#34A853"
     />
     <path
-      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12 1 13.78 1.43 15.45 2.18 16.93l2.85-2.22.81-.62z"
-      fill="white"
+      d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29V4.95818H0.957275C0.347727 6.17318 0 7.54772 0 9C0 10.4523 0.347727 11.8268 0.957275 13.0418L3.96409 10.71Z"
+      fill="#FBBC05"
     />
     <path
-      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-      fill="white"
+      d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z"
+      fill="#EA4335"
     />
   </svg>
 );
@@ -92,7 +92,7 @@ const LoginPage = () => {
           setMessage(result.error || 'Login failed. Please try again.');
         }
       } catch (error) {
-        console.error('Login with Google failed', error);
+        console.error('Login with Google failed.', error);
         setMessage('Login failed. Please try again.');
       } finally {
         setIsLoading(false);
@@ -198,7 +198,7 @@ const LoginPage = () => {
         }
       });
     } catch (error) {
-      console.error('Google sign-in prompt failed', error);
+      console.error('Google sign-in prompt failed.', error);
       setMessage('Sign-in failed. Please try refreshing the page.');
     }
   }, [config.enable_google_oauth]);
@@ -212,22 +212,38 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
-      <div className="login-page__card">
-        <div>
-          <h1 className="login-page__brand-title">🌙 Nightlio</h1>
-          <p className="login-page__brand-subtitle">Your daily mood companion</p>
-          <p className="login-page__brand-tagline">Track your emotions, build healthy habits</p>
+      <div className="login-page__card" style={{ maxWidth: '420px', padding: '3rem 2rem' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <h1 className="login-page__brand-title" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: '0.5rem',
+            marginBottom: '0.75rem'
+          }}>
+            <img 
+              src="/logo.png" 
+              alt="Nightlio logo"
+              style={{ 
+                width: '1em', 
+                height: '1em', 
+                objectFit: 'contain',
+                display: 'block'
+              }} 
+            />
+            Nightlio
+          </h1>
+          <p className="login-page__brand-subtitle" style={{ marginBottom: 0 }}>Your daily mood companion.</p>
         </div>
 
-        <div>
-          <h2 className="login-page__headline">{isSelfHost ? 'Welcome' : 'Welcome Back'}</h2>
-          <p className="login-page__description">
+        <div style={{ marginTop: '0.5rem' }}>
+          <p className="login-page__description" style={{ marginBottom: '1.5rem', fontSize: '0.925rem' }}>
             {isSelfHost
-              ? 'Self-host mode is enabled. Click continue to use Nightlio locally.'
-              : 'Sign in with your Google account to continue your mood tracking journey.'}
+              ? 'Click continue to start using Nightlio locally.'
+              : 'Sign in to continue tracking your mood journey.'}
           </p>
 
-          {message && <p className="login-page__message">{message}</p>}
+          {message && <p className="login-page__message" style={{ marginBottom: '1rem' }}>{message}</p>}
 
           {isSelfHost ? (
             <button
@@ -241,25 +257,56 @@ const LoginPage = () => {
           ) : (
             <button
               type="button"
-              className="login-page__button"
+              className="login-page__button login-page__button--google"
               onClick={handleGoogleLogin}
               disabled={isLoading}
+              style={{
+                background: 'white',
+                color: '#3c4043',
+                border: '1px solid #dadce0',
+                fontWeight: '500',
+                fontSize: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                padding: '10px 24px',
+                transition: 'background-color 0.2s, box-shadow 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.backgroundColor = '#f8f9fa';
+                  e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'white';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
             >
-              <span aria-hidden="true">
+              <span aria-hidden="true" style={{ display: 'flex', alignItems: 'center' }}>
                 {isLoading ? <LoadingSpinner /> : <GoogleIcon />}
               </span>
-              <span>{isLoading ? 'Signing in…' : 'Continue with Google'}</span>
+              <span>{isLoading ? 'Signing in…' : 'Sign in with Google'}</span>
             </button>
           )}
-        </div>
 
-        <div className="login-page__footer">
-          <Lock size={14} aria-hidden="true" />
-          <span>
-            {isSelfHost
-              ? 'Local-only mode. No external auth is used.'
-              : 'Your data is private and secure. We only use your Google account for authentication.'}
-          </span>
+          <div className="login-page__footer" style={{ 
+            marginTop: '1.75rem', 
+            fontSize: '0.8rem', 
+            opacity: 0.6,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}>
+            <Lock size={12} aria-hidden="true" style={{ flexShrink: 0 }} />
+            <span>
+              {isSelfHost
+                ? 'No external authentication required.'
+                : 'We only use your Google account for authentication.'}
+            </span>
+          </div>
         </div>
       </div>
     </div>
