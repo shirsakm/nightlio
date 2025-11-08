@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "NODE_OPTIONS='--max-old-space-size=768' vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "api": "cd api && python3 -m venv venv && venv/bin/pip install -r requirements.txt && venv/bin/flask run --no-debugger",
