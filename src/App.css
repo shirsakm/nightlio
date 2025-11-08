@@ -82,8 +82,8 @@
 .sidebar__inner { display: flex; flex-direction: column; gap: 6px; padding: var(--space-2) var(--space-3) var(--space-2) var(--space-3); height: 100%; overflow-y: auto; background: transparent; border: none; border-radius: 0; box-shadow: none; box-sizing: border-box; }
 .sidebar__brand { display: flex; align-items: center; gap: 10px; padding: 0 0 var(--space-2); border-bottom: 1px solid var(--border); margin: 0 0 var(--space-2) 0; }
 .sidebar__sections { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-.sidebar__footer { margin-top: auto; padding-top: var(--space-2); padding-bottom: var(--space-1); border-top: 1px solid var(--border); }
-.sidebar__item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: transparent; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--text); transition: background 180ms cubic-bezier(.2,.6,.2,1), color 180ms cubic-bezier(.2,.6,.2,1); }
+.sidebar__footer { margin-top: auto; padding-top: var(--space-2); padding-bottom: var(--space-1); border-top: 1px solid var(--border); display: flex; flex-direction: column; }
+.sidebar__item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: transparent; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--text); transition: background 180ms cubic-bezier(.2,.6,.2,1), color 180ms cubic-bezier(.2,.6,.2,1); width: 100%; }
 .sidebar__item:hover { background: var(--accent-bg-soft); }
 .sidebar__item.is-active { 
   color: #fff; 
