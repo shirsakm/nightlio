@@ -166,8 +166,8 @@ html[data-theme="dark"] {
   /* Dracula palette */
   --bg: #282a36;               /* background */
   --surface: #343746;          /* elevated surfaces */
-  --text: #f8f8f2;             /* foreground */
-  --text-muted: #6272a4;       /* comments */
+  --text: #f5f5f5;             /* foreground - lighter/whiter */
+  --text-muted: #9ca3af;       /* comments - lighter gray */
   --border: #44475a;           /* current line */
   --bg-card: rgba(52,55,70,0.92);
   --fg-body: var(--text);
