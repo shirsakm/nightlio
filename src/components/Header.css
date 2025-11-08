@@ -2,8 +2,13 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 62%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 45%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.12);
+  background-clip: padding-box;
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   padding: var(--space-2) var(--gutter-page);
   margin-bottom: 0;
 }
