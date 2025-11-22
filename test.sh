@@ -1,2 +1,2 @@
 #!/bin/bash
-cd api && venv/bin/pytest
+PYTHONPATH=. api/venv/bin/pytest

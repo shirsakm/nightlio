@@ -4,7 +4,7 @@ from authlib.integrations.requests_client import OAuth2Session
 from authlib.common.errors import AuthlibBaseError
 import requests
 from jose import jwt, JWTError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from api.services.user_service import UserService
 from api.utils.rate_limiter import rate_limit
 from api.config import get_config
@@ -128,9 +128,9 @@ def create_auth_routes(user_service: UserService):
 
             payload = {
                 "user_id": user["id"],
-                "exp": datetime.utcnow()
+                "exp": datetime.now(timezone.utc)
                 + timedelta(seconds=current_app.config["JWT_ACCESS_TOKEN_EXPIRES"]),
-                "iat": datetime.utcnow(),
+                "iat": datetime.now(timezone.utc),
             }
 
             token = jose_jwt.encode(payload, jwt_secret, algorithm="HS256")
@@ -200,9 +200,9 @@ def create_auth_routes(user_service: UserService):
         """Generate JWT token for user"""
         payload = {
             "user_id": user_id,
-            "exp": datetime.utcnow()
+            "exp": datetime.now(timezone.utc)
             + timedelta(seconds=current_app.config["JWT_ACCESS_TOKEN_EXPIRES"]),
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
         }
 
         return jwt.encode(
