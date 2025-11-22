@@ -311,7 +311,15 @@ Nightlio is actively developed. Here are some of the features planned for the fu
 
 ## Contributing
 
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change. Please ensure you add tests for any new API functionality.
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+Please ensure you run the tests before opening a PR:
+
+```bash
+npm test
+```
+
+This command runs the backend tests using `pytest`. Please ensure you add tests for any new API functionality.
 
 ## License
 
