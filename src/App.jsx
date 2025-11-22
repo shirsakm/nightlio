@@ -203,7 +203,7 @@ const RootProviders = ({ children }) => {
 };
 
 function App() {
-  const isLandingRoute = typeof window !== "undefined" && window.location?.pathname?.startsWith("/landing");
+  const isLandingRoute = window.location.pathname.startsWith("/landing");
 
   if (isLandingRoute) {
     return (
