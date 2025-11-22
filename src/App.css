@@ -109,19 +109,18 @@
 .mood-button.selected { transform: scale(1.06); border-color: var(--accent-600); background: var(--accent-bg-soft); }
 
 @media (max-width: 600px) {
-  #root { margin: 0; border-radius: 0; min-height: 100vh; }
+  #root { margin: 0; border-radius: 0; min-height: 100vh; padding: 0; }
   .app-layout { display: block; }
   .app-shell { margin-left: 0; }
   .sidebar { display: none; }
   .bottom-nav { display: flex; }
   .fab { display: grid; }
-  .app-main { padding: var(--gutter-page); padding-bottom: 120px; border-radius: var(--radius-sm); }
+
   .mood-button { font-size: 2rem; width: 56px; height: 56px; }
 
   /* Tighter spacing for mobile portrait */
-  #root { padding: 0; } /* Remove root padding to let app-main go edge-to-edge if needed, or just small padding */
-  .app-main { 
-    padding: 16px; 
+  .app-main {
+    padding: 16px;
     padding-bottom: 16px; /* Reset to standard padding */
     margin: 0; /* Remove margin */
     border-radius: 0; /* Full width look */
