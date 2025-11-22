@@ -80,13 +80,13 @@ def google_callback():
     # Issue JWT using existing app config (legacy)
     try:
         from jose import jwt  # type: ignore
-        from datetime import datetime, timedelta
+        from datetime import datetime, timedelta, timezone
 
         payload = {
             "user_id": user["id"],
-            "exp": datetime.utcnow()
+            "exp": datetime.now(timezone.utc)
             + timedelta(seconds=current_app.config["JWT_ACCESS_TOKEN_EXPIRES"]),
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
         }
         token = jwt.encode(
             payload, current_app.config["JWT_SECRET_KEY"], algorithm="HS256"

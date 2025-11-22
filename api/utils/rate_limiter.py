@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import request, jsonify, current_app
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import threading
 
 # Simple in-memory rate limiter (for production, use Redis)
@@ -19,7 +19,7 @@ def rate_limit(max_requests=100, window_minutes=15):
                 return f(*args, **kwargs)
 
             client_ip = request.environ.get("HTTP_X_FORWARDED_FOR", request.remote_addr)
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             window_start = now - timedelta(minutes=window_minutes)
 
             with lock:

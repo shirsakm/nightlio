@@ -16,6 +16,7 @@ import SettingsView from "./views/SettingsView";
 import GoalsView from "./views/GoalsView";
 import { ToastProvider } from "./components/ui/ToastProvider";
 import AchievementsView from "./views/AchievementsView";
+import LandingPage from "./views/LandingPage";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
 import { useStatistics } from "./hooks/useStatistics";
@@ -202,6 +203,16 @@ const RootProviders = ({ children }) => {
 };
 
 function App() {
+  const isLandingRoute = window.location.pathname.startsWith("/landing");
+
+  if (isLandingRoute) {
+    return (
+      <ThemeProvider>
+        <LandingPage />
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ConfigProvider>
       <ThemeProvider>
