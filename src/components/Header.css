@@ -115,8 +115,7 @@
   }
 
   .header__search {
-    order: 3;
-    width: 100%;
+    display: none;
   }
 
   .header__searchInner {
