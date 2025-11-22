@@ -107,9 +107,9 @@ const LandingPage = () => {
                 Wrapped up the day with a quiet walk. Noticed how the cool air reset my headspace and made the lingering worries feel smaller.
               </p>
               <div className="landing__timeline">
-                <span className="landing__dot landing__dot--active"></span>
-                <span className="landing__dot"></span>
-                <span className="landing__dot"></span>
+                <span className="landing__dot landing__dot--active" aria-hidden="true"></span>
+                <span className="landing__dot" aria-hidden="true"></span>
+                <span className="landing__dot" aria-hidden="true"></span>
               </div>
             </div>
           </div>
