@@ -20,8 +20,10 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEd
   <div className="history-header">
         <MoodPicker onMoodSelect={onMoodSelect} />
         <div className="history-date">
-          <div className="history-date-text">
-            {dateString} • {timeString}
+          <h2 className="history-today-title">Today</h2>
+          <div className="history-datetime-group">
+            <span className="history-date-part">{dateString}</span>
+            <span className="history-time-part">{timeString}</span>
           </div>
         </div>
       </div>

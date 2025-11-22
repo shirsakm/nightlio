@@ -311,14 +311,37 @@
 .history-date {
   text-align: right;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
-.history-date-text {
+.app-main .history-today-title {
+  margin: 0;
   color: var(--text);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.history-datetime-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.history-date-part {
+  color: var(--text);
   opacity: 0.9;
+  font-size: 0.8rem;
+  margin-top: 0.125rem;
+  line-height: 1.2;
+}
+
+.history-time-part {
+  color: var(--text);
+  opacity: 0.7;
+  font-size: 0.75rem;
+  margin-top: 0.0625rem;
+  line-height: 1.2;
 }
 
 @media (max-width: 600px) {
@@ -330,8 +353,35 @@
 
   .history-date {
     text-align: center;
-    justify-content: center;
+    align-items: center;
     width: 100%;
+  }
+  
+  /* Hide "Today" on mobile portrait */
+  .history-today-title {
+    display: none;
+  }
+  
+  /* Make date/time inline on mobile */
+  .history-datetime-group {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .history-date-part, .history-time-part {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  /* Add separator */
+  .history-date-part::after {
+    content: " •";
+    opacity: 0.5;
+    margin-left: 0.5rem;
   }
   
   /* Ensure mood picker centers its items if needed */
