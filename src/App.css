@@ -154,9 +154,6 @@
   /* Compact the editor */
   .mdx-editor .mdxeditor-rich-text-editor { min-height: 150px; padding: 12px; }
   .mdx-editor .mdxeditor-toolbar { padding: 4px; }
-  
-  /* Hide the "History" heading in the list to save space if visible */
-  .app-wide h2 { display: none; }
 }
 
 /* Entry cards */
