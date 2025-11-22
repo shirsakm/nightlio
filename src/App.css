@@ -118,6 +118,22 @@
   .mood-button { font-size: 2rem; width: 56px; height: 56px; }
 }
 
+/* Mobile Landscape tweaks for keyboard visibility */
+@media (max-height: 500px) and (orientation: landscape) {
+  .bottom-nav, .fab { display: none !important; }
+  .app-main { padding-bottom: var(--space-4) !important; }
+  
+  /* Let the header scroll away so it doesn't eat vertical space */
+  .header { position: static; }
+  
+  /* Compact the editor */
+  .mdx-editor .mdxeditor-rich-text-editor { min-height: 150px; padding: 12px; }
+  .mdx-editor .mdxeditor-toolbar { padding: 4px; }
+  
+  /* Hide the "History" heading in the list to save space if visible */
+  .app-wide h2 { display: none; }
+}
+
 /* Entry cards */
 .entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: var(--space-3); margin-bottom: 0; transition: box-shadow 180ms cubic-bezier(.2,.6,.2,1), border-color 180ms cubic-bezier(.2,.6,.2,1); position: relative; }
 .entry-card .timestamp { color: color-mix(in oklab, var(--text), transparent 20%); font-size: 0.9rem; }
