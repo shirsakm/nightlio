@@ -302,3 +302,43 @@
 
 /* Reduce extra space below app-main when followed by app-wide */
 .app-main + .app-wide { margin-top: var(--space-3); }
+
+/* History Header Responsive Layout */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+.history-date {
+  text-align: right;
+  display: flex;
+  align-items: center;
+}
+
+.history-date-text {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .history-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch; 
+  }
+
+  .history-date {
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  /* Ensure mood picker centers its items if needed */
+  .history-header .mood-grid {
+    justify-content: center;
+  }
+}
