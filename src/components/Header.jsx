@@ -114,9 +114,7 @@ const Header = ({ currentStreak }) => {
         </div>
 
         <div className="header__search">
-          <div className="header__searchInner">
-            <SearchPlaceholder />
-          </div>
+          {/* Search disabled globally */}
         </div>
 
         {user && (
