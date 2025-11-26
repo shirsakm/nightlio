@@ -38,7 +38,7 @@ const AboutPage = () => {
         <section className="about__section">
           <h2>How it Started</h2>
           <p>
-            Recently, I got into keeping track of my daily moods, and alongside I decided to start journaling. 
+            I recently started keeping track of my daily moods and decided to start journaling alongside it. 
             After some research, one of the most used apps for mood logging seemed to be Daylio, so I downloaded it. 
             Turns out, it's truly a great app, and it's truly great at shilling its subscription.
           </p>
