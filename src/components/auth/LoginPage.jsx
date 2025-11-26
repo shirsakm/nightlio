@@ -101,7 +101,7 @@ const LoginPage = () => {
         setIsLoading(false);
       }
     },
-    [login],
+    [login, navigate],
   );
 
   const navigate = useNavigate();
