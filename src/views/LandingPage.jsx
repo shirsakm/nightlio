@@ -81,20 +81,6 @@ const LandingPage = () => {
               <a className="landing__button landing__button--primary" href="/">Get started for free</a>
               <a className="landing__button landing__button--ghost" href="https://github.com/shirsakm/nightlio">View on GitHub</a>
             </div>
-            <dl className="landing__stats">
-              <div>
-                <dt>5k+</dt>
-                <dd>Daily reflections logged</dd>
-              </div>
-              <div>
-                <dt>94%</dt>
-                <dd>Report feeling more mindful after two weeks</dd>
-              </div>
-              <div>
-                <dt>Zero ads</dt>
-                <dd>Your data stays in your hands</dd>
-              </div>
-            </dl>
           </div>
           <div className="landing__hero-visual">
             <div className="landing__card">
@@ -166,7 +152,7 @@ const LandingPage = () => {
       </section>
 
       <footer className="landing__footer">
-        <p className="landing__footer-note">© 2024 Nightlio. Open source and privacy-first.</p>
+        <p className="landing__footer-note">© 2025 Nightlio. Open source and privacy-first.</p>
         <div className="landing__footer-links">
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>

@@ -178,23 +178,7 @@
   margin-bottom: 2rem;
 }
 
-.landing__stats {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  color: var(--text-muted);
-}
 
-.landing__stats dt {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.landing__stats dd {
-  margin: 0.25rem 0 0;
-  font-size: 0.85rem;
-}
 
 .landing__hero-visual {
   display: flex;
@@ -468,13 +452,7 @@
     font-size: 1rem;
   }
 
-  .landing__stats {
-    gap: 1.25rem;
-  }
 
-  .landing__stats dt {
-    font-size: 1.5rem;
-  }
 
   .landing__section {
     padding: 3rem 1.5rem;
