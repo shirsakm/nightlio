@@ -3,16 +3,15 @@
 }
 
 .login-page {
-  width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
   padding: 1rem;
-  margin: 0;
-  box-sizing: border-box;
-  overflow: hidden;
+  background: radial-gradient(circle at top, rgba(80, 94, 255, 0.18), transparent 55%),
+              radial-gradient(circle at 20% 30%, rgba(255, 194, 99, 0.12), transparent 40%),
+              linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
+  color: var(--text);
 }
 
 .login-page__card {
