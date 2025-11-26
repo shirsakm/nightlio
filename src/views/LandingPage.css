@@ -94,8 +94,8 @@
 }
 
 .landing .landing__button--primary {
-  background: #FACC15 !important;
-  color: var(--bg) !important;
+  background: #FACC15;
+  color: var(--bg);
   box-shadow: 0 18px 32px rgba(250, 204, 21, 0.25);
 }
 
