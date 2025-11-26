@@ -17,6 +17,7 @@ import GoalsView from "./views/GoalsView";
 import { ToastProvider } from "./components/ui/ToastProvider";
 import AchievementsView from "./views/AchievementsView";
 import LandingPage from "./views/LandingPage";
+import AboutPage from "./views/AboutPage";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
 import { useStatistics } from "./hooks/useStatistics";
@@ -204,11 +205,20 @@ const RootProviders = ({ children }) => {
 
 function App() {
   const isLandingRoute = window.location.pathname.startsWith("/landing");
+  const isAboutRoute = window.location.pathname.startsWith("/about");
 
   if (isLandingRoute) {
     return (
       <ThemeProvider>
         <LandingPage />
+      </ThemeProvider>
+    );
+  }
+
+  if (isAboutRoute) {
+    return (
+      <ThemeProvider>
+        <AboutPage />
       </ThemeProvider>
     );
   }

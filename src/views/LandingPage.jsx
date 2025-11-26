@@ -53,7 +53,7 @@ const LandingPage = () => {
           </a>
           <div className="landing__nav-links">
             <a href="#features">Features</a>
-            <a href="#why-nightlio">About</a>
+            <a href="/about">About</a>
           </div>
           <div className="landing__nav-actions">
             <a className="landing__button landing__button--icon" href="https://github.com/shirsakm/nightlio" target="_blank" rel="noreferrer" aria-label="GitHub">
