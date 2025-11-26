@@ -1,4 +1,5 @@
 import './LandingPage.css';
+import { Link } from 'react-router-dom';
 
 const highlights = [
   {
@@ -47,13 +48,13 @@ const LandingPage = () => {
     <div className="landing">
       <header className="landing__hero">
         <nav className="landing__nav">
-          <a className="landing__brand" href="/">
+          <Link className="landing__brand" to="/">
             <img src="/logo.png" alt="Nightlio logo" className="landing__brand-mark" />
             <span className="landing__brand-name">Nightlio</span>
-          </a>
+          </Link>
           <div className="landing__nav-links">
-            <a href="/landing#features">Features</a>
-            <a href="/about">About</a>
+            <a href="#features">Features</a>
+            <Link to="/about">About</Link>
           </div>
           <div className="landing__nav-actions">
             <a className="landing__button landing__button--icon" href="https://github.com/shirsakm/nightlio" target="_blank" rel="noreferrer" aria-label="GitHub">
@@ -61,11 +62,11 @@ const LandingPage = () => {
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405 1.02 0 2.04.135 3 .405 2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.285 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
               </svg>
             </a>
-            <a className="landing__button landing__button--primary landing__button--circle" href="/" aria-label="Launch App">
+            <Link className="landing__button landing__button--primary landing__button--circle" to="/dashboard" aria-label="Launch App">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
-            </a>
+            </Link>
           </div>
         </nav>
 
@@ -78,7 +79,7 @@ const LandingPage = () => {
               No ads, no subscriptions, and absolutely no data mining.
             </p>
             <div className="landing__cta-group">
-              <a className="landing__button landing__button--primary" href="/">Get started for free</a>
+              <Link className="landing__button landing__button--primary" to="/dashboard">Get started for free</Link>
               <a className="landing__button landing__button--ghost" href="https://github.com/shirsakm/nightlio">View on GitHub</a>
             </div>
           </div>
@@ -145,7 +146,7 @@ const LandingPage = () => {
             <p>Get up and running in minutes with a single Docker command. Self-host with confidence.</p>
           </div>
           <div className="landing__cta-buttons">
-            <a className="landing__button landing__button--primary" href="/">Open the app</a>
+            <Link className="landing__button landing__button--primary" to="/dashboard">Open the app</Link>
             <a className="landing__button landing__button--ghost" href="https://github.com/shirsakm/nightlio" target="_blank" rel="noreferrer">View on GitHub</a>
           </div>
         </div>
@@ -154,8 +155,8 @@ const LandingPage = () => {
       <footer className="landing__footer">
         <p className="landing__footer-note">© 2025 Nightlio. Open source and privacy-first.</p>
         <div className="landing__footer-links">
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
           <a href="mailto:hello@nightlio.com">Contact</a>
         </div>
       </footer>

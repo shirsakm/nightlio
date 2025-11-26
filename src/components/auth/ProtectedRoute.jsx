@@ -1,5 +1,5 @@
 import { useAuth } from '../../contexts/AuthContext';
-import LoginPage from './LoginPage';
+import { Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
 const ProtectedRoute = ({ children }) => {
@@ -80,7 +80,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <LoginPage />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;
