@@ -95,10 +95,10 @@
   box-shadow: var(--shadow-md);
 }
 
-.landing__button--primary {
-  background: var(--accent-600);
-  color: #fff;
-  box-shadow: 0 18px 32px rgba(37, 99, 235, 0.35);
+.landing .landing__button--primary {
+  background: #FACC15 !important;
+  color: var(--bg) !important;
+  box-shadow: 0 18px 32px rgba(250, 204, 21, 0.25);
 }
 
 .landing__button--ghost {
@@ -235,7 +235,7 @@
 }
 
 .landing__dot--active {
-  background: var(--accent-500, var(--accent-600));
+  background: var(--text);
 }
 
 .landing__section {

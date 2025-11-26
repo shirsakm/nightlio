@@ -72,8 +72,8 @@ const LandingPage = () => {
               No ads, no subscriptions, and absolutely no data mining.
             </p>
             <div className="landing__cta-group">
-              <a className="landing__button landing__button--primary" href="/">Get started free</a>
-              <a className="landing__button landing__button--ghost" href="/login">Sign in</a>
+              <a className="landing__button landing__button--primary" href="/">Get started for free</a>
+              <a className="landing__button landing__button--ghost" href="https://github.com/shirsakm/nightlio">View on GitHub</a>
             </div>
             <dl className="landing__stats">
               <div>
