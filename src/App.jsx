@@ -78,9 +78,9 @@ const AppContent = () => {
 
   useEffect(() => {
     const handler = () => {
-      if (!location.pathname.endsWith('/dashboard') && !location.pathname.endsWith('/dashboard/')) {
-         navigate('/dashboard');
-         return;
+      if (!location.pathname.startsWith('/dashboard')) {
+        navigate('/dashboard');
+        return;
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
