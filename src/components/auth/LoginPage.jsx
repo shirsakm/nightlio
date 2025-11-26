@@ -38,7 +38,8 @@ const GoogleIcon = () => (
 );
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
   const { config } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -104,8 +105,7 @@ const LoginPage = () => {
     [login, navigate],
   );
 
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+
 
   useEffect(() => {
     if (isAuthenticated) {
