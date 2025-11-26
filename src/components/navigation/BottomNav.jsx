@@ -1,5 +1,6 @@
 import { Home, BarChart3, Trophy, Settings, Target } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 
 const BottomNav = ({ onLoadStatistics }) => {
   const items = [
@@ -10,11 +11,13 @@ const BottomNav = ({ onLoadStatistics }) => {
     { key: 'settings', label: 'Settings', icon: Settings },
   ];
 
-  const handleClick = (key) => {
-    if (key === 'stats' && typeof onLoadStatistics === 'function') {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('stats') && typeof onLoadStatistics === 'function') {
       onLoadStatistics();
     }
-  };
+  }, [location.pathname, onLoadStatistics]);
 
   return (
     <nav className="bottom-nav">
@@ -23,7 +26,7 @@ const BottomNav = ({ onLoadStatistics }) => {
           key={key}
           to={key}
           end={end}
-          onClick={() => handleClick(key)}
+
           className={({ isActive }) => `bottom-nav__item ${isActive ? 'is-active' : ''}`}
           aria-label={label}
         >
