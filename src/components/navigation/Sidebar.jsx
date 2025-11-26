@@ -1,5 +1,6 @@
 import { Home, BarChart3, Trophy, Settings, Target } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 
 const Sidebar = ({ onLoadStatistics }) => {
   const items = [
@@ -9,11 +10,13 @@ const Sidebar = ({ onLoadStatistics }) => {
     { key: 'achievements', label: 'Achievements', icon: Trophy },
   ];
 
-  const handleClick = (key) => {
-    if (key === 'stats' && typeof onLoadStatistics === 'function') {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('stats') && typeof onLoadStatistics === 'function') {
       onLoadStatistics();
     }
-  };
+  }, [location.pathname, onLoadStatistics]);
 
   return (
     <aside className={`sidebar`}>
@@ -38,7 +41,7 @@ const Sidebar = ({ onLoadStatistics }) => {
               key={key}
               to={key}
               end={end}
-              onClick={() => handleClick(key)}
+
               className={({ isActive }) => `sidebar__item ${isActive ? 'is-active' : ''}`}
               title={label}
             >
