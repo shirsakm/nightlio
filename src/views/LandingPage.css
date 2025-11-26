@@ -30,7 +30,7 @@
   align-items: center;
   gap: 0.75rem;
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.5rem;
   color: var(--text);
   text-decoration: none;
 }
@@ -77,7 +77,6 @@
 }
 
 .landing__button {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.65rem 1.25rem;
@@ -105,6 +104,34 @@
   background: transparent;
   border-color: rgba(148, 163, 184, 0.35);
   color: var(--text);
+}
+
+.landing__button--icon {
+  background: transparent;
+  color: var(--text-muted);
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.landing__button--icon:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.landing__button--circle {
+  padding: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .landing__hero-body {
