@@ -2,42 +2,42 @@ import './LandingPage.css';
 
 const highlights = [
   {
-    title: 'Mood-first journaling',
-    description: 'Capture how you feel in a few taps and let Nightlio suggest meaningful prompts that evolve with your habits.'
+    title: 'Rich Journaling',
+    description: 'Write detailed notes for every entry using Markdown for formatting, lists, and links.'
   },
   {
-    title: 'Actionable reflections',
-    description: 'Turn streaks, trends, and group rituals into personal insights you can actually act on.'
+    title: 'Track & Analyze',
+    description: 'Log your daily mood on a simple 5-point scale and use customizable tags to discover what influences your mind.'
   },
   {
-    title: 'Privacy on your terms',
-    description: 'Self-host or use our cloud. Either way, your data stays yours. End-to-end encrypted backups keep memories safe.'
+    title: 'Privacy First',
+    description: 'Your sensitive data is stored in a simple SQLite database file on your server. No third-party trackers or analytics.'
   }
 ];
 
 const featureBlocks = [
   {
-    title: 'Plan with intention',
+    title: 'Gamified Consistency',
     items: [
-      'Focus on weekly goals that nudge you forward',
-      'Celebrate milestones with achievement badges',
-      'Bring friends or teammates together with shared groups'
+      'Stay consistent with built-in achievements',
+      'Unlock badges as you build your journaling habit',
+      'Track your journaling streak to stay motivated'
     ]
   },
   {
-    title: 'Reflect without friction',
+    title: 'Effortless Logging',
     items: [
-      'Fast keyboard shortcuts to log moods in seconds',
-      'Rich markdown editor with images, code, and callouts',
-      'Context-aware prompts that surface when you need them'
+      'Log your daily mood on a simple 5-point scale',
+      'Use customizable tags like "Sleep" or "Productivity"',
+      'Fast keyboard shortcuts to log moods in seconds'
     ]
   },
   {
-    title: 'See the bigger picture',
+    title: 'Insightful Analytics',
     items: [
-      'Mood insights layered with energy, sleep, and tags',
-      'Calendar heatmaps and trendlines you can export',
-      'Weekly digest summaries delivered to your inbox'
+      'View your mood history on a calendar heatmap',
+      'See your average mood over time',
+      'Discover patterns in your state of mind'
     ]
   }
 ];
@@ -65,11 +65,11 @@ const LandingPage = () => {
 
         <div className="landing__hero-body">
           <div className="landing__hero-copy">
-            <span className="landing__tag">Track what matters</span>
-            <h1>Nightlio keeps your mood, memories, and meaning in sync.</h1>
+            <span className="landing__tag">Your data, your rules</span>
+            <h1>Privacy-first mood tracker and daily journal.</h1>
             <p>
-              A calm, modern journal for teams and individuals who want more than streak counters.
-              Log in seconds, reflect with intention, and build rituals around the moments that matter.
+              Designed for effortless self-hosting. Your data, your server, your rules. 
+              No ads, no subscriptions, and absolutely no data mining.
             </p>
             <div className="landing__cta-group">
               <a className="landing__button landing__button--primary" href="/">Get started free</a>
@@ -144,23 +144,13 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="landing__section landing__section--alt">
-        <div className="landing__testimonials">
-          <blockquote>
-            “Nightlio replaced our scattered notes and gave the team a ritual we actually look forward to. The weekly digest keeps us aligned without another meeting.”
-          </blockquote>
-          <cite>
-            <span>Amelia Chen</span>
-            <span>Design lead, Luminous Studio</span>
-          </cite>
-        </div>
-      </section>
+
 
       <section id="cta" className="landing__section landing__section--cta">
         <div className="landing__cta">
           <div>
             <h2>Take the weight off your mind.</h2>
-            <p>Spin up Nightlio in minutes. Use our hosted version or self-host with the confidence of open-source.</p>
+            <p>Get up and running in minutes with a single Docker command. Self-host with confidence.</p>
           </div>
           <div className="landing__cta-buttons">
             <a className="landing__button landing__button--primary" href="/">Open the app</a>
