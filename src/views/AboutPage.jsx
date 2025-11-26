@@ -1,5 +1,6 @@
 import React from 'react';
 import './AboutPage.css';
+import './LandingPage.css';
 
 const AboutPage = () => {
   return (
