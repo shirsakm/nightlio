@@ -52,7 +52,7 @@ const LandingPage = () => {
             <span className="landing__brand-name">Nightlio</span>
           </a>
           <div className="landing__nav-links">
-            <a href="#features">Features</a>
+            <a href="/landing#features">Features</a>
             <a href="/about">About</a>
           </div>
           <div className="landing__nav-actions">
