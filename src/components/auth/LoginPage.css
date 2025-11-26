@@ -3,16 +3,13 @@
 }
 
 .login-page {
-  width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
   padding: 1rem;
-  margin: 0;
-  box-sizing: border-box;
-  overflow: hidden;
+  background: var(--gradient-background);
+  color: var(--text);
 }
 
 .login-page__card {

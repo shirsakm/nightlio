@@ -1,0 +1,104 @@
+.about-page {
+  min-height: 100vh;
+  background: var(--gradient-background);
+  color: var(--text);
+  font-family: var(--font-sans, 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+}
+
+.about__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) 1.5rem;
+}
+
+.about__header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.about__header h1 {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+.about__subtitle {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  max-width: 60ch;
+  margin: 0 auto;
+}
+
+.about__section {
+  margin-bottom: 4rem;
+}
+
+.about__section h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.about__section p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(226, 232, 240, 0.9);
+  margin-bottom: 1.5rem;
+}
+
+.about__section ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.about__section li {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(226, 232, 240, 0.9);
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.about__section li::before {
+  content: "•";
+  color: var(--moon-yellow, #FACC15);
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.about__section strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.about__section a {
+  color: var(--moon-yellow, #FACC15);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.about__section a:hover {
+  border-bottom-color: currentColor;
+}
+
+.about__highlight {
+  background: rgba(250, 204, 21, 0.1);
+  border-left: 4px solid #FACC15;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.about__highlight p {
+  margin: 0;
+  color: var(--text);
+}
+
+/* Reuse Landing Page Nav Styles if not globally available, 
+   but assuming LandingPage.css is not imported here, we might need to import it or duplicate essential nav styles.
+   Ideally, we should extract common styles. For now, I'll assume we can import LandingPage.css or duplicate minimal styles.
+*/

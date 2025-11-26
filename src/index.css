@@ -99,6 +99,11 @@
   --brand: var(--accent-600);
   --brand-2: var(--accent-700);
 
+  /* Shared background gradient */
+  --gradient-background: radial-gradient(circle at top, rgba(80, 94, 255, 0.18), transparent 55%),
+                         radial-gradient(circle at 20% 30%, rgba(255, 194, 99, 0.12), transparent 40%),
+                         linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -112,7 +117,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--gradient-background);
+  background-attachment: fixed;
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);

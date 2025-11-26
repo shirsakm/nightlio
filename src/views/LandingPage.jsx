@@ -2,42 +2,42 @@ import './LandingPage.css';
 
 const highlights = [
   {
-    title: 'Mood-first journaling',
-    description: 'Capture how you feel in a few taps and let Nightlio suggest meaningful prompts that evolve with your habits.'
+    title: 'Rich Journaling',
+    description: 'Write detailed notes for every entry using Markdown for formatting, lists, and links.'
   },
   {
-    title: 'Actionable reflections',
-    description: 'Turn streaks, trends, and group rituals into personal insights you can actually act on.'
+    title: 'Track & Analyze',
+    description: 'Log your daily mood on a simple 5-point scale and use customizable tags to discover what influences your mind.'
   },
   {
-    title: 'Privacy on your terms',
-    description: 'Self-host or use our cloud. Either way, your data stays yours. End-to-end encrypted backups keep memories safe.'
+    title: 'Privacy First',
+    description: 'Your sensitive data is stored in a simple SQLite database file on your server. No third-party trackers or analytics.'
   }
 ];
 
 const featureBlocks = [
   {
-    title: 'Plan with intention',
+    title: 'Gamified Consistency',
     items: [
-      'Focus on weekly goals that nudge you forward',
-      'Celebrate milestones with achievement badges',
-      'Bring friends or teammates together with shared groups'
+      'Stay consistent with built-in achievements',
+      'Unlock badges as you build your journaling habit',
+      'Track your journaling streak to stay motivated'
     ]
   },
   {
-    title: 'Reflect without friction',
+    title: 'Effortless Logging',
     items: [
-      'Fast keyboard shortcuts to log moods in seconds',
-      'Rich markdown editor with images, code, and callouts',
-      'Context-aware prompts that surface when you need them'
+      'Log your daily mood on a simple 5-point scale',
+      'Use customizable tags like "Sleep" or "Productivity"',
+      'Fast keyboard shortcuts to log moods in seconds'
     ]
   },
   {
-    title: 'See the bigger picture',
+    title: 'Insightful Analytics',
     items: [
-      'Mood insights layered with energy, sleep, and tags',
-      'Calendar heatmaps and trendlines you can export',
-      'Weekly digest summaries delivered to your inbox'
+      'View your mood history on a calendar heatmap',
+      'See your average mood over time',
+      'Discover patterns in your state of mind'
     ]
   }
 ];
@@ -52,43 +52,35 @@ const LandingPage = () => {
             <span className="landing__brand-name">Nightlio</span>
           </a>
           <div className="landing__nav-links">
-            <a href="#features">Features</a>
-            <a href="#why-nightlio">Why Nightlio</a>
-            <a href="#cta">Start Today</a>
+            <a href="/landing#features">Features</a>
+            <a href="/about">About</a>
           </div>
           <div className="landing__nav-actions">
-            <a className="landing__link" href="/docs/DEPLOYMENT">Docs</a>
-            <a className="landing__button landing__button--ghost" href="https://github.com/shirsakm/nightlio" target="_blank" rel="noreferrer">GitHub</a>
-            <a className="landing__button" href="/">Launch App</a>
+            <a className="landing__button landing__button--icon" href="https://github.com/shirsakm/nightlio" target="_blank" rel="noreferrer" aria-label="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405 1.02 0 2.04.135 3 .405 2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.285 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+            </a>
+            <a className="landing__button landing__button--primary landing__button--circle" href="/" aria-label="Launch App">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
           </div>
         </nav>
 
         <div className="landing__hero-body">
           <div className="landing__hero-copy">
-            <span className="landing__tag">Track what matters</span>
-            <h1>Nightlio keeps your mood, memories, and meaning in sync.</h1>
+            <span className="landing__tag">Your data, your rules</span>
+            <h1>Privacy-first mood tracker and daily journal.</h1>
             <p>
-              A calm, modern journal for teams and individuals who want more than streak counters.
-              Log in seconds, reflect with intention, and build rituals around the moments that matter.
+              Designed for effortless self-hosting. Your data, your server, your rules. 
+              No ads, no subscriptions, and absolutely no data mining.
             </p>
             <div className="landing__cta-group">
-              <a className="landing__button landing__button--primary" href="/">Get started free</a>
-              <a className="landing__button landing__button--ghost" href="/login">Sign in</a>
+              <a className="landing__button landing__button--primary" href="/">Get started for free</a>
+              <a className="landing__button landing__button--ghost" href="https://github.com/shirsakm/nightlio">View on GitHub</a>
             </div>
-            <dl className="landing__stats">
-              <div>
-                <dt>5k+</dt>
-                <dd>Daily reflections logged</dd>
-              </div>
-              <div>
-                <dt>94%</dt>
-                <dd>Report feeling more mindful after two weeks</dd>
-              </div>
-              <div>
-                <dt>Zero ads</dt>
-                <dd>Your data stays in your hands</dd>
-              </div>
-            </dl>
           </div>
           <div className="landing__hero-visual">
             <div className="landing__card">
@@ -117,7 +109,7 @@ const LandingPage = () => {
       </header>
 
       <section id="why-nightlio" className="landing__section landing__section--alt">
-        <h2>Designed for mindful nights and focused mornings.</h2>
+        <h2>Designed for mindful nights and focused mornings</h2>
         <div className="landing__grid">
           {highlights.map((item) => (
             <article key={item.title} className="landing__tile">
@@ -144,23 +136,13 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="landing__section landing__section--alt">
-        <div className="landing__testimonials">
-          <blockquote>
-            “Nightlio replaced our scattered notes and gave the team a ritual we actually look forward to. The weekly digest keeps us aligned without another meeting.”
-          </blockquote>
-          <cite>
-            <span>Amelia Chen</span>
-            <span>Design lead, Luminous Studio</span>
-          </cite>
-        </div>
-      </section>
+
 
       <section id="cta" className="landing__section landing__section--cta">
         <div className="landing__cta">
           <div>
             <h2>Take the weight off your mind.</h2>
-            <p>Spin up Nightlio in minutes. Use our hosted version or self-host with the confidence of open-source.</p>
+            <p>Get up and running in minutes with a single Docker command. Self-host with confidence.</p>
           </div>
           <div className="landing__cta-buttons">
             <a className="landing__button landing__button--primary" href="/">Open the app</a>
@@ -170,16 +152,12 @@ const LandingPage = () => {
       </section>
 
       <footer className="landing__footer">
-        <div className="landing__footer-brand">
-          <img src="/logo.png" alt="Nightlio logo" className="landing__brand-mark" />
-          <span>Nightlio</span>
-        </div>
+        <p className="landing__footer-note">© 2025 Nightlio. Open source and privacy-first.</p>
         <div className="landing__footer-links">
-          <a href="/docs/DEPLOYMENT">Deployment Guide</a>
-          <a href="/docs/DOCKER">Docker Setup</a>
-          <a href="mailto:hi@nightlio.app">Contact</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="mailto:hello@nightlio.com">Contact</a>
         </div>
-        <p className="landing__footer-note">© {new Date().getFullYear()} Nightlio. Built for mindful teams and solo creators.</p>
       </footer>
     </div>
   );
