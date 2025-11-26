@@ -37,7 +37,7 @@
 .app-main {
   flex: 1;
   position: relative;
-  background: color-mix(in oklab, var(--surface) 85%, transparent);
+  background: color-mix(in oklab, var(--surface) 10%, transparent);
   backdrop-filter: blur(20px);
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -72,7 +72,7 @@
   width: 280px; 
   height: 100vh; 
   z-index: 50; 
-  background: color-mix(in oklab, var(--surface) 62%, transparent);
+  background: color-mix(in oklab, var(--surface) 10%, transparent);
   backdrop-filter: blur(18px); 
   border-right: 1px solid var(--border); 
   box-sizing: border-box;
