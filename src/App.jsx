@@ -58,22 +58,6 @@ const AppContent = () => {
   };
 
   const handleEditMoodSelect = (moodValue) => {
-    // This is handled in EntryView state usually, but if we need to update URL state?
-    // EntryView manages its own state for selectedMood if passed initially.
-    // But if we want to update the "selectedMood" prop passed to EntryView?
-    // EntryView seems to take onEditMoodSelect.
-    // If EntryView uses internal state initialized from props, we might not need to update parent state.
-    // Let's assume EntryView handles it or we update location state?
-    // Updating location state replaces history entry?
-    // For now, let's assume EntryView handles local mood selection during edit.
-    // But wait, EntryView takes `selectedMood` prop.
-    // If I change mood in EntryView, does it call onEditMoodSelect?
-    // Yes.
-    // And AppContent used to update `selectedMood` state.
-    // So I should probably update location state or just let EntryView handle it if it can.
-    // If EntryView relies on `selectedMood` prop being updated, I need to update it.
-    // But `useLocation` state is immutable for the current render.
-    // I can use `navigate('.', { state: { ...location.state, mood: moodValue }, replace: true })`.
     navigate('.', { state: { ...location.state, mood: moodValue }, replace: true });
   };
 
