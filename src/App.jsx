@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import LoginPage from "./components/auth/LoginPage";
+import NotFound from "./views/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -24,9 +27,8 @@ import { useStatistics } from "./hooks/useStatistics";
 import "./App.css";
 
 const AppContent = () => {
-  const [currentView, setCurrentView] = useState("history");
-  const [selectedMood, setSelectedMood] = useState(null);
-  const [editingEntry, setEditingEntry] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
@@ -34,21 +36,15 @@ const AppContent = () => {
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
   const handleMoodSelect = (moodValue) => {
-    setEditingEntry(null);
-    setSelectedMood(moodValue);
-    setCurrentView("entry");
+    navigate('entry', { state: { mood: moodValue } });
   };
 
   const handleBackToHistory = () => {
-    setCurrentView("history");
-    setSelectedMood(null);
-    setEditingEntry(null);
+    navigate('/dashboard');
   };
 
   const handleEntrySubmitted = () => {
-    setCurrentView("history");
-    setSelectedMood(null);
-    setEditingEntry(null);
+    navigate('/dashboard');
     refreshHistory();
   };
 
@@ -58,130 +54,143 @@ const AppContent = () => {
   };
 
   const handleStartEdit = (entry) => {
-    setEditingEntry(entry);
-    setSelectedMood(entry.mood);
-    setCurrentView("entry");
+    navigate('entry', { state: { entry: entry, mood: entry.mood } });
   };
 
   const handleEditMoodSelect = (moodValue) => {
-    setSelectedMood(moodValue);
+    // This is handled in EntryView state usually, but if we need to update URL state?
+    // EntryView manages its own state for selectedMood if passed initially.
+    // But if we want to update the "selectedMood" prop passed to EntryView?
+    // EntryView seems to take onEditMoodSelect.
+    // If EntryView uses internal state initialized from props, we might not need to update parent state.
+    // Let's assume EntryView handles it or we update location state?
+    // Updating location state replaces history entry?
+    // For now, let's assume EntryView handles local mood selection during edit.
+    // But wait, EntryView takes `selectedMood` prop.
+    // If I change mood in EntryView, does it call onEditMoodSelect?
+    // Yes.
+    // And AppContent used to update `selectedMood` state.
+    // So I should probably update location state or just let EntryView handle it if it can.
+    // If EntryView relies on `selectedMood` prop being updated, I need to update it.
+    // But `useLocation` state is immutable for the current render.
+    // I can use `navigate('.', { state: { ...location.state, mood: moodValue }, replace: true })`.
+    navigate('.', { state: { ...location.state, mood: moodValue }, replace: true });
   };
 
   const handleEntryUpdated = (updatedEntry) => {
     setPastEntries(prev => prev.map(entry => (
       entry.id === updatedEntry.id ? { ...entry, ...updatedEntry } : entry
     )));
-    setEditingEntry(null);
-    setSelectedMood(null);
-    setCurrentView("history");
+    navigate('/dashboard');
     refreshHistory();
   };
 
-  const handleViewChange = (view) => {
-    setCurrentView(view);
-  };
+  // Helper to get state from location
+  const locationState = location.state || {};
+  const { mood: selectedMood, entry: editingEntry } = locationState;
+  
+  // Determine if we are in entry view for layout purposes (no sidebar)
+  const isEntryView = location.pathname.endsWith('/entry');
 
   useEffect(() => {
     const handler = () => {
-      if (currentView !== 'history') {
-        setCurrentView('history');
-        return;
+      if (!location.pathname.endsWith('/dashboard') && !location.pathname.endsWith('/dashboard/')) {
+         navigate('/dashboard');
+         return;
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     window.addEventListener('nightlio:new-entry', handler);
     return () => window.removeEventListener('nightlio:new-entry', handler);
-  }, [currentView]);
+  }, [location.pathname, navigate]);
 
   return (
     <>
-      <div className={`app-page ${currentView === 'entry' ? 'no-sidebar' : ''}`}>
+      <div className={`app-page ${isEntryView ? 'no-sidebar' : ''}`}>
         <Sidebar
-          currentView={currentView}
-          onViewChange={handleViewChange}
           onLoadStatistics={loadStatistics}
         />
         
         <div className="app-shell">
-          <Header currentView={currentView} currentStreak={currentStreak} />
+          <Header currentStreak={currentStreak} />
 
           <div className="app-layout">
 
             <main className="app-main">
-          {currentView === "history" && (
-            <HistoryView
-              pastEntries={pastEntries}
-              loading={historyLoading}
-              error={historyError}
-              onMoodSelect={handleMoodSelect}
-              onDelete={handleEntryDeleted}
-              onEdit={handleStartEdit}
-              renderOnlyHeader={true}
-            />
-          )}
-
-      {currentView === "entry" && (
-            <EntryView
-              selectedMood={selectedMood}
-              groups={groups}
-              onBack={handleBackToHistory}
-              onCreateGroup={createGroup}
-              onCreateOption={createGroupOption}
-              onEntrySubmitted={handleEntrySubmitted}
-              editingEntry={editingEntry}
-              onEntryUpdated={handleEntryUpdated}
-              onEditMoodSelect={handleEditMoodSelect}
-              onSelectMood={handleMoodSelect}
-            />
-          )}
-
-          {currentView === "stats" && (
-            <StatisticsView
-              statistics={statistics}
-              pastEntries={pastEntries}
-              loading={statsLoading}
-              error={statsError}
-            />
-          )}
-
-              {currentView === "achievements" && <AchievementsView />}
-              {currentView === "goals" && <GoalsView />}
-              {currentView === "settings" && <SettingsView />}
+              <Routes>
+                <Route index element={
+                  <HistoryView
+                    pastEntries={pastEntries}
+                    loading={historyLoading}
+                    error={historyError}
+                    onMoodSelect={handleMoodSelect}
+                    onDelete={handleEntryDeleted}
+                    onEdit={handleStartEdit}
+                    renderOnlyHeader={true}
+                  />
+                } />
+                <Route path="entry" element={
+                  <EntryView
+                    selectedMood={selectedMood}
+                    groups={groups}
+                    onBack={handleBackToHistory}
+                    onCreateGroup={createGroup}
+                    onCreateOption={createGroupOption}
+                    onEntrySubmitted={handleEntrySubmitted}
+                    editingEntry={editingEntry}
+                    onEntryUpdated={handleEntryUpdated}
+                    onEditMoodSelect={handleEditMoodSelect}
+                    onSelectMood={handleMoodSelect}
+                  />
+                } />
+                <Route path="stats" element={
+                  <StatisticsView
+                    statistics={statistics}
+                    pastEntries={pastEntries}
+                    loading={statsLoading}
+                    error={statsError}
+                  />
+                } />
+                <Route path="achievements" element={<AchievementsView />} />
+                <Route path="goals" element={<GoalsView />} />
+                <Route path="settings" element={<SettingsView />} />
+              </Routes>
             </main>
-            {currentView === "history" && (
-              <section className="app-wide" aria-label="Goals section">
-                <GoalsSection onNavigateToGoals={() => handleViewChange('goals')} />
-              </section>
-            )}
-            {currentView === "history" && (
-              <section className="app-wide" aria-label="History entries">
-                <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>History</h2>
-                <HistoryList 
-                  entries={pastEntries}
-                  loading={historyLoading}
-                  error={historyError}
-                  onDelete={handleEntryDeleted}
-                  onEdit={handleStartEdit}
-                />
-              </section>
-            )}
+            
+            <Routes>
+              <Route index element={
+                <>
+                  <section className="app-wide" aria-label="Goals section">
+                    <GoalsSection onNavigateToGoals={() => navigate('goals')} />
+                  </section>
+                  <section className="app-wide" aria-label="History entries">
+                    <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>History</h2>
+                    <HistoryList 
+                      entries={pastEntries}
+                      loading={historyLoading}
+                      error={historyError}
+                      onDelete={handleEntryDeleted}
+                      onEdit={handleStartEdit}
+                    />
+                  </section>
+                </>
+              } />
+            </Routes>
           </div>
         </div>
       </div>
 
       <BottomNav
-        currentView={currentView}
-        onViewChange={handleViewChange}
         onLoadStatistics={loadStatistics}
       />
 
       <FAB
         onClick={() => {
-          if (currentView === 'history') {
+          if (location.pathname === '/dashboard' || location.pathname === '/dashboard/') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
-            setCurrentView('history');
+            navigate('/dashboard');
           }
         }}
         label="Scroll to top"
@@ -190,46 +199,27 @@ const AppContent = () => {
   );
 };
 
-const RootProviders = ({ children }) => {
-  const { loading } = useConfig();
-  if (loading) return null;
-  const content = (
-    <AuthProvider>
-      <ProtectedRoute>
-        {children}
-      </ProtectedRoute>
-    </AuthProvider>
-  );
-  return content;
-};
-
 function App() {
-  const isLandingRoute = window.location.pathname.startsWith("/landing");
-  const isAboutRoute = window.location.pathname.startsWith("/about");
-
-  if (isLandingRoute) {
-    return (
-      <ThemeProvider>
-        <LandingPage />
-      </ThemeProvider>
-    );
-  }
-
-  if (isAboutRoute) {
-    return (
-      <ThemeProvider>
-        <AboutPage />
-      </ThemeProvider>
-    );
-  }
-
   return (
     <ConfigProvider>
       <ThemeProvider>
         <ToastProvider>
-          <RootProviders>
-            <AppContent />
-          </RootProviders>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/dashboard/*"
+                element={
+                  <ProtectedRoute>
+                    <AppContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
         </ToastProvider>
       </ThemeProvider>
     </ConfigProvider>

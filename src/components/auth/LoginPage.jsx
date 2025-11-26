@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useConfig } from '../../contexts/ConfigContext';
@@ -90,6 +91,8 @@ const LoginPage = () => {
         const result = await login(response.credential);
         if (!result.success) {
           setMessage(result.error || 'Login failed. Please try again.');
+        } else {
+          navigate('/dashboard', { replace: true });
         }
       } catch (error) {
         console.error('Login with Google failed.', error);
@@ -100,6 +103,16 @@ const LoginPage = () => {
     },
     [login],
   );
+
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
 
   const initializeGoogle = useCallback(() => {
     if (typeof window === 'undefined' || !googleClientId) {

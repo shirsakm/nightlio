@@ -1,15 +1,15 @@
 import { Home, BarChart3, Trophy, Settings, Target } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
-const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
+const Sidebar = ({ onLoadStatistics }) => {
   const items = [
-    { key: 'history', label: 'Home', icon: Home },
+    { key: '', label: 'Home', icon: Home, end: true },
     { key: 'goals', label: 'Goals', icon: Target },
     { key: 'stats', label: 'Statistics', icon: BarChart3 },
     { key: 'achievements', label: 'Achievements', icon: Trophy },
   ];
 
   const handleClick = (key) => {
-    onViewChange(key);
     if (key === 'stats' && typeof onLoadStatistics === 'function') {
       onLoadStatistics();
     }
@@ -33,31 +33,30 @@ const Sidebar = ({ currentView, onViewChange, onLoadStatistics }) => {
         </div>
 
         <div className="sidebar__sections">
-          {/* eslint-disable-next-line no-unused-vars */}
-          {items.map(({ key, label, icon: Icon }) => (
-            <button
+          {items.map(({ key, label, icon: Icon, end }) => (
+            <NavLink
               key={key}
+              to={key}
+              end={end}
               onClick={() => handleClick(key)}
-              className={`sidebar__item ${currentView === key ? 'is-active' : ''}`}
-              aria-current={currentView === key ? 'page' : undefined}
+              className={({ isActive }) => `sidebar__item ${isActive ? 'is-active' : ''}`}
               title={label}
             >
               <Icon size={18} style={{ flexShrink: 0 }} />
               <span>{label}</span>
-            </button>
+            </NavLink>
           ))}
         </div>
 
         <div className="sidebar__footer">
-          <button
-            onClick={() => handleClick('settings')}
-            className={`sidebar__item ${currentView === 'settings' ? 'is-active' : ''}`}
-            aria-current={currentView === 'settings' ? 'page' : undefined}
+          <NavLink
+            to="settings"
+            className={({ isActive }) => `sidebar__item ${isActive ? 'is-active' : ''}`}
             title="Settings"
           >
             <Settings size={18} style={{ flexShrink: 0 }} />
             <span>Settings</span>
-          </button>
+          </NavLink>
         </div>
       </div>
     </aside>
