@@ -397,24 +397,19 @@
 
 .landing__footer {
   padding: 2.5rem clamp(1.5rem, 8vw, 6rem) 3rem;
-  display: grid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 1.25rem;
-  justify-items: center;
   background: rgba(15, 23, 42, 0.85);
 }
 
-.landing__footer-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-weight: 600;
-}
+
 
 .landing__footer-links {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
-  justify-content: center;
 }
 
 .landing__footer-links a {
@@ -432,7 +427,7 @@
   margin: 0;
   color: rgba(148, 163, 184, 0.7);
   font-size: 0.85rem;
-  text-align: center;
+  text-align: left;
 }
 
 @media (max-width: 960px) {

@@ -166,16 +166,12 @@ const LandingPage = () => {
       </section>
 
       <footer className="landing__footer">
-        <div className="landing__footer-brand">
-          <img src="/logo.png" alt="Nightlio logo" className="landing__brand-mark" />
-          <span>Nightlio</span>
-        </div>
+        <p className="landing__footer-note">© 2024 Nightlio. Open source and privacy-first.</p>
         <div className="landing__footer-links">
-          <a href="/docs/DEPLOYMENT">Deployment Guide</a>
-          <a href="/docs/DOCKER">Docker Setup</a>
-          <a href="mailto:hi@nightlio.app">Contact</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="mailto:hello@nightlio.com">Contact</a>
         </div>
-        <p className="landing__footer-note">© {new Date().getFullYear()} Nightlio. Built for mindful teams and solo creators.</p>
       </footer>
     </div>
   );
