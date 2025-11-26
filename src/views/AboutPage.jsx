@@ -13,7 +13,7 @@ const AboutPage = () => {
             <span className="landing__brand-name">Nightlio</span>
           </Link>
           <div className="landing__nav-links">
-            <Link to="/#features">Features</Link>
+            <a href="#features">Features</a>
             <Link to="/about" className="active">About</Link>
           </div>
           <div className="landing__nav-actions">
