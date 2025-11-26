@@ -8,7 +8,7 @@
 }
 
 .landing__hero {
-  padding: clamp(2rem, 8vw, 5rem) clamp(1.5rem, 8vw, 6rem) clamp(3rem, 8vw, 6rem) clamp(1.5rem, 8vw, 6rem);
+  padding: clamp(0.5rem, 4vw, 1.0rem) clamp(1.5rem, 8vw, 6rem) clamp(3rem, 8vw, 6rem) clamp(1.5rem, 8vw, 6rem);
   position: relative;
   overflow: hidden;
 }
@@ -18,7 +18,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-bottom: clamp(3rem, 10vw, 6rem);
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .landing__brand {
@@ -108,6 +112,10 @@
   gap: clamp(2rem, 6vw, 4rem);
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   align-items: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .landing__hero-copy h1 {
@@ -249,6 +257,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .landing__tile {
@@ -275,6 +287,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .landing__feature {
