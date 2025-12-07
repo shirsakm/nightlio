@@ -32,11 +32,11 @@ const AppContent = () => {
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
-  const { groups, createGroup, createGroupOption } = useGroups();
+  const { groups, createGroup, createGroupOption, deleteGroup } = useGroups();
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
   const handleMoodSelect = (moodValue) => {
-    navigate('entry', { state: { mood: moodValue } });
+    navigate('/dashboard/entry', { state: { mood: moodValue } });
   };
 
   const handleBackToHistory = () => {
@@ -54,7 +54,7 @@ const AppContent = () => {
   };
 
   const handleStartEdit = (entry) => {
-    navigate('entry', { state: { entry: entry, mood: entry.mood } });
+    navigate('/dashboard/entry', { state: { entry: entry, mood: entry.mood } });
   };
 
   const handleEditMoodSelect = (moodValue) => {
@@ -82,6 +82,9 @@ const AppContent = () => {
         navigate('/dashboard');
         return;
       }
+
+      // Navigate to the new entry page
+      navigate('/dashboard/entry');
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -121,6 +124,7 @@ const AppContent = () => {
                     onBack={handleBackToHistory}
                     onCreateGroup={createGroup}
                     onCreateOption={createGroupOption}
+                    onDeleteGroup={deleteGroup}
                     onEntrySubmitted={handleEntrySubmitted}
                     editingEntry={editingEntry}
                     onEntryUpdated={handleEntryUpdated}
@@ -146,7 +150,7 @@ const AppContent = () => {
               <Route index element={
                 <>
                   <section className="app-wide" aria-label="Goals section">
-                    <GoalsSection onNavigateToGoals={() => navigate('goals')} />
+                    <GoalsSection onNavigateToGoals={() => navigate('/dashboard/goals')} />
                   </section>
                   <section className="app-wide" aria-label="History entries">
                     <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>History</h2>
