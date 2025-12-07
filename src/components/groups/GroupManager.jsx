@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Settings, X } from 'lucide-react';
+import { Settings, X, Trash2 } from 'lucide-react';
 
-const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
+const GroupManager = ({ groups, onCreateGroup, onCreateOption, onDeleteGroup }) => {
   const [showManager, setShowManager] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [newOptionName, setNewOptionName] = useState('');
   const [selectedGroupForOption, setSelectedGroupForOption] = useState('');
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const [isCreatingOption, setIsCreatingOption] = useState(false);
+  const [deletingGroupId, setDeletingGroupId] = useState(null);
 
   const handleCreateGroup = async () => {
     if (!newGroupName.trim()) return;
@@ -25,7 +26,7 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
 
   const handleCreateOption = async () => {
     if (!newOptionName.trim() || !selectedGroupForOption) return;
-    
+
     setIsCreatingOption(true);
     try {
       const success = await onCreateOption(selectedGroupForOption, newOptionName.trim());
@@ -35,6 +36,19 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
       }
     } finally {
       setIsCreatingOption(false);
+    }
+  };
+
+  const handleDeleteGroup = async (groupId) => {
+    if (!window.confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeletingGroupId(groupId);
+    try {
+      await onDeleteGroup(groupId);
+    } finally {
+      setDeletingGroupId(null);
     }
   };
 
@@ -75,6 +89,8 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
         padding: '1.5rem',
     boxShadow: 'var(--shadow-lg)',
         marginTop: '1rem',
+        maxHeight: '70vh',
+        overflowY: 'auto',
       }}
     >
       <div
@@ -232,13 +248,40 @@ const GroupManager = ({ groups, onCreateGroup, onCreateOption }) => {
                   background: 'var(--surface)',
                   borderRadius: '8px',
                   border: '1px solid var(--border)',
+                  position: 'relative',
                 }}
               >
+                <button
+                  onClick={() => handleDeleteGroup(group.id)}
+                  disabled={deletingGroupId === group.id}
+                  style={{
+                    position: 'absolute',
+                    top: '0.5rem',
+                    right: '0.5rem',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: deletingGroupId === group.id ? 'not-allowed' : 'pointer',
+                    color: 'var(--text-muted)',
+                    padding: '0.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '4px',
+                    transition: 'all 0.2s',
+                    opacity: deletingGroupId === group.id ? 0.5 : 1,
+                  }}
+                  title="Delete category"
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-card)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >
+                  <Trash2 size={14} />
+                </button>
                 <div
                   style={{
                     fontWeight: '600',
                     color: 'var(--text)',
                     marginBottom: '0.5rem',
+                    paddingRight: '1.5rem',
                   }}
                 >
                   {group.name} ({group.options.length} options)

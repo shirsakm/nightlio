@@ -11,12 +11,13 @@ const DEFAULT_MARKDOWN = `# How was your day?
 
 Write about your thoughts, feelings, and experiences...`;
 
-const EntryView = ({ 
-  selectedMood, 
-  groups, 
-  onBack, 
-  onCreateGroup, 
-  onCreateOption, 
+const EntryView = ({
+  selectedMood,
+  groups,
+  onBack,
+  onCreateGroup,
+  onCreateOption,
+  onDeleteGroup,
   onEntrySubmitted,
   onSelectMood,
   editingEntry = null,
@@ -283,6 +284,7 @@ const EntryView = ({
               groups={groups}
               onCreateGroup={onCreateGroup}
               onCreateOption={onCreateOption}
+              onDeleteGroup={onDeleteGroup}
             />
           </div>
         </div>

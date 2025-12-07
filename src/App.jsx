@@ -32,7 +32,7 @@ const AppContent = () => {
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
-  const { groups, createGroup, createGroupOption } = useGroups();
+  const { groups, createGroup, createGroupOption, deleteGroup } = useGroups();
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
   const handleMoodSelect = (moodValue) => {
@@ -124,6 +124,7 @@ const AppContent = () => {
                     onBack={handleBackToHistory}
                     onCreateGroup={createGroup}
                     onCreateOption={createGroupOption}
+                    onDeleteGroup={deleteGroup}
                     onEntrySubmitted={handleEntrySubmitted}
                     editingEntry={editingEntry}
                     onEntryUpdated={handleEntryUpdated}
