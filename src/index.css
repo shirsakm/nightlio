@@ -113,6 +113,16 @@
 a { font-weight: 500; color: var(--accent-600); text-decoration: none; }
 a:hover { color: var(--accent-700); text-decoration: underline; }
 
+/* Sidebar nav links should NOT look like hyperlinks */
+.sidebar a,
+.sidebar a:hover,
+.sidebar a:focus,
+.sidebar a:active {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
 body {
   margin: 0;
   min-width: 320px;
