@@ -11,11 +11,11 @@ const cssVar = (name, fallback) => {
 };
 
 export const MOODS = [
-  { icon: Frown, value: 1, color: 'var(--mood-1)', label: 'Terrible' },
-  { icon: Frown, value: 2, color: 'var(--mood-2)', label: 'Bad' },
-  { icon: Meh,   value: 3, color: 'var(--mood-3)', label: 'Okay' },
-  { icon: Smile, value: 4, color: 'var(--mood-4)', label: 'Good' },
-  { icon: Heart, value: 5, color: 'var(--mood-5)', label: 'Amazing' },
+  { icon: Frown, value: 1, color: 'var(--mood-1)', label: 'Terrible', tag: 'dark+ambient' },
+  { icon: Frown, value: 2, color: 'var(--mood-2)', label: 'Bad', tag: 'melancholic' },
+  { icon: Meh,   value: 3, color: 'var(--mood-3)', label: 'Okay', tag: 'lofi+chill' },
+  { icon: Smile, value: 4, color: 'var(--mood-4)', label: 'Good', tag: 'upbeat+pop' },
+  { icon: Heart, value: 5, color: 'var(--mood-5)', label: 'Amazing', tag: 'synthwave+energy' },
 ];
 
 export const getMoodIcon = (moodValue) => {

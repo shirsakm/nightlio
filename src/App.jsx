@@ -24,6 +24,7 @@ import AboutPage from "./views/AboutPage";
 import { useMoodData } from "./hooks/useMoodData";
 import { useGroups } from "./hooks/useGroups";
 import { useStatistics } from "./hooks/useStatistics";
+import MusicDock from './components/mood/MusicDock'
 import "./App.css";
 
 const AppContent = () => {
@@ -203,6 +204,7 @@ function App() {
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <MusicDock />
           </AuthProvider>
         </ToastProvider>
       </ThemeProvider>
