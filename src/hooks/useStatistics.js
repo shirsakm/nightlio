@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiService from '../services/api';
 
 export const useStatistics = () => {
@@ -7,10 +7,10 @@ export const useStatistics = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const loadStatistics = async () => {
+  const loadStatistics = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const data = await apiService.getStatistics();
       setStatistics(data);
@@ -20,9 +20,9 @@ export const useStatistics = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadStreak = async () => {
+  const loadStreak = useCallback(async () => {
     try {
       const data = await apiService.getCurrentStreak();
       setCurrentStreak(data.current_streak);
@@ -30,7 +30,7 @@ export const useStatistics = () => {
       console.error('Failed to load streak:', error);
       setCurrentStreak(0);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadStreak();

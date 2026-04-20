@@ -23,7 +23,7 @@ export const useGroups = () => {
 
   const createGroup = async (name) => {
     try {
-      await apiService.createGroup(name);
+      await apiService.createGroup({ name });
       await loadGroups(); // Refresh the list
       return true;
     } catch (error) {
@@ -35,7 +35,7 @@ export const useGroups = () => {
 
   const createGroupOption = async (groupId, name) => {
     try {
-      await apiService.createGroupOption(groupId, name);
+      await apiService.createGroupOption(groupId, { name });
       await loadGroups(); // Refresh the list
       return true;
     } catch (error) {
