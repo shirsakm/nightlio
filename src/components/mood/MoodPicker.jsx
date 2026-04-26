@@ -1,16 +1,22 @@
 import { MOODS } from '../../utils/moodUtils';
+import apiService from '../../services/api';
+import { useConfig } from '../../contexts/ConfigContext';
 import './MoodPicker.css';
 
 const MoodPicker = ({ onMoodSelect }) => {
+  const { config } = useConfig();
   
   //Handler to manage both saving the mood and playing music
   const handleMoodClick = async (mood) => {
     onMoodSelect(mood.value);
 
-    // 2. Intercept and fetch music
+    if (!config.enable_mood_music) {
+      return;
+    }
+
+    // Fetch music only when the feature is enabled.
     try {
-      const res = await fetch(`http://localhost:5000/api/music/vibe?tag=${mood.tag}`);
-      const data = await res.json();
+      const data = await apiService.getMoodMusic(mood.tag);
       
       if (data.audio_url) {
         // Broadcast the music data to the permanent MusicDock

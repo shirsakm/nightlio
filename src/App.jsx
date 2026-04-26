@@ -27,6 +27,13 @@ import { useStatistics } from "./hooks/useStatistics";
 import MusicDock from './components/mood/MusicDock'
 import "./App.css";
 
+const MusicDockGate = () => {
+  const { config } = useConfig();
+
+  if (!config.enable_mood_music) return null;
+  return <MusicDock />;
+};
+
 const AppContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -233,7 +240,7 @@ function App() {
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
-            <MusicDock />
+            <MusicDockGate />
           </AuthProvider>
         </ToastProvider>
       </ThemeProvider>

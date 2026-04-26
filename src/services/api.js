@@ -156,6 +156,12 @@ class ApiService {
     return this.request('/api/streak');
   }
 
+  // Mood music endpoint
+  async getMoodMusic(tag) {
+    const encodedTag = encodeURIComponent(String(tag || 'chill'));
+    return this.request(`/api/music/vibe?tag=${encodedTag}`);
+  }
+
   // Groups endpoints
   async getGroups() {
     return this.request('/api/groups');
