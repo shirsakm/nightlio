@@ -58,6 +58,43 @@
 .entry-left { position: sticky; top: 0; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden; padding-right: var(--space-2); }
 .entry-right { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; align-self: start; }
 .entry-savebar { position: sticky; bottom: 0; padding-top: var(--space-2); background: linear-gradient(180deg, rgba(255,255,255,0), var(--surface) 40%); display: flex; justify-content: flex-end; }
+.entry-autosave-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: color-mix(in oklab, var(--text), transparent 20%);
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+.entry-autosave-status.is-saved {
+  border-color: color-mix(in oklab, var(--accent-600), transparent 55%);
+  color: color-mix(in oklab, var(--accent-600), var(--text) 30%);
+}
+.entry-autosave-status.is-dirty,
+.entry-autosave-status.is-error {
+  border-color: color-mix(in oklab, #f59e0b, transparent 45%);
+  color: color-mix(in oklab, #f59e0b, var(--text) 25%);
+}
+.entry-autosave-status.is-saving {
+  border-color: color-mix(in oklab, var(--accent-600), transparent 50%);
+  color: color-mix(in oklab, var(--accent-600), var(--text) 30%);
+}
+.entry-autosave-status.is-disabled {
+  border-color: color-mix(in oklab, var(--text), transparent 75%);
+  color: color-mix(in oklab, var(--text), transparent 45%);
+}
+.entry-autosave-status .is-spinning {
+  animation: entry-autosave-spin 0.9s linear infinite;
+}
+@keyframes entry-autosave-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
 @media (max-width: 900px) {
   .entry-grid { display: block; }

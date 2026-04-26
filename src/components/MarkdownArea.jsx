@@ -30,7 +30,11 @@ import {
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 
-const MyComponent = forwardRef((props, ref) => {
+const DEFAULT_MARKDOWN = `# How was your day?
+
+Write about your thoughts, feelings, and experiences...`;
+
+const MyComponent = forwardRef(({ initialMarkdown, onChange }, ref) => {
   const editorRef = useRef(null);
 
   useImperativeHandle(ref, () => ({
@@ -77,9 +81,8 @@ const MyComponent = forwardRef((props, ref) => {
       </style>
       <MDXEditor
         ref={editorRef}
-        markdown={`# How was your day?
-
-Write about your thoughts, feelings, and experiences...`}
+        markdown={initialMarkdown || DEFAULT_MARKDOWN}
+        onChange={onChange}
         contentEditableClassName="prose"
         plugins={[
           headingsPlugin(),

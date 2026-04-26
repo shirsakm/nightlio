@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock3,
+  CloudOff,
+  Loader2,
+} from 'lucide-react';
 import MoodPicker from '../components/mood/MoodPicker';
 import MoodDisplay from '../components/mood/MoodDisplay';
 import GroupSelector from '../components/groups/GroupSelector';
@@ -11,46 +18,117 @@ import { useBurner } from '../contexts/BurnerContext';
 const DEFAULT_MARKDOWN = `# How was your day?
 
 Write about your thoughts, feelings, and experiences...`;
+const DEFAULT_MARKDOWN_TRIMMED = DEFAULT_MARKDOWN.trim();
+const AUTOSAVE_DEBOUNCE_MS = 1200;
 
-const EntryView = ({ 
-  selectedMood, 
-  groups, 
-  onBack, 
-  onCreateGroup, 
-  onCreateOption, 
-  onEntrySubmitted,
+const normalizeSelectedOptions = (optionIds = []) => (
+  [...optionIds].map((id) => Number(id)).filter((id) => Number.isFinite(id)).sort((a, b) => a - b)
+);
+
+const buildSnapshot = ({ mood, content, selectedOptions }) => (
+  JSON.stringify({
+    mood: mood ?? null,
+    content: content ?? '',
+    selected_options: normalizeSelectedOptions(selectedOptions),
+  })
+);
+
+const EntryView = ({
+  selectedMood,
+  groups,
+  onBack,
+  onCreateGroup,
+  onCreateOption,
   onSelectMood,
   editingEntry = null,
   onEntryUpdated,
   onEditMoodSelect,
 }) => {
   const isEditing = Boolean(editingEntry);
-  const [selectedOptions, setSelectedOptions] = useState(
-    editingEntry?.selections?.map((selection) => selection.id) ?? []
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const initialSelectionIds = editingEntry?.selections?.map((selection) => selection.id) ?? [];
+
+  const [selectedOptions, setSelectedOptions] = useState(initialSelectionIds);
   const [showMoodPicker, setShowMoodPicker] = useState(false);
+  const [markdownContent, setMarkdownContent] = useState(editingEntry?.content || DEFAULT_MARKDOWN);
+  const [activeEntryId, setActiveEntryId] = useState(editingEntry?.id ?? null);
+  const [saveState, setSaveState] = useState('idle');
+  const [lastSavedAt, setLastSavedAt] = useState(null);
+  const [saveErrorMessage, setSaveErrorMessage] = useState('');
+
   const markdownRef = useRef();
+  const autosaveTimerRef = useRef(null);
+  const isHydratingEditorRef = useRef(false);
+  const saveInFlightRef = useRef(false);
+  const pendingSaveRef = useRef(false);
+  const latestPayloadRef = useRef(null);
+  const lastSavedSnapshotRef = useRef('');
+  const activeEntryIdRef = useRef(activeEntryId);
+
   const { show } = useToast();
   const { isBurnerMode } = useBurner();
 
+  const clearAutosaveTimer = useCallback(() => {
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current);
+      autosaveTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
-    if (!isEditing || !editingEntry) return;
+    activeEntryIdRef.current = activeEntryId;
+  }, [activeEntryId]);
 
-    setSelectedOptions(editingEntry.selections?.map((selection) => selection.id) ?? []);
+  useEffect(() => {
+    if (isEditing && editingEntry) {
+      const selectionIds = editingEntry.selections?.map((selection) => selection.id) ?? [];
+      const content = editingEntry.content || '';
 
+      setSelectedOptions(selectionIds);
+      setActiveEntryId(editingEntry.id);
+      setMarkdownContent(content);
+
+      isHydratingEditorRef.current = true;
+      const instance = markdownRef.current?.getInstance?.();
+      if (instance && typeof instance.setMarkdown === 'function') {
+        instance.setMarkdown(content);
+      }
+      queueMicrotask(() => {
+        isHydratingEditorRef.current = false;
+      });
+
+      lastSavedSnapshotRef.current = buildSnapshot({
+        mood: selectedMood ?? editingEntry.mood,
+        content,
+        selectedOptions: selectionIds,
+      });
+      setLastSavedAt(new Date());
+      setSaveState(isBurnerMode ? 'disabled' : 'saved');
+      setSaveErrorMessage('');
+      return;
+    }
+
+    setSelectedOptions([]);
+    setActiveEntryId(null);
+    setMarkdownContent(DEFAULT_MARKDOWN);
+
+    isHydratingEditorRef.current = true;
     const instance = markdownRef.current?.getInstance?.();
     if (instance && typeof instance.setMarkdown === 'function') {
-      instance.setMarkdown(editingEntry.content || '');
+      instance.setMarkdown(DEFAULT_MARKDOWN);
     }
-  }, [isEditing, editingEntry]);
+    queueMicrotask(() => {
+      isHydratingEditorRef.current = false;
+    });
 
-  useEffect(() => {
-    if (isEditing) {
-      setSubmitMessage('');
-    }
-  }, [isEditing]);
+    lastSavedSnapshotRef.current = buildSnapshot({
+      mood: selectedMood,
+      content: DEFAULT_MARKDOWN,
+      selectedOptions: [],
+    });
+    setLastSavedAt(null);
+    setSaveState(isBurnerMode ? 'disabled' : 'idle');
+    setSaveErrorMessage('');
+  }, [isEditing, editingEntry, isBurnerMode]);
 
   useEffect(() => {
     if (!isEditing) {
@@ -58,8 +136,230 @@ const EntryView = ({
     }
   }, [isEditing]);
 
+  useEffect(() => {
+    if (isBurnerMode) {
+      clearAutosaveTimer();
+      setSaveState('disabled');
+      return;
+    }
+
+    if (saveState === 'disabled') {
+      setSaveState('idle');
+    }
+  }, [isBurnerMode, saveState, clearAutosaveTimer]);
+
+  const executeAutosave = useCallback(
+    async (payload, snapshot, silentError = false) => {
+      if (isBurnerMode) return false;
+
+      if (saveInFlightRef.current) {
+        pendingSaveRef.current = true;
+        return false;
+      }
+
+      saveInFlightRef.current = true;
+      setSaveState('saving');
+      setSaveErrorMessage('');
+
+      try {
+        if (activeEntryIdRef.current) {
+          const response = await apiService.updateMoodEntry(activeEntryIdRef.current, payload);
+          const updatedEntry = response?.entry
+            ? {
+                ...response.entry,
+                selections: response.entry.selections ?? [],
+              }
+            : {
+                id: activeEntryIdRef.current,
+                mood: payload.mood,
+                content: payload.content,
+                selections: normalizeSelectedOptions(payload.selected_options).map((id) => ({ id })),
+              };
+
+          if (typeof onEntryUpdated === 'function') {
+            onEntryUpdated(updatedEntry, {
+              navigateAfterSave: false,
+              refreshAfterSave: false,
+            });
+          }
+        } else {
+          const now = new Date();
+          const createPayload = {
+            ...payload,
+            date: now.toLocaleDateString(),
+            time: now.toISOString(),
+          };
+
+          const response = await apiService.createMoodEntry(createPayload);
+          const newEntryId = response?.entry_id;
+
+          if (newEntryId) {
+            setActiveEntryId(newEntryId);
+            activeEntryIdRef.current = newEntryId;
+
+            if (typeof onEntryUpdated === 'function') {
+              onEntryUpdated(
+                {
+                  id: newEntryId,
+                  mood: payload.mood,
+                  content: payload.content,
+                  date: createPayload.date,
+                  created_at: createPayload.time,
+                  selections: normalizeSelectedOptions(payload.selected_options).map((id) => ({ id })),
+                },
+                {
+                  navigateAfterSave: false,
+                  refreshAfterSave: true,
+                }
+              );
+            }
+          }
+
+          if (response?.new_achievements?.length) {
+            show('Saved. New achievements unlocked.', 'success');
+          }
+        }
+
+        lastSavedSnapshotRef.current = snapshot;
+        setLastSavedAt(new Date());
+        setSaveState('saved');
+        return true;
+      } catch (error) {
+        console.error('Autosave failed:', error);
+        setSaveState('error');
+        setSaveErrorMessage('Autosave failed. Retrying when changes continue.');
+        if (!silentError) {
+          show('Autosave failed. Your changes are still in the editor.', 'error');
+        }
+        return false;
+      } finally {
+        saveInFlightRef.current = false;
+
+        if (pendingSaveRef.current) {
+          pendingSaveRef.current = false;
+          const latest = latestPayloadRef.current;
+          if (latest && latest.snapshot !== lastSavedSnapshotRef.current) {
+            void executeAutosave(latest.payload, latest.snapshot, true);
+          }
+        }
+      }
+    },
+    [isBurnerMode, onEntryUpdated, show]
+  );
+
+  const flushPendingSave = useCallback(async () => {
+    clearAutosaveTimer();
+
+    const latest = latestPayloadRef.current;
+    if (!latest) return true;
+    if (latest.snapshot === lastSavedSnapshotRef.current) return true;
+
+    return executeAutosave(latest.payload, latest.snapshot);
+  }, [clearAutosaveTimer, executeAutosave]);
+
+  useEffect(() => {
+    return () => {
+      clearAutosaveTimer();
+    };
+  }, [clearAutosaveTimer]);
+
+  useEffect(() => {
+    return () => {
+      void flushPendingSave();
+    };
+  }, [flushPendingSave]);
+
+  useEffect(() => {
+    if (isBurnerMode) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        void flushPendingSave();
+      }
+    };
+
+    const handleBeforeUnload = (event) => {
+      if (saveState === 'dirty' || saveState === 'saving') {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [flushPendingSave, isBurnerMode, saveState]);
+
+  useEffect(() => {
+    clearAutosaveTimer();
+
+    const payload = {
+      mood: selectedMood ? Number(selectedMood) : null,
+      content: markdownContent || '',
+      selected_options: normalizeSelectedOptions(selectedOptions),
+    };
+    const snapshot = buildSnapshot({
+      mood: payload.mood,
+      content: payload.content,
+      selectedOptions: payload.selected_options,
+    });
+
+    latestPayloadRef.current = { payload, snapshot };
+
+    if (isBurnerMode) {
+      setSaveState('disabled');
+      return;
+    }
+
+    if (!payload.mood) {
+      setSaveState('idle');
+      return;
+    }
+
+    const trimmed = payload.content.trim();
+    const hasMeaningfulContent = Boolean(trimmed) && trimmed !== DEFAULT_MARKDOWN_TRIMMED;
+
+    if (!hasMeaningfulContent) {
+      setSaveState(activeEntryIdRef.current ? 'saved' : 'idle');
+      return;
+    }
+
+    if (snapshot === lastSavedSnapshotRef.current) {
+      if (!saveInFlightRef.current) {
+        setSaveState('saved');
+      }
+      return;
+    }
+
+    setSaveState('dirty');
+
+    autosaveTimerRef.current = setTimeout(() => {
+      const latest = latestPayloadRef.current;
+      if (!latest) return;
+      if (latest.snapshot === lastSavedSnapshotRef.current) return;
+      void executeAutosave(latest.payload, latest.snapshot);
+    }, AUTOSAVE_DEBOUNCE_MS);
+
+    return () => {
+      clearAutosaveTimer();
+    };
+  }, [
+    selectedMood,
+    selectedOptions,
+    markdownContent,
+    isBurnerMode,
+    executeAutosave,
+    clearAutosaveTimer,
+  ]);
+
   const handleOptionToggle = (optionId) => {
-    setSelectedOptions(prev => (prev.includes(optionId) ? prev.filter(id => id !== optionId) : [...prev, optionId]));
+    setSelectedOptions((prev) => (
+      prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
+    ));
   };
 
   const handleMoodSelection = (moodValue) => {
@@ -73,16 +373,53 @@ const EntryView = ({
     }
   };
 
-  const resetDraftComposer = () => {
-    markdownRef.current?.getInstance?.()?.setMarkdown(DEFAULT_MARKDOWN);
-    setSelectedOptions([]);
-    setSubmitMessage('');
-    setShowMoodPicker(false);
+  const handleEditorChange = (nextMarkdown) => {
+    if (isHydratingEditorRef.current) return;
+    setMarkdownContent(nextMarkdown || '');
   };
 
-  const handleCloseWriter = () => {
+  const resetDraftComposer = () => {
+    isHydratingEditorRef.current = true;
+    markdownRef.current?.getInstance?.()?.setMarkdown(DEFAULT_MARKDOWN);
+    queueMicrotask(() => {
+      isHydratingEditorRef.current = false;
+    });
+
+    setMarkdownContent(DEFAULT_MARKDOWN);
+    setSelectedOptions([]);
+    setShowMoodPicker(false);
+    setSaveErrorMessage('');
+    setSaveState('disabled');
+
+    const resetSnapshot = buildSnapshot({
+      mood: selectedMood,
+      content: DEFAULT_MARKDOWN,
+      selectedOptions: [],
+    });
+    lastSavedSnapshotRef.current = resetSnapshot;
+    latestPayloadRef.current = {
+      payload: {
+        mood: selectedMood ? Number(selectedMood) : null,
+        content: DEFAULT_MARKDOWN,
+        selected_options: [],
+      },
+      snapshot: resetSnapshot,
+    };
+  };
+
+  const handleCloseWriter = async () => {
     if (isBurnerMode && !isEditing) {
       resetDraftComposer();
+    }
+
+    if (!isBurnerMode) {
+      const saved = await flushPendingSave();
+      if (!saved) {
+        const shouldLeave = window.confirm('Recent changes are still unsaved. Leave this page anyway?');
+        if (!shouldLeave) {
+          return;
+        }
+      }
     }
 
     if (typeof onBack === 'function') {
@@ -90,98 +427,56 @@ const EntryView = ({
     }
   };
 
-  const handleSubmit = async () => {
+  const saveStatusMeta = (() => {
     if (isBurnerMode) {
-      show('Burner mode is on. Close the writer when you are done venting.', 'info');
-      return;
+      return {
+        label: 'Autosave off in burner mode',
+        Icon: CloudOff,
+      };
     }
 
-    setIsSubmitting(true);
-    setSubmitMessage('');
-
-    try {
-      if (!selectedMood) {
-        show('Pick a mood before saving your entry.', 'error');
-        setIsSubmitting(false);
-        return;
-      }
-
-      const markdownContent = markdownRef.current?.getMarkdown() || '';
-      if (!markdownContent.trim()) {
-        show('Write a few thoughts before saving.', 'error');
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (isEditing && editingEntry) {
-        const response = await apiService.updateMoodEntry(editingEntry.id, {
-          mood: selectedMood,
-          content: markdownContent,
-          selected_options: selectedOptions,
-        });
-
-        if (response?.entry && typeof onEntryUpdated === 'function') {
-          onEntryUpdated({
-            ...editingEntry,
-            ...response.entry,
-            selections: response.entry.selections ?? [],
-          });
-        }
-
-        if (typeof onBack === 'function') {
-          onBack();
-        }
-
-        show('Entry updated successfully!', 'success');
-        return;
-      }
-
-      const now = new Date();
-      const response = await apiService.createMoodEntry({
-        mood: selectedMood,
-        date: now.toLocaleDateString(),
-        time: now.toISOString(),
-        content: markdownContent,
-        selected_options: selectedOptions,
-      });
-
-      if (response.new_achievements && response.new_achievements.length > 0) {
-        const achievementNames = {
-          'first_entry': 'First Entry',
-          'week_warrior': 'Week Warrior',
-          'consistency_king': 'Consistency King',
-          'data_lover': 'Data Lover',
-          'mood_master': 'Mood Master'
-        };
-        const readableNames = response.new_achievements.map(type => achievementNames[type] || type).join(', ');
-        setSubmitMessage(`Entry saved! 🎉 New achievement unlocked: ${readableNames}`);
-      } else {
-        setSubmitMessage('Entry saved successfully! 🎉');
-      }
-
-  markdownRef.current?.getInstance()?.setMarkdown(DEFAULT_MARKDOWN);
-
-      setSelectedOptions([]);
-      setTimeout(() => {
-        onEntrySubmitted();
-      }, 1500);
-  } catch (error) {
-      console.error('Failed to save entry:', error);
-      if (isEditing) {
-        show('Failed to update entry. Please try again.', 'error');
-      } else {
-        setSubmitMessage('Failed to save entry. Please try again.');
-      }
-    } finally {
-      setIsSubmitting(false);
+    if (saveState === 'saving') {
+      return {
+        label: 'Saving...',
+        Icon: Loader2,
+      };
     }
-  };
+
+    if (saveState === 'dirty') {
+      return {
+        label: 'Unsaved changes',
+        Icon: AlertCircle,
+      };
+    }
+
+    if (saveState === 'error') {
+      return {
+        label: saveErrorMessage || 'Autosave error',
+        Icon: AlertCircle,
+      };
+    }
+
+    if (saveState === 'saved') {
+      const timestamp = lastSavedAt
+        ? lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : '';
+      return {
+        label: timestamp ? `Saved at ${timestamp}` : 'All changes saved',
+        Icon: CheckCircle2,
+      };
+    }
+
+    return {
+      label: 'Waiting for changes',
+      Icon: Clock3,
+    };
+  })();
 
   if (!selectedMood && !isEditing) {
     return (
       <div style={{ marginTop: '1rem' }}>
         <h3 style={{ marginTop: 0 }}>
-          {isEditing ? 'Pick a new mood for this entry' : 'Pick your mood to start an entry'}
+          Pick your mood to start an entry
         </h3>
         <MoodPicker onMoodSelect={handleMoodSelection} />
       </div>
@@ -218,7 +513,7 @@ const EntryView = ({
             <div style={{
               marginBottom: '0.75rem',
               fontSize: '0.85rem',
-              color: 'color-mix(in oklab, var(--text), transparent 40%)'
+              color: 'color-mix(in oklab, var(--text), transparent 40%)',
             }}>
               Editing entry from <strong style={{ color: 'var(--text)' }}>{editingEntry.date}</strong>
             </div>
@@ -254,7 +549,7 @@ const EntryView = ({
                 borderRadius: '16px',
                 border: '1px solid var(--border)',
                 background: 'var(--surface)',
-                boxShadow: 'var(--shadow-sm)'
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
               <p style={{ marginTop: 0, marginBottom: '0.75rem', fontWeight: 600, color: 'var(--text)' }}>
@@ -272,7 +567,7 @@ const EntryView = ({
                     background: 'transparent',
                     cursor: 'pointer',
                     fontSize: '0.85rem',
-                    color: 'color-mix(in oklab, var(--text), transparent 30%)'
+                    color: 'color-mix(in oklab, var(--text), transparent 30%)',
                   }}
                 >
                   Cancel
@@ -295,7 +590,21 @@ const EntryView = ({
         </div>
 
         <div className="entry-right">
-          <MDArea ref={markdownRef} />
+          <MDArea
+            ref={markdownRef}
+            initialMarkdown={editingEntry?.content || DEFAULT_MARKDOWN}
+            onChange={handleEditorChange}
+          />
+
+          <div className={`entry-autosave-status is-${saveState}`} role="status" aria-live="polite">
+            <saveStatusMeta.Icon
+              size={16}
+              className={saveState === 'saving' ? 'is-spinning' : ''}
+              aria-hidden="true"
+            />
+            <span>{saveStatusMeta.label}</span>
+          </div>
+
           {isBurnerMode && (
             <div
               style={{
@@ -312,76 +621,8 @@ const EntryView = ({
               Burner mode is on. This vent entry is temporary and disappears when you close the writer.
             </div>
           )}
-          {!isBurnerMode && (
-            <div className="entry-savebar">
-              <button
-                disabled={isSubmitting}
-                onClick={handleSubmit}
-                style={{
-                  padding: '0.9rem 2rem',
-                  fontSize: '1rem',
-                  background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50px',
-                  cursor: !isSubmitting ? 'pointer' : 'not-allowed',
-                  transition: 'all 0.3s ease',
-                  fontWeight: '600',
-                  boxShadow: 'var(--shadow-md)'
-                }}
-              >
-                {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Save Entry'}
-              </button>
-            </div>
-          )}
         </div>
       </div>
-
-      {submitMessage && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'grid',
-            placeItems: 'center',
-            zIndex: 10,
-          }}
-        >
-      <div
-            style={{
-        background: 'var(--bg-card)',
-              padding: '2rem',
-              borderRadius: '16px',
-        boxShadow: 'var(--shadow-3)',
-        border: '1px solid var(--border)',
-              textAlign: 'center',
-              minWidth: '300px',
-              maxWidth: 'min(560px, 90%)',
-            }}
-          >
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-            <div style={{
-        color: submitMessage.includes('achievement') ? 'var(--accent-600)' : 'var(--text)',
-              fontWeight: '600',
-              fontSize: '1.1rem',
-              lineHeight: '1.4'
-            }}>
-              {submitMessage}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {submitMessage && (
-    <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-      background: 'var(--overlay)',
-            zIndex: 5
-          }}
-        />
-      )}
     </div>
   );
 };
