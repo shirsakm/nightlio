@@ -180,6 +180,17 @@ const EntryView = ({
   if (!selectedMood && !isEditing) {
     return (
       <div style={{ marginTop: '1rem' }}>
+        <h3 style={{ marginTop: 0 }}>
+          {isEditing ? 'Pick a new mood for this entry' : 'Pick your mood to start an entry'}
+        </h3>
+        <MoodPicker onMoodSelect={handleMoodSelection} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="entry-container" style={{ position: 'relative' }}>
+      {isEditing && (
         <div style={{ marginBottom: '1rem' }}>
           <button
             onClick={handleCloseWriter}
@@ -196,38 +207,10 @@ const EntryView = ({
               boxShadow: 'var(--shadow-md)',
             }}
           >
-            {isEditing ? '<- Cancel Edit' : '<- Back to History'}
+            {'<- Cancel Edit'}
           </button>
         </div>
-        <h3 style={{ marginTop: 0 }}>
-          {isEditing ? 'Pick a new mood for this entry' : 'Pick your mood to start an entry'}
-        </h3>
-        <MoodPicker onMoodSelect={handleMoodSelection} />
-      </div>
-    );
-  }
-
-  return (
-    <div className="entry-container" style={{ position: 'relative' }}>
-      <div style={{ marginBottom: '1rem' }}>
-        <button
-          onClick={handleCloseWriter}
-          style={{
-            padding: '0.5rem 1rem',
-            background: 'var(--accent-bg)',
-            color: 'white',
-            border: 'none',
-            borderRadius: 'var(--radius-pill)',
-            cursor: 'pointer',
-            fontSize: '0.9rem',
-            fontWeight: '500',
-            transition: 'all 0.3s ease',
-            boxShadow: 'var(--shadow-md)',
-          }}
-        >
-          {isEditing ? '<- Cancel Edit' : '<- Back to History'}
-        </button>
-      </div>
+      )}
 
       <div className="entry-grid">
         <div className="entry-left">

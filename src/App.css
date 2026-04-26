@@ -55,7 +55,7 @@
 /* Entry two-column layout (desktop) */
 .entry-container { margin-top: 1rem; width: 100%; max-width: 1400px; margin-inline: auto; }
 .entry-grid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
-.entry-left { position: sticky; top: calc(var(--space-4) + 64px); align-self: start; max-height: calc(100vh - 170px); overflow: auto; padding-right: var(--space-2); }
+.entry-left { position: sticky; top: 0; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden; padding-right: var(--space-2); }
 .entry-right { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; align-self: start; }
 .entry-savebar { position: sticky; bottom: 0; padding-top: var(--space-2); background: linear-gradient(180deg, rgba(255,255,255,0), var(--surface) 40%); display: flex; justify-content: flex-end; }
 
