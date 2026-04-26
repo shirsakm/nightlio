@@ -26,6 +26,8 @@ try:
     from api.routes.achievement_routes import create_achievement_routes
     from api.utils.error_handlers import setup_error_handlers
     from api.utils.security_headers import add_security_headers
+    from api.services.mus_service import MusicService
+    from api.routes.mus_routes import create_music_routes
 except Exception:  # fallback for running from inside api/
     from database import MoodDatabase
     from services.mood_service import MoodService
@@ -42,7 +44,8 @@ except Exception:  # fallback for running from inside api/
     from routes.achievement_routes import create_achievement_routes
     from utils.error_handlers import setup_error_handlers
     from utils.security_headers import add_security_headers
-
+    from services.mus_service import MusicService
+    from routes.mus_routes import create_music_routes
 
 def create_app(config_name="default"):
     """Application factory pattern"""
@@ -88,6 +91,9 @@ def create_app(config_name="default"):
     user_service = UserService(db)
     achievement_service = AchievementService(db)
 
+    # Initialize music service
+    music_service = MusicService(db)
+
     # Register blueprints
     app.register_blueprint(create_auth_routes(user_service), url_prefix="/api")
     app.register_blueprint(create_mood_routes(mood_service), url_prefix="/api")
@@ -113,6 +119,10 @@ def create_app(config_name="default"):
             cfg = get_config()
         except Exception:
             cfg = None
+
+    # Register music blueprint only when enabled.
+    if cfg and getattr(cfg, "ENABLE_MOOD_MUSIC", False):
+        app.register_blueprint(create_music_routes(music_service), url_prefix="/api")
 
     if cfg and getattr(cfg, "ENABLE_GOOGLE_OAUTH", False):
         try:

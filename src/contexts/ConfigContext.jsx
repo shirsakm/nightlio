@@ -10,7 +10,10 @@ export const useConfig = () => {
 };
 
 export const ConfigProvider = ({ children }) => {
-  const [config, setConfig] = useState({ enable_google_oauth: false });
+  const [config, setConfig] = useState({
+    enable_google_oauth: false,
+    enable_mood_music: false,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,7 +22,9 @@ export const ConfigProvider = ({ children }) => {
     (async () => {
       try {
         const data = await api.getPublicConfig();
-        if (isMounted) setConfig(data);
+        if (isMounted) {
+          setConfig((prev) => ({ ...prev, ...data }));
+        }
       } catch (e) {
         if (isMounted) setError(e.message || 'Failed to load config');
       } finally {

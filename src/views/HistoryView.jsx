@@ -1,7 +1,15 @@
+import { useState, useEffect } from 'react';
 import MoodPicker from '../components/mood/MoodPicker';
 import HistoryList from '../components/history/HistoryList';
 
 const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEdit, renderOnlyHeader = false }) => {
+  const [filteredEntries, setFilteredEntries] = useState(pastEntries);
+  
+  // Update filtered entries when pastEntries changes (e.g. from global search)
+  useEffect(() => {
+    setFilteredEntries(pastEntries);
+  }, [pastEntries]);
+  
   const currentDate = new Date();
   const dateString = currentDate.toLocaleDateString('en-US', { 
     weekday: 'long', 
@@ -17,7 +25,7 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEd
 
   return (
     <>
-  <div className="history-header">
+      <div className="history-header">
         <MoodPicker onMoodSelect={onMoodSelect} />
         <div className="history-date">
           <h2 className="history-today-title">Today</h2>
@@ -27,15 +35,16 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEd
           </div>
         </div>
       </div>
-  {renderOnlyHeader ? null : (
-      <HistoryList 
-        entries={pastEntries} 
-        loading={loading} 
-        error={error} 
-        onDelete={onDelete}
-        onEdit={onEdit}
-      />
-  )}
+
+      {renderOnlyHeader ? null : (
+        <HistoryList 
+          entries={filteredEntries}
+          loading={loading} 
+          error={error} 
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
+      )}
     </>
   );
 };

@@ -7,5 +7,10 @@ def test_config_endpoint_client():
     resp = client.get("/api/config")
     assert resp.status_code == 200
     data = resp.get_json()
-    assert set(data.keys()) == {"enable_google_oauth", "google_client_id"}
+    assert set(data.keys()) == {
+        "enable_google_oauth",
+        "enable_mood_music",
+        "google_client_id",
+    }
     assert isinstance(data["enable_google_oauth"], bool)
+    assert isinstance(data["enable_mood_music"], bool)

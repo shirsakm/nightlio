@@ -9,6 +9,7 @@ import { useToast } from './ui/ToastProvider';
 import SearchPlaceholder from './search/SearchPlaceholder';
 
 import './Header.css';
+import SearchBar from './search/SearchBar';
 
 const resolveShortcutElement = (target) => {
   if (!target || typeof target !== 'object') {
@@ -61,7 +62,7 @@ const shouldSkipShortcut = (target) => {
   return false;
 };
 
-const Header = ({ currentStreak }) => {
+const Header = ({ currentStreak, pastEntries, onSearch }) => {
   const { user, logout } = useAuth();
   useConfig();
   const { theme, cycle } = useTheme();
@@ -116,7 +117,12 @@ const Header = ({ currentStreak }) => {
         </div>
 
         <div className="header__search">
-          {/* Search disabled globally */}
+          <SearchBar 
+            entries={pastEntries} 
+            onSearch={onSearch}
+            placeholder="Search..."
+            searchFields={['content', 'date']}
+          />
         </div>
 
         {user && (
