@@ -2,6 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import { useEffect, useState } from 'react';
 import { Pencil, Trash2, Download } from 'lucide-react';
 import apiService from '../../services/api';
+import { getMoodLabel } from '../../utils/moodUtils';
 
 const backdropStyle = {
   position: 'fixed',
@@ -73,7 +74,27 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) =>
     if (isExporting) return;
     setIsExporting(true);
     try {
-      const blob = await apiService.exportPdf(entry.content);
+      const timeStr = entry.created_at ? new Date(entry.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      const dateStr = `${entry.date}${timeStr ? ` at ${timeStr}` : ''}`;
+      
+      const moodLabel = entry.mood ? getMoodLabel(entry.mood) : '';
+      
+      const tagsStr = entry.selections?.length > 0 
+        ? entry.selections.map(s => s.name).join(', ') 
+        : '';
+    
+      const headerLines = [];
+      headerLines.push(`**Date:** ${dateStr}`);
+      if (moodLabel) {
+        headerLines.push(`**Mood:** ${moodLabel}`);
+      }
+      if (tagsStr) {
+        headerLines.push(`**Tags:** ${tagsStr}`);
+      }
+    
+      const enhancedContent = headerLines.join('\n') + '\n\n---\n\n' + (entry.content || '');
+
+      const blob = await apiService.exportPdf(enhancedContent);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
