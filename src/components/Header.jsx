@@ -118,7 +118,7 @@ const Header = ({ currentStreak, pastEntries, onSearch }) => {
           <SearchBar 
             entries={pastEntries} 
             onSearch={onSearch}
-            placeholder="Search your entries... (date or content)"
+            placeholder="Search..."
             searchFields={['content', 'date']}
           />
         </div>

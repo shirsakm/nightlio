@@ -81,6 +81,29 @@ const AppContent = () => {
   // Determine if we are in entry view for layout purposes (no sidebar)
   const isEntryView = location.pathname.endsWith('/entry');
 
+  const handleGlobalSearch = (results) => {
+    setSearchResults(results);
+    if (results !== null) {
+      if (location.pathname !== '/dashboard' && location.pathname !== '/dashboard/') {
+        navigate('/dashboard');
+      }
+      setTimeout(() => {
+        const historySection = document.getElementById('history-section');
+        if (historySection) {
+          // Calculate an offset to prevent header overlap
+          const headerOffset = 80;
+          const elementPosition = historySection.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.scrollY - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 50); // slight delay to allow rendering if navigating
+    }
+  };
+
   useEffect(() => {
     const handler = () => {
       if (!location.pathname.startsWith('/dashboard')) {
@@ -102,7 +125,7 @@ const AppContent = () => {
         />
         
         <div className="app-shell">
-          <Header currentStreak={currentStreak} pastEntries={pastEntries} onSearch={setSearchResults} />
+          <Header currentStreak={currentStreak} pastEntries={pastEntries} onSearch={handleGlobalSearch} />
 
           <div className="app-layout">
 
@@ -153,7 +176,7 @@ const AppContent = () => {
                   <section className="app-wide" aria-label="Goals section">
                     <GoalsSection onNavigateToGoals={() => navigate('goals')} />
                   </section>
-                  <section className="app-wide" aria-label="History entries">
+                  <section className="app-wide" aria-label="History entries" id="history-section">
                     <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>
                       {searchResults !== null ? `Search Results (${searchResults.length})` : 'History'}
                     </h2>
