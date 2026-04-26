@@ -64,13 +64,13 @@
   --radius-pill: 9999px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(16,24,40,0.06), 0 1px 1.5px rgba(16,24,40,0.03);
-  --shadow-md: 0 4px 12px rgba(16,24,40,0.08), 0 2px 4px rgba(16,24,40,0.06);
-  --shadow-lg: 0 10px 30px rgba(16,24,40,0.10), 0 3px 6px rgba(16,24,40,0.08);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
   /* compat */
-  --shadow-1: var(--shadow-md);
-  --shadow-2: var(--shadow-lg);
-  --shadow-3: 0 20px 60px rgba(16,24,40,0.14);
+  --shadow-1: none;
+  --shadow-2: none;
+  --shadow-3: none;
 
   /* Interaction */
   --ring: 0 0 0 3px rgba(47,126,137,0.28);
@@ -100,9 +100,7 @@
   --brand-2: var(--accent-700);
 
   /* Shared background gradient */
-  --gradient-background: radial-gradient(circle at top, rgba(80, 94, 255, 0.18), transparent 55%),
-                         radial-gradient(circle at 20% 30%, rgba(255, 194, 99, 0.12), transparent 40%),
-                         linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
+  --gradient-background: var(--bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -220,6 +218,19 @@ html[data-theme="dark"] {
   --overlay: rgba(0,0,0,0.55);
   --skeleton-a: rgba(255,255,255,0.06);
   --skeleton-b: rgba(255,255,255,0.12);
+
+  /* Shadows (keep them in dark mode) */
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.06), 0 1px 1.5px rgba(16,24,40,0.03);
+  --shadow-md: 0 4px 12px rgba(16,24,40,0.08), 0 2px 4px rgba(16,24,40,0.06);
+  --shadow-lg: 0 10px 30px rgba(16,24,40,0.10), 0 3px 6px rgba(16,24,40,0.08);
+  --shadow-1: var(--shadow-md);
+  --shadow-2: var(--shadow-lg);
+  --shadow-3: 0 20px 60px rgba(16,24,40,0.14);
+
+  /* Shared background gradient (keep blobs in dark mode) */
+  --gradient-background: radial-gradient(circle at top, rgba(80, 94, 255, 0.18), transparent 55%),
+                         radial-gradient(circle at 20% 30%, rgba(255, 194, 99, 0.12), transparent 40%),
+                         linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
 
   color-scheme: dark;
 }
