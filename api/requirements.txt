@@ -6,5 +6,6 @@ python-jose[cryptography]==3.3.0
 python-dotenv==1.0.0
 pytest==7.4.3
 gunicorn==21.2.0
-sentence-transformers
+sentence_transformers
+google-generativeai
 numpy
