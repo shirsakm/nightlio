@@ -133,7 +133,12 @@ const AppContent = () => {
         />
         
         <div className="app-shell">
-          <Header currentStreak={currentStreak} pastEntries={pastEntries} onSearch={handleGlobalSearch} />
+          <Header
+            currentStreak={currentStreak}
+            pastEntries={pastEntries}
+            onSearch={handleGlobalSearch}
+            showSearch={!isEntryView}
+          />
 
           <div className="app-layout">
 

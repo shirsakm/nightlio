@@ -196,7 +196,7 @@ const EntryView = ({
               boxShadow: 'var(--shadow-md)',
             }}
           >
-            {isEditing ? '← Cancel Edit' : '← Back'}
+            {isEditing ? '<- Cancel Edit' : '<- Back to History'}
           </button>
         </div>
         <h3 style={{ marginTop: 0 }}>
@@ -208,7 +208,7 @@ const EntryView = ({
   }
 
   return (
-    <div className="entry-container" style={{ marginTop: '1rem', position: 'relative' }}>
+    <div className="entry-container" style={{ position: 'relative' }}>
       <div style={{ marginBottom: '1rem' }}>
         <button
           onClick={handleCloseWriter}
@@ -225,7 +225,7 @@ const EntryView = ({
             boxShadow: 'var(--shadow-md)',
           }}
         >
-          {isEditing ? '← Cancel Edit' : '← Back to History'}
+          {isEditing ? '<- Cancel Edit' : '<- Back to History'}
         </button>
       </div>
 

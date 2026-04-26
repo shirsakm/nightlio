@@ -6,7 +6,6 @@ import { useConfig } from '../contexts/ConfigContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useBurner } from '../contexts/BurnerContext';
 import { useToast } from './ui/ToastProvider';
-import SearchPlaceholder from './search/SearchPlaceholder';
 
 import './Header.css';
 import SearchBar from './search/SearchBar';
@@ -62,7 +61,7 @@ const shouldSkipShortcut = (target) => {
   return false;
 };
 
-const Header = ({ currentStreak, pastEntries, onSearch }) => {
+const Header = ({ currentStreak, pastEntries, onSearch, showSearch = true }) => {
   const { user, logout } = useAuth();
   useConfig();
   const { theme, cycle } = useTheme();
@@ -72,6 +71,10 @@ const Header = ({ currentStreak, pastEntries, onSearch }) => {
 
   const handleSearchShortcut = useCallback(
     (event) => {
+      if (!showSearch) {
+        return;
+      }
+
       if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) {
         return;
       }
@@ -92,7 +95,7 @@ const Header = ({ currentStreak, pastEntries, onSearch }) => {
         show('Search focused — search not yet implemented', 'info', 1500);
       }
     },
-    [show]
+    [show, showSearch]
   );
 
   useEffect(() => {
@@ -116,14 +119,16 @@ const Header = ({ currentStreak, pastEntries, onSearch }) => {
           )}
         </div>
 
-        <div className="header__search">
-          <SearchBar 
-            entries={pastEntries} 
-            onSearch={onSearch}
-            placeholder="Search..."
-            searchFields={['content', 'date']}
-          />
-        </div>
+        {showSearch && (
+          <div className="header__search">
+            <SearchBar
+              entries={pastEntries}
+              onSearch={onSearch}
+              placeholder="Search..."
+              searchFields={['content', 'date']}
+            />
+          </div>
+        )}
 
         {user && (
           <div className="header__right">
