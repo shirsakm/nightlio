@@ -1,6 +1,7 @@
 import ReactMarkdown from 'react-markdown';
-import { useEffect } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Pencil, Trash2, Download } from 'lucide-react';
+import apiService from '../../services/api';
 
 const backdropStyle = {
   position: 'fixed',
@@ -47,6 +48,8 @@ const deriveTitleBody = (content = '') => {
 };
 
 const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) => {
+  const [isExporting, setIsExporting] = useState(false);
+
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e) => {
@@ -64,6 +67,29 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) =>
   const onBackdrop = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
+
+  const handleExport = async (e) => {
+    e.stopPropagation();
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const blob = await apiService.exportPdf(entry.content);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Entry_${entry.date || 'Export'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Export error:", err);
+      alert("Failed to export PDF.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const { title, body } = deriveTitleBody(entry.content);
   return (
     <div style={backdropStyle} onClick={onBackdrop} role="dialog" aria-modal="true">
@@ -78,6 +104,28 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) =>
             )}
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              style={{
+                background: 'var(--surface)',
+                color: 'var(--text)',
+                border: '1px solid var(--border)',
+                borderRadius: 10,
+                padding: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 600,
+                boxShadow: 'var(--shadow-sm)',
+                opacity: isExporting ? 0.5 : 1,
+                cursor: isExporting ? 'not-allowed' : 'pointer',
+              }}
+              title="Export as PDF"
+              aria-label="Export as PDF"
+            >
+              <Download size={18} />
+            </button>
             {onEdit && (
               <button
                 onClick={(e) => { e.stopPropagation(); onEdit(); }}
