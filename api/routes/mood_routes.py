@@ -71,7 +71,6 @@ def create_mood_routes(mood_service: MoodService):
                         "entry_id": result["entry_id"],
                         "new_achievements": result["new_achievements"],
                         "message": "Mood entry created successfully",
-                        "insight": result.get("insight"),
                     }
                 ),
                 201,

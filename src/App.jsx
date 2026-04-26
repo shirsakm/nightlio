@@ -180,7 +180,6 @@ const AppContent = () => {
         }}
         label="Scroll to top"
       />
-    <MusicDock />
     </>
   );
 };
@@ -205,6 +204,7 @@ function App() {
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <MusicDock />
           </AuthProvider>
         </ToastProvider>
       </ThemeProvider>

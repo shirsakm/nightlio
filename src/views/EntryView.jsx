@@ -6,7 +6,6 @@ import GroupManager from '../components/groups/GroupManager';
 import MDArea from '../components/MarkdownArea.jsx';
 import apiService from '../services/api';
 import { useToast } from '../components/ui/ToastProvider';
-import './EntryView.css';
 
 const DEFAULT_MARKDOWN = `# How was your day?
 
@@ -33,7 +32,6 @@ const EntryView = ({
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const markdownRef = useRef();
   const { show } = useToast();
-  const [insight, setInsight] = useState('');
 
   useEffect(() => {
     if (!isEditing || !editingEntry) return;
@@ -141,13 +139,8 @@ const EntryView = ({
 
       setSelectedOptions([]);
       setTimeout(() => {
-        if (response.insight) {
-          setSubmitMessage(''); 
-          setInsight(response.insight);
-        } else {
-          onEntrySubmitted();
-        }
-      }, 3000);
+        onEntrySubmitted();
+      }, 1500);
   } catch (error) {
       console.error('Failed to save entry:', error);
       if (isEditing) {
@@ -363,18 +356,6 @@ const EntryView = ({
             zIndex: 5
           }}
         />
-      )}
-      {insight && (
-        <div className="insight-overlay">
-          <div className="insight-card">
-            <div className="insight-header">
-              <span>🌟 Entry Saved!</span>
-              <button className="insight-close" onClick={() => onEntrySubmitted()}>✕</button>
-            </div>
-            <p className="insight-text">{insight}</p>
-            <div className="insight-footer">Keep going! You've got this.</div>
-          </div>
-        </div>
       )}
     </div>
   );
