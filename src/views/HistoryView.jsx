@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MoodPicker from '../components/mood/MoodPicker';
 import HistoryList from '../components/history/HistoryList';
-import SearchBar from '../components/search/SearchBar';
 
 const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEdit, renderOnlyHeader = false }) => {
-  const [searchQuery, setSearchQuery] = useState('');  // Track search text
   const [filteredEntries, setFilteredEntries] = useState(pastEntries);
+  
+  // Update filtered entries when pastEntries changes (e.g. from global search)
+  useEffect(() => {
+    setFilteredEntries(pastEntries);
+  }, [pastEntries]);
   
   const currentDate = new Date();
   const dateString = currentDate.toLocaleDateString('en-US', { 
@@ -20,12 +23,6 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEd
     hour12: true 
   });
 
-  const handleSearch = (results) => {
-    setFilteredEntries(results.length > 0 ? results : pastEntries);
-    // If no results found, show all entries
-    // This way pressing X button shows all entries again
-  };
-
   return (
     <>
       <div className="history-header">
@@ -37,16 +34,6 @@ const HistoryView = ({ pastEntries, loading, error, onMoodSelect, onDelete, onEd
             <span className="history-time-part">{timeString}</span>
           </div>
         </div>
-      </div>
-
-      {/* Search bar */}
-      <div style={{ marginBottom: '2rem', marginTop: '1.5rem' }}>
-        <SearchBar
-          entries={pastEntries}
-          onSearch={handleSearch}
-          placeholder="Search your entries... (date or content)"
-          searchFields={['content', 'date']}
-        />
       </div>
 
       {renderOnlyHeader ? null : (

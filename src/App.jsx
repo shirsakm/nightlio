@@ -33,6 +33,7 @@ const AppContent = () => {
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
+  const [searchResults, setSearchResults] = useState(null);
   const { groups, createGroup, createGroupOption } = useGroups();
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
@@ -74,6 +75,9 @@ const AppContent = () => {
   const locationState = location.state || {};
   const { mood: selectedMood, entry: editingEntry } = locationState;
   
+  // Get currently displayed entries (apply search filter if active)
+  const displayEntries = searchResults !== null ? searchResults : pastEntries;
+
   // Determine if we are in entry view for layout purposes (no sidebar)
   const isEntryView = location.pathname.endsWith('/entry');
 
@@ -98,7 +102,7 @@ const AppContent = () => {
         />
         
         <div className="app-shell">
-          <Header currentStreak={currentStreak} />
+          <Header currentStreak={currentStreak} pastEntries={pastEntries} onSearch={setSearchResults} />
 
           <div className="app-layout">
 
@@ -106,7 +110,7 @@ const AppContent = () => {
               <Routes>
                 <Route index element={
                   <HistoryView
-                    pastEntries={pastEntries}
+                    pastEntries={displayEntries}
                     loading={historyLoading}
                     error={historyError}
                     onMoodSelect={handleMoodSelect}
@@ -150,9 +154,11 @@ const AppContent = () => {
                     <GoalsSection onNavigateToGoals={() => navigate('goals')} />
                   </section>
                   <section className="app-wide" aria-label="History entries">
-                    <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>History</h2>
+                    <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>
+                      {searchResults !== null ? `Search Results (${searchResults.length})` : 'History'}
+                    </h2>
                     <HistoryList 
-                      entries={pastEntries}
+                      entries={displayEntries}
                       loading={historyLoading}
                       error={historyError}
                       onDelete={handleEntryDeleted}

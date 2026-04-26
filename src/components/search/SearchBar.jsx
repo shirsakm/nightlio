@@ -18,6 +18,7 @@ export default function SearchBar({
     if (!query.trim()) {
       setResults([]);
       setIsOpen(false);
+      if (onSearch) onSearch(null); // Return null when search is cleared
       return;
     }
 
