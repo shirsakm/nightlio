@@ -107,6 +107,7 @@ class ConfigData:
 
     # Feature flags
     ENABLE_GOOGLE_OAUTH: bool
+    ENABLE_MOOD_MUSIC: bool
 
     # Google OAuth
     GOOGLE_CLIENT_ID: Optional[str]
@@ -135,6 +136,7 @@ def _load_config_from_env() -> ConfigData:
     """
 
     enable_google = is_truthy(os.getenv("ENABLE_GOOGLE_OAUTH"))
+    enable_mood_music = is_truthy(os.getenv("ENABLE_MOOD_MUSIC"))
     # Web3 removed
 
     # Secrets pulled from env; don't default to empty string.
@@ -154,6 +156,7 @@ def _load_config_from_env() -> ConfigData:
     return ConfigData(
         PORT=port,
         ENABLE_GOOGLE_OAUTH=enable_google,
+        ENABLE_MOOD_MUSIC=enable_mood_music,
         GOOGLE_CLIENT_ID=os.getenv("GOOGLE_CLIENT_ID"),
         GOOGLE_CLIENT_SECRET=os.getenv("GOOGLE_CLIENT_SECRET"),
         GOOGLE_CALLBACK_URL=os.getenv("GOOGLE_CALLBACK_URL"),
@@ -184,6 +187,7 @@ def config_to_public_dict(cfg: ConfigData) -> Dict[str, Any]:
     """
     return {
         "enable_google_oauth": bool(cfg.ENABLE_GOOGLE_OAUTH),
+        "enable_mood_music": bool(cfg.ENABLE_MOOD_MUSIC),
         # Expose the Google Client ID so the frontend can initialize GSI correctly
         "google_client_id": cfg.GOOGLE_CLIENT_ID,
     }

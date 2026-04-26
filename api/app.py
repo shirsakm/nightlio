@@ -105,9 +105,6 @@ def create_app(config_name="default"):
     app.register_blueprint(create_misc_routes(), url_prefix="/api")
     app.register_blueprint(create_config_routes(), url_prefix="/api")
 
-    #Register music blueprint
-    app.register_blueprint(create_music_routes(music_service), url_prefix="/api")
-    
     # Expose services for optional blueprints (e.g., OAuth) to reuse
     try:
         if not hasattr(app, "extensions") or app.extensions is None:  # type: ignore[attr-defined]
@@ -122,6 +119,10 @@ def create_app(config_name="default"):
             cfg = get_config()
         except Exception:
             cfg = None
+
+    # Register music blueprint only when enabled.
+    if cfg and getattr(cfg, "ENABLE_MOOD_MUSIC", False):
+        app.register_blueprint(create_music_routes(music_service), url_prefix="/api")
 
     if cfg and getattr(cfg, "ENABLE_GOOGLE_OAUTH", False):
         try:
