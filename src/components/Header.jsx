@@ -4,6 +4,7 @@ import { Flame, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBurner } from '../contexts/BurnerContext';
 import { useToast } from './ui/ToastProvider';
 import SearchPlaceholder from './search/SearchPlaceholder';
 
@@ -64,6 +65,7 @@ const Header = ({ currentStreak }) => {
   const { user, logout } = useAuth();
   useConfig();
   const { theme, cycle } = useTheme();
+  const { isBurnerMode, toggleBurnerMode } = useBurner();
   const { show } = useToast();
   const [showAvatar, setShowAvatar] = useState(true);
 
@@ -127,6 +129,17 @@ const Header = ({ currentStreak }) => {
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun size={14} strokeWidth={2} /> : <Moon size={14} strokeWidth={2} />}
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleBurnerMode}
+              className={`header__button header__iconButton${isBurnerMode ? ' header__iconButton--active' : ''}`}
+              title={`Burner mode: ${isBurnerMode ? 'on' : 'off'}`}
+              aria-label="Toggle burner mode"
+              aria-pressed={isBurnerMode}
+            >
+              <Flame size={14} strokeWidth={2} />
             </button>
 
             <div className="header__profile">
