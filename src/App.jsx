@@ -53,9 +53,19 @@ const AppContent = () => {
     navigate('/dashboard');
   };
 
-  const handleEntrySubmitted = () => {
-    navigate('/dashboard');
-    refreshHistory();
+  const upsertEntry = (entry) => {
+    if (!entry?.id) return;
+
+    setPastEntries((prev) => {
+      const existingIndex = prev.findIndex((item) => item.id === entry.id);
+      if (existingIndex === -1) {
+        return [entry, ...prev];
+      }
+
+      return prev.map((item) => (
+        item.id === entry.id ? { ...item, ...entry } : item
+      ));
+    });
   };
 
   const handleEntryDeleted = (deletedEntryId) => {
@@ -71,12 +81,21 @@ const AppContent = () => {
     navigate('.', { state: { ...location.state, mood: moodValue }, replace: true });
   };
 
-  const handleEntryUpdated = (updatedEntry) => {
-    setPastEntries(prev => prev.map(entry => (
-      entry.id === updatedEntry.id ? { ...entry, ...updatedEntry } : entry
-    )));
-    navigate('/dashboard');
-    refreshHistory();
+  const handleEntryUpdated = (updatedEntry, options = {}) => {
+    const {
+      navigateAfterSave = true,
+      refreshAfterSave = true,
+    } = options;
+
+    upsertEntry(updatedEntry);
+
+    if (navigateAfterSave) {
+      navigate('/dashboard');
+    }
+
+    if (refreshAfterSave) {
+      refreshHistory();
+    }
   };
 
   // Helper to get state from location
@@ -133,7 +152,12 @@ const AppContent = () => {
         />
         
         <div className="app-shell">
-          <Header currentStreak={currentStreak} pastEntries={pastEntries} onSearch={handleGlobalSearch} />
+          <Header
+            currentStreak={currentStreak}
+            pastEntries={pastEntries}
+            onSearch={handleGlobalSearch}
+            showSearch={!isEntryView}
+          />
 
           <div className="app-layout">
 
@@ -155,9 +179,9 @@ const AppContent = () => {
                     selectedMood={selectedMood}
                     groups={groups}
                     onBack={handleBackToHistory}
+                    onEntryDeleted={handleEntryDeleted}
                     onCreateGroup={createGroup}
                     onCreateOption={createGroupOption}
-                    onEntrySubmitted={handleEntrySubmitted}
                     editingEntry={editingEntry}
                     onEntryUpdated={handleEntryUpdated}
                     onEditMoodSelect={handleEditMoodSelect}
@@ -226,26 +250,7 @@ function App() {
     <ConfigProvider>
       <ThemeProvider>
         <ToastProvider>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route
-                path="/dashboard/*"
-                element={
-                  <ProtectedRoute>
-                    <AppContent />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <MusicDockGate />
-          </AuthProvider>
-        </ToastProvider>
-        <BurnerProvider>
-          <ToastProvider>
+          <BurnerProvider>
             <AuthProvider>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
@@ -261,9 +266,10 @@ function App() {
                 />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <MusicDockGate />
             </AuthProvider>
-          </ToastProvider>
-        </BurnerProvider>
+          </BurnerProvider>
+        </ToastProvider>
       </ThemeProvider>
     </ConfigProvider>
   );
