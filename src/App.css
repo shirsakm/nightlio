@@ -54,6 +54,31 @@
 
 /* Entry two-column layout (desktop) */
 .entry-container { margin-top: 1rem; width: 100%; max-width: 1400px; margin-inline: auto; }
+.entry-mood-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.entry-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.entry-icon-button:hover {
+  border-color: color-mix(in oklab, var(--accent-600), transparent 45%);
+  box-shadow: var(--shadow-md);
+}
 .entry-grid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
 .entry-left { position: sticky; top: 0; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden; padding-right: var(--space-2); }
 .entry-right { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; align-self: start; }

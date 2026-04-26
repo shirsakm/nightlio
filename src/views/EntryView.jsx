@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   AlertCircle,
+  ArrowLeft,
   CheckCircle2,
   Clock3,
   CloudOff,
@@ -37,6 +38,7 @@ const EntryView = ({
   selectedMood,
   groups,
   onBack,
+  onEntryDeleted,
   onCreateGroup,
   onCreateOption,
   onSelectMood,
@@ -63,6 +65,8 @@ const EntryView = ({
   const latestPayloadRef = useRef(null);
   const lastSavedSnapshotRef = useRef('');
   const activeEntryIdRef = useRef(activeEntryId);
+  const createdByAutosaveRef = useRef(false);
+  const skipAutosaveFlushRef = useRef(false);
 
   const { show } = useToast();
   const { isBurnerMode } = useBurner();
@@ -80,6 +84,9 @@ const EntryView = ({
 
   useEffect(() => {
     if (isEditing && editingEntry) {
+      createdByAutosaveRef.current = false;
+      skipAutosaveFlushRef.current = false;
+
       const selectionIds = editingEntry.selections?.map((selection) => selection.id) ?? [];
       const content = editingEntry.content || '';
 
@@ -110,6 +117,8 @@ const EntryView = ({
     setSelectedOptions([]);
     setActiveEntryId(null);
     setMarkdownContent(DEFAULT_MARKDOWN);
+    createdByAutosaveRef.current = false;
+    skipAutosaveFlushRef.current = false;
 
     isHydratingEditorRef.current = true;
     const instance = markdownRef.current?.getInstance?.();
@@ -196,6 +205,7 @@ const EntryView = ({
           if (newEntryId) {
             setActiveEntryId(newEntryId);
             activeEntryIdRef.current = newEntryId;
+            createdByAutosaveRef.current = true;
 
             if (typeof onEntryUpdated === 'function') {
               onEntryUpdated(
@@ -248,6 +258,8 @@ const EntryView = ({
   );
 
   const flushPendingSave = useCallback(async () => {
+    if (skipAutosaveFlushRef.current) return true;
+
     clearAutosaveTimer();
 
     const latest = latestPayloadRef.current;
@@ -265,7 +277,9 @@ const EntryView = ({
 
   useEffect(() => {
     return () => {
-      void flushPendingSave();
+      if (!skipAutosaveFlushRef.current) {
+        void flushPendingSave();
+      }
     };
   }, [flushPendingSave]);
 
@@ -407,18 +421,33 @@ const EntryView = ({
     };
   };
 
-  const handleCloseWriter = async () => {
+  const handleCancel = async () => {
+    clearAutosaveTimer();
+
+    if (!isEditing && !isBurnerMode && saveInFlightRef.current && !activeEntryIdRef.current) {
+      show('Autosave is still finishing. Please tap Cancel again in a moment.', 'info');
+      return;
+    }
+
+    skipAutosaveFlushRef.current = true;
+
     if (isBurnerMode && !isEditing) {
       resetDraftComposer();
     }
 
-    if (!isBurnerMode) {
-      const saved = await flushPendingSave();
-      if (!saved) {
-        const shouldLeave = window.confirm('Recent changes are still unsaved. Leave this page anyway?');
-        if (!shouldLeave) {
-          return;
+    if (!isEditing && createdByAutosaveRef.current && activeEntryIdRef.current) {
+      try {
+        const draftId = activeEntryIdRef.current;
+        await apiService.deleteMoodEntry(draftId);
+        if (typeof onEntryDeleted === 'function') {
+          onEntryDeleted(draftId);
         }
+        show('Draft discarded.', 'success');
+      } catch (error) {
+        console.error('Failed to discard autosaved draft:', error);
+        skipAutosaveFlushRef.current = false;
+        show('Could not discard the autosaved draft. Please try again.', 'error');
+        return;
       }
     }
 
@@ -430,7 +459,7 @@ const EntryView = ({
   const saveStatusMeta = (() => {
     if (isBurnerMode) {
       return {
-        label: 'Autosave off in burner mode',
+        label: 'Saving is turned off in burner mode.',
         Icon: CloudOff,
       };
     }
@@ -485,28 +514,6 @@ const EntryView = ({
 
   return (
     <div className="entry-container" style={{ position: 'relative' }}>
-      {isEditing && (
-        <div style={{ marginBottom: '1rem' }}>
-          <button
-            onClick={handleCloseWriter}
-            style={{
-              padding: '0.5rem 1rem',
-              background: 'var(--accent-bg)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-pill)',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              fontWeight: '500',
-              transition: 'all 0.3s ease',
-              boxShadow: 'var(--shadow-md)',
-            }}
-          >
-            {'<- Cancel Edit'}
-          </button>
-        </div>
-      )}
-
       <div className="entry-grid">
         <div className="entry-left">
           {isEditing && editingEntry && (
@@ -519,7 +526,28 @@ const EntryView = ({
             </div>
           )}
           <div style={{ marginBottom: '1rem' }}>
-            <MoodDisplay moodValue={selectedMood} />
+            <MoodDisplay moodValue={selectedMood} showLabel={false}>
+              <div className="entry-mood-actions">
+                <button
+                  type="button"
+                  className="entry-icon-button"
+                  onClick={handleCancel}
+                  aria-label="Cancel"
+                  title="Cancel"
+                >
+                  <ArrowLeft size={16} aria-hidden="true" />
+                </button>
+
+                <div className={`entry-autosave-status is-${saveState}`} role="status" aria-live="polite">
+                  <saveStatusMeta.Icon
+                    size={16}
+                    className={saveState === 'saving' ? 'is-spinning' : ''}
+                    aria-hidden="true"
+                  />
+                  <span>{saveStatusMeta.label}</span>
+                </div>
+              </div>
+            </MoodDisplay>
             {isEditing && (
               <button
                 type="button"
@@ -595,32 +623,6 @@ const EntryView = ({
             initialMarkdown={editingEntry?.content || DEFAULT_MARKDOWN}
             onChange={handleEditorChange}
           />
-
-          <div className={`entry-autosave-status is-${saveState}`} role="status" aria-live="polite">
-            <saveStatusMeta.Icon
-              size={16}
-              className={saveState === 'saving' ? 'is-spinning' : ''}
-              aria-hidden="true"
-            />
-            <span>{saveStatusMeta.label}</span>
-          </div>
-
-          {isBurnerMode && (
-            <div
-              style={{
-                marginTop: '0.9rem',
-                padding: '0.85rem 1rem',
-                borderRadius: '14px',
-                border: '1px solid color-mix(in oklab, var(--accent-600) 36%, var(--border))',
-                background: 'color-mix(in oklab, var(--accent-bg-soft) 52%, transparent)',
-                color: 'var(--text)',
-                fontSize: '0.9rem',
-                lineHeight: 1.35,
-              }}
-            >
-              Burner mode is on. This vent entry is temporary and disappears when you close the writer.
-            </div>
-          )}
         </div>
       </div>
     </div>

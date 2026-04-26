@@ -179,6 +179,7 @@ const AppContent = () => {
                     selectedMood={selectedMood}
                     groups={groups}
                     onBack={handleBackToHistory}
+                    onEntryDeleted={handleEntryDeleted}
                     onCreateGroup={createGroup}
                     onCreateOption={createGroupOption}
                     editingEntry={editingEntry}
