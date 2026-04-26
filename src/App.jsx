@@ -226,26 +226,7 @@ function App() {
     <ConfigProvider>
       <ThemeProvider>
         <ToastProvider>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route
-                path="/dashboard/*"
-                element={
-                  <ProtectedRoute>
-                    <AppContent />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <MusicDockGate />
-          </AuthProvider>
-        </ToastProvider>
-        <BurnerProvider>
-          <ToastProvider>
+          <BurnerProvider>
             <AuthProvider>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
@@ -261,9 +242,10 @@ function App() {
                 />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <MusicDockGate />
             </AuthProvider>
-          </ToastProvider>
-        </BurnerProvider>
+          </BurnerProvider>
+        </ToastProvider>
       </ThemeProvider>
     </ConfigProvider>
   );
