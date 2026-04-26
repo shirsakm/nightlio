@@ -5,6 +5,7 @@ import NotFound from "./views/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { BurnerProvider } from "./contexts/BurnerContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
 import Sidebar from "./components/navigation/Sidebar";
@@ -243,6 +244,26 @@ function App() {
             <MusicDockGate />
           </AuthProvider>
         </ToastProvider>
+        <BurnerProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route
+                  path="/dashboard/*"
+                  element={
+                    <ProtectedRoute>
+                      <AppContent />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          </ToastProvider>
+        </BurnerProvider>
       </ThemeProvider>
     </ConfigProvider>
   );

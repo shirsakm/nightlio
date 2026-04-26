@@ -6,6 +6,7 @@ import GroupManager from '../components/groups/GroupManager';
 import MDArea from '../components/MarkdownArea.jsx';
 import apiService from '../services/api';
 import { useToast } from '../components/ui/ToastProvider';
+import { useBurner } from '../contexts/BurnerContext';
 
 const DEFAULT_MARKDOWN = `# How was your day?
 
@@ -32,6 +33,7 @@ const EntryView = ({
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const markdownRef = useRef();
   const { show } = useToast();
+  const { isBurnerMode } = useBurner();
 
   useEffect(() => {
     if (!isEditing || !editingEntry) return;
@@ -71,7 +73,29 @@ const EntryView = ({
     }
   };
 
+  const resetDraftComposer = () => {
+    markdownRef.current?.getInstance?.()?.setMarkdown(DEFAULT_MARKDOWN);
+    setSelectedOptions([]);
+    setSubmitMessage('');
+    setShowMoodPicker(false);
+  };
+
+  const handleCloseWriter = () => {
+    if (isBurnerMode && !isEditing) {
+      resetDraftComposer();
+    }
+
+    if (typeof onBack === 'function') {
+      onBack();
+    }
+  };
+
   const handleSubmit = async () => {
+    if (isBurnerMode) {
+      show('Burner mode is on. Close the writer when you are done venting.', 'info');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitMessage('');
 
@@ -158,7 +182,7 @@ const EntryView = ({
       <div style={{ marginTop: '1rem' }}>
         <div style={{ marginBottom: '1rem' }}>
           <button
-            onClick={onBack}
+            onClick={handleCloseWriter}
             style={{
               padding: '0.5rem 1rem',
               background: 'var(--accent-bg)',
@@ -187,7 +211,7 @@ const EntryView = ({
     <div className="entry-container" style={{ marginTop: '1rem', position: 'relative' }}>
       <div style={{ marginBottom: '1rem' }}>
         <button
-          onClick={onBack}
+          onClick={handleCloseWriter}
           style={{
             padding: '0.5rem 1rem',
             background: 'var(--accent-bg)',
@@ -289,26 +313,44 @@ const EntryView = ({
 
         <div className="entry-right">
           <MDArea ref={markdownRef} />
-          <div className="entry-savebar">
-      <button
-              disabled={isSubmitting}
-              onClick={handleSubmit}
+          {isBurnerMode && (
+            <div
               style={{
-                padding: '0.9rem 2rem',
-                fontSize: '1rem',
-  background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
-                color: 'white',
-                border: 'none',
-                borderRadius: '50px',
-                cursor: !isSubmitting ? 'pointer' : 'not-allowed',
-                transition: 'all 0.3s ease',
-                fontWeight: '600',
-    boxShadow: 'var(--shadow-md)'
+                marginTop: '0.9rem',
+                padding: '0.85rem 1rem',
+                borderRadius: '14px',
+                border: '1px solid color-mix(in oklab, var(--accent-600) 36%, var(--border))',
+                background: 'color-mix(in oklab, var(--accent-bg-soft) 52%, transparent)',
+                color: 'var(--text)',
+                fontSize: '0.9rem',
+                lineHeight: 1.35,
               }}
             >
-              {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Save Entry'}
-            </button>
-          </div>
+              Burner mode is on. This vent entry is temporary and disappears when you close the writer.
+            </div>
+          )}
+          {!isBurnerMode && (
+            <div className="entry-savebar">
+              <button
+                disabled={isSubmitting}
+                onClick={handleSubmit}
+                style={{
+                  padding: '0.9rem 2rem',
+                  fontSize: '1rem',
+                  background: 'linear-gradient(135deg, var(--accent-bg), var(--accent-bg-2))',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50px',
+                  cursor: !isSubmitting ? 'pointer' : 'not-allowed',
+                  transition: 'all 0.3s ease',
+                  fontWeight: '600',
+                  boxShadow: 'var(--shadow-md)'
+                }}
+              >
+                {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Save Entry'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
