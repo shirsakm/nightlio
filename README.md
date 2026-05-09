@@ -70,6 +70,7 @@ docker run -d --name nightlio-api \
     -e JWT_SECRET=$(openssl rand -hex 32) \
     -e CORS_ORIGINS=http://localhost:5173 \
     -e ENABLE_GOOGLE_OAUTH=0 \
+    -e ENABLE_MOOD_MUSIC=0 \
     -e DEFAULT_SELF_HOST_ID=selfhost_default_user \
     -e DATABASE_PATH=/app/data/nightlio.db \
     -e PORT=5000 \
@@ -139,6 +140,7 @@ services:
       - JWT_SECRET=change-me-too
       - CORS_ORIGINS=https://your.domain
       - ENABLE_GOOGLE_OAUTH=0
+      - ENABLE_MOOD_MUSIC=0
       - DEFAULT_SELF_HOST_ID=selfhost_default_user
       - DATABASE_PATH=/app/data/nightlio.db
       - PORT=5000
@@ -184,10 +186,14 @@ DATABASE_PATH=/app/data/nightlio.db
 
 # Feature flags (1 to enable, 0 to disable)
 ENABLE_GOOGLE_OAUTH=0
+ENABLE_MOOD_MUSIC=0
 
 # Google OAuth (if enabled)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+
+# Mood music (if enabled)
+JAMENDO_CLIENT_ID=
 
 # CORS - Add your frontend's domain if deploying publicly
 CORS_ORIGINS=http://localhost:5173,[https://your.domain.com](https://your.domain.com)

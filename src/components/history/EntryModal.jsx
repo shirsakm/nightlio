@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import { useEffect } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 const backdropStyle = {
   position: 'fixed',
@@ -86,13 +87,17 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) =>
                   color: '#fff',
                   border: '1px solid var(--accent-bg)',
                   borderRadius: 10,
-                  padding: '8px 12px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   fontWeight: 600,
                   boxShadow: 'var(--shadow-sm)'
                 }}
+                title="Edit entry"
                 aria-label="Edit entry"
               >
-                Edit
+                <Pencil size={18} />
               </button>
             )}
             {onDelete && (
@@ -104,13 +109,17 @@ const EntryModal = ({ isOpen, entry, onClose, onDelete, isDeleting, onEdit }) =>
                   color: '#fff',
                   border: '1px solid var(--danger)',
                   borderRadius: 10,
-                  padding: '8px 12px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   fontWeight: 600,
                   boxShadow: 'var(--shadow-sm)'
                 }}
+                title="Delete entry"
                 aria-label="Delete entry"
               >
-                {isDeleting ? 'Deleting…' : 'Delete'}
+                {isDeleting ? <Trash2 size={18} opacity={0.5} /> : <Trash2 size={18} />}
               </button>
             )}
           </div>

@@ -47,6 +47,7 @@ CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 
 # Optional features
 ENABLE_GOOGLE_OAUTH=0
+ENABLE_MOOD_MUSIC=0
 # Web3 removed
 DEFAULT_SELF_HOST_ID=selfhost_default_user
 
@@ -54,6 +55,9 @@ DEFAULT_SELF_HOST_ID=selfhost_default_user
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_CALLBACK_URL=https://yourdomain.com/auth/callback
+
+# Mood music (if enabled)
+JAMENDO_CLIENT_ID=your-jamendo-client-id
 ```
 
 ### Generating Secure Secrets

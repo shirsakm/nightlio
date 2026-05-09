@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import apiService from '../services/api';
 
 export const useStatistics = () => {
@@ -7,11 +7,10 @@ export const useStatistics = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 1. This now runs ONCE when the app starts
-  const loadStatistics = useCallback(async (forceLoading = false) => {
-    if (forceLoading) setLoading(true);
-    
+  const loadStatistics = async () => {
+    setLoading(true);
     setError(null);
+    
     try {
       const data = await apiService.getStatistics();
       setStatistics(data);
@@ -21,9 +20,9 @@ export const useStatistics = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // Empty array makes this function reference permanent
+  };
 
-  const loadStreak = useCallback(async () => {
+  const loadStreak = async () => {
     try {
       const data = await apiService.getCurrentStreak();
       setCurrentStreak(data.current_streak);
@@ -31,13 +30,11 @@ export const useStatistics = () => {
       console.error('Failed to load streak:', error);
       setCurrentStreak(0);
     }
-  }, []);
+  };
 
-  // 2. This now runs exactly ONCE when the app starts
   useEffect(() => {
     loadStreak();
-    loadStatistics();
-  }, [loadStreak, loadStatistics]);
+  }, []);
 
   return {
     statistics,

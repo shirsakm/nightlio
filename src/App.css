@@ -53,10 +53,73 @@
 .app-main section + section { margin-top: var(--space-5); }
 
 /* Entry two-column layout (desktop) */
-.entry-grid { display: grid; grid-template-columns: 360px 1fr; gap: var(--space-6); }
-.entry-left { position: sticky; top: calc(var(--space-6) + 56px); align-self: start; max-height: calc(100vh - 180px); overflow: auto; padding-right: var(--space-2); }
-.entry-right { display: flex; flex-direction: column; gap: var(--space-4); }
+.entry-container { margin-top: 1rem; width: 100%; max-width: 1400px; margin-inline: auto; }
+.entry-mood-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.entry-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.entry-icon-button:hover {
+  border-color: color-mix(in oklab, var(--accent-600), transparent 45%);
+  box-shadow: var(--shadow-md);
+}
+.entry-grid { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+.entry-left { position: sticky; top: 0; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden; padding-right: var(--space-2); }
+.entry-right { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; align-self: start; }
 .entry-savebar { position: sticky; bottom: 0; padding-top: var(--space-2); background: linear-gradient(180deg, rgba(255,255,255,0), var(--surface) 40%); display: flex; justify-content: flex-end; }
+.entry-autosave-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: color-mix(in oklab, var(--text), transparent 20%);
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+.entry-autosave-status.is-saved {
+  border-color: color-mix(in oklab, var(--accent-600), transparent 55%);
+  color: color-mix(in oklab, var(--accent-600), var(--text) 30%);
+}
+.entry-autosave-status.is-dirty,
+.entry-autosave-status.is-error {
+  border-color: color-mix(in oklab, #f59e0b, transparent 45%);
+  color: color-mix(in oklab, #f59e0b, var(--text) 25%);
+}
+.entry-autosave-status.is-saving {
+  border-color: color-mix(in oklab, var(--accent-600), transparent 50%);
+  color: color-mix(in oklab, var(--accent-600), var(--text) 30%);
+}
+.entry-autosave-status.is-disabled {
+  border-color: color-mix(in oklab, var(--text), transparent 75%);
+  color: color-mix(in oklab, var(--text), transparent 45%);
+}
+.entry-autosave-status .is-spinning {
+  animation: entry-autosave-spin 0.9s linear infinite;
+}
+@keyframes entry-autosave-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
 @media (max-width: 900px) {
   .entry-grid { display: block; }
@@ -223,7 +286,8 @@
 .entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: var(--space-3); margin-bottom: 0; transition: box-shadow 180ms cubic-bezier(.2,.6,.2,1), border-color 180ms cubic-bezier(.2,.6,.2,1); position: relative; }
 .entry-card .timestamp { color: color-mix(in oklab, var(--text), transparent 20%); font-size: 0.9rem; }
 .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--space-2); }
-.tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: var(--radius-pill); font-size: 0.875rem; line-height: 1; background: var(--accent-chip-bg); color: #fff; border: 1px solid color-mix(in oklab, var(--accent-600), transparent 45%); }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: var(--radius-pill); font-size: 0.875rem; line-height: 1; background: var(--accent-chip-bg); color: var(--accent-700); border: 1px solid color-mix(in oklab, var(--accent-600), transparent 45%); }
+html[data-theme="dark"] .tag { color: #fff; }
 .tag--neutral { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
 /* MDXEditor Custom Styles (condensed) */

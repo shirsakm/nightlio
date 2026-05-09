@@ -61,6 +61,7 @@ services:
 
 ### Optional Features
 - `ENABLE_GOOGLE_OAUTH`: Set to `1` to enable Google login
+- `ENABLE_MOOD_MUSIC`: Set to `1` to enable mood-based music recommendations
 Web3-related variables have been removed.
 - `DEFAULT_SELF_HOST_ID`: User ID for self-hosted instances
 
@@ -78,6 +79,15 @@ If you want to enable Google OAuth:
    GOOGLE_CLIENT_SECRET=your-client-secret
    GOOGLE_CALLBACK_URL=http://localhost:3000/auth/callback
    ```
+
+### Mood Music Setup (Optional)
+If you want to enable mood-based music:
+1. Create a free app at [Jamendo API](https://developer.jamendo.com/v3.0)
+2. Add your client ID to `.env`:
+  ```bash
+  ENABLE_MOOD_MUSIC=1
+  JAMENDO_CLIENT_ID=your-jamendo-client-id
+  ```
 
 ## Docker Commands
 

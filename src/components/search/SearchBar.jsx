@@ -18,6 +18,7 @@ export default function SearchBar({
     if (!query.trim()) {
       setResults([]);
       setIsOpen(false);
+      if (onSearch) onSearch(null); // Return null when search is cleared
       return;
     }
 
@@ -79,40 +80,6 @@ export default function SearchBar({
           </button>
         )}
       </div>
-
-      {/* Dropdown with results */}
-      {isOpen && results.length > 0 && (
-        <div className="search-bar-dropdown">
-          <div className="search-bar-results-header">
-            Found {results.length} result{results.length !== 1 ? 's' : ''}
-          </div>
-          <ul className="search-bar-results">
-            {results.slice(0, 5).map((entry) => (
-              <li key={entry.id} className="search-bar-result-item">
-                <div className="search-bar-result-date">
-                  {entry.date}
-                </div>
-                <div className="search-bar-result-preview">
-                  {/* Show mood emoji + preview of content */}
-                  {entry.content.substring(0, 60)}...
-                </div>
-              </li>
-            ))}
-            {results.length > 5 && (
-              <li className="search-bar-result-more">
-                +{results.length - 5} more results
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
-
-      {/* No results */}
-      {isOpen && query && results.length === 0 && (
-        <div className="search-bar-no-results">
-          No entries found matching "{query}"
-        </div>
-      )}
     </div>
   );
 }

@@ -4,10 +4,11 @@ import { Flame, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useConfig } from '../contexts/ConfigContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBurner } from '../contexts/BurnerContext';
 import { useToast } from './ui/ToastProvider';
-import SearchPlaceholder from './search/SearchPlaceholder';
 
 import './Header.css';
+import SearchBar from './search/SearchBar';
 
 const resolveShortcutElement = (target) => {
   if (!target || typeof target !== 'object') {
@@ -60,15 +61,20 @@ const shouldSkipShortcut = (target) => {
   return false;
 };
 
-const Header = ({ currentStreak }) => {
+const Header = ({ currentStreak, pastEntries, onSearch, showSearch = true }) => {
   const { user, logout } = useAuth();
   useConfig();
   const { theme, cycle } = useTheme();
+  const { isBurnerMode, toggleBurnerMode } = useBurner();
   const { show } = useToast();
   const [showAvatar, setShowAvatar] = useState(true);
 
   const handleSearchShortcut = useCallback(
     (event) => {
+      if (!showSearch) {
+        return;
+      }
+
       if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) {
         return;
       }
@@ -89,7 +95,7 @@ const Header = ({ currentStreak }) => {
         show('Search focused — search not yet implemented', 'info', 1500);
       }
     },
-    [show]
+    [show, showSearch]
   );
 
   useEffect(() => {
@@ -113,9 +119,16 @@ const Header = ({ currentStreak }) => {
           )}
         </div>
 
-        <div className="header__search">
-          {/* Search disabled globally */}
-        </div>
+        {showSearch && (
+          <div className="header__search">
+            <SearchBar
+              entries={pastEntries}
+              onSearch={onSearch}
+              placeholder="Search..."
+              searchFields={['content', 'date']}
+            />
+          </div>
+        )}
 
         {user && (
           <div className="header__right">
@@ -127,6 +140,17 @@ const Header = ({ currentStreak }) => {
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun size={14} strokeWidth={2} /> : <Moon size={14} strokeWidth={2} />}
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleBurnerMode}
+              className={`header__button header__iconButton${isBurnerMode ? ' header__iconButton--active' : ''}`}
+              title={`Burner mode: ${isBurnerMode ? 'on' : 'off'}`}
+              aria-label="Toggle burner mode"
+              aria-pressed={isBurnerMode}
+            >
+              <Flame size={14} strokeWidth={2} />
             </button>
 
             <div className="header__profile">

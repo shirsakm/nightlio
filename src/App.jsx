@@ -5,6 +5,7 @@ import NotFound from "./views/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider, useConfig } from "./contexts/ConfigContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { BurnerProvider } from "./contexts/BurnerContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Header from "./components/Header";
 import Sidebar from "./components/navigation/Sidebar";
@@ -27,12 +28,20 @@ import { useStatistics } from "./hooks/useStatistics";
 import MusicDock from './components/mood/MusicDock'
 import "./App.css";
 
+const MusicDockGate = () => {
+  const { config } = useConfig();
+
+  if (!config.enable_mood_music) return null;
+  return <MusicDock />;
+};
+
 const AppContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
   // Custom hooks
   const { pastEntries, setPastEntries, loading: historyLoading, error: historyError, refreshHistory } = useMoodData();
+  const [searchResults, setSearchResults] = useState(null);
   const { groups, createGroup, createGroupOption } = useGroups();
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
 
@@ -44,9 +53,19 @@ const AppContent = () => {
     navigate('/dashboard');
   };
 
-  const handleEntrySubmitted = () => {
-    navigate('/dashboard');
-    refreshHistory();
+  const upsertEntry = (entry) => {
+    if (!entry?.id) return;
+
+    setPastEntries((prev) => {
+      const existingIndex = prev.findIndex((item) => item.id === entry.id);
+      if (existingIndex === -1) {
+        return [entry, ...prev];
+      }
+
+      return prev.map((item) => (
+        item.id === entry.id ? { ...item, ...entry } : item
+      ));
+    });
   };
 
   const handleEntryDeleted = (deletedEntryId) => {
@@ -62,20 +81,55 @@ const AppContent = () => {
     navigate('.', { state: { ...location.state, mood: moodValue }, replace: true });
   };
 
-  const handleEntryUpdated = (updatedEntry) => {
-    setPastEntries(prev => prev.map(entry => (
-      entry.id === updatedEntry.id ? { ...entry, ...updatedEntry } : entry
-    )));
-    navigate('/dashboard');
-    refreshHistory();
+  const handleEntryUpdated = (updatedEntry, options = {}) => {
+    const {
+      navigateAfterSave = true,
+      refreshAfterSave = true,
+    } = options;
+
+    upsertEntry(updatedEntry);
+
+    if (navigateAfterSave) {
+      navigate('/dashboard');
+    }
+
+    if (refreshAfterSave) {
+      refreshHistory();
+    }
   };
 
   // Helper to get state from location
   const locationState = location.state || {};
   const { mood: selectedMood, entry: editingEntry } = locationState;
   
+  // Get currently displayed entries (apply search filter if active)
+  const displayEntries = searchResults !== null ? searchResults : pastEntries;
+
   // Determine if we are in entry view for layout purposes (no sidebar)
   const isEntryView = location.pathname.endsWith('/entry');
+
+  const handleGlobalSearch = (results) => {
+    setSearchResults(results);
+    if (results !== null) {
+      if (location.pathname !== '/dashboard' && location.pathname !== '/dashboard/') {
+        navigate('/dashboard');
+      }
+      setTimeout(() => {
+        const historySection = document.getElementById('history-section');
+        if (historySection) {
+          // Calculate an offset to prevent header overlap
+          const headerOffset = 80;
+          const elementPosition = historySection.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.scrollY - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 50); // slight delay to allow rendering if navigating
+    }
+  };
 
   useEffect(() => {
     const handler = () => {
@@ -98,7 +152,12 @@ const AppContent = () => {
         />
         
         <div className="app-shell">
-          <Header currentStreak={currentStreak} />
+          <Header
+            currentStreak={currentStreak}
+            pastEntries={pastEntries}
+            onSearch={handleGlobalSearch}
+            showSearch={!isEntryView}
+          />
 
           <div className="app-layout">
 
@@ -106,7 +165,7 @@ const AppContent = () => {
               <Routes>
                 <Route index element={
                   <HistoryView
-                    pastEntries={pastEntries}
+                    pastEntries={displayEntries}
                     loading={historyLoading}
                     error={historyError}
                     onMoodSelect={handleMoodSelect}
@@ -120,9 +179,9 @@ const AppContent = () => {
                     selectedMood={selectedMood}
                     groups={groups}
                     onBack={handleBackToHistory}
+                    onEntryDeleted={handleEntryDeleted}
                     onCreateGroup={createGroup}
                     onCreateOption={createGroupOption}
-                    onEntrySubmitted={handleEntrySubmitted}
                     editingEntry={editingEntry}
                     onEntryUpdated={handleEntryUpdated}
                     onEditMoodSelect={handleEditMoodSelect}
@@ -149,10 +208,12 @@ const AppContent = () => {
                   <section className="app-wide" aria-label="Goals section">
                     <GoalsSection onNavigateToGoals={() => navigate('goals')} />
                   </section>
-                  <section className="app-wide" aria-label="History entries">
-                    <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>History</h2>
+                  <section className="app-wide" aria-label="History entries" id="history-section">
+                    <h2 style={{ margin: '0 0 var(--space-1) 0', paddingLeft: 'calc(var(--space-1) / 2)', paddingTop: 0, paddingBottom: 'calc(var(--space-1) / 2)', color: 'var(--text)' }}>
+                      {searchResults !== null ? `Search Results (${searchResults.length})` : 'History'}
+                    </h2>
                     <HistoryList 
-                      entries={pastEntries}
+                      entries={displayEntries}
                       loading={historyLoading}
                       error={historyError}
                       onDelete={handleEntryDeleted}
@@ -180,7 +241,6 @@ const AppContent = () => {
         }}
         label="Scroll to top"
       />
-    <MusicDock />
     </>
   );
 };
@@ -190,22 +250,25 @@ function App() {
     <ConfigProvider>
       <ThemeProvider>
         <ToastProvider>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route
-                path="/dashboard/*"
-                element={
-                  <ProtectedRoute>
-                    <AppContent />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
+          <BurnerProvider>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route
+                  path="/dashboard/*"
+                  element={
+                    <ProtectedRoute>
+                      <AppContent />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <MusicDockGate />
+            </AuthProvider>
+          </BurnerProvider>
         </ToastProvider>
       </ThemeProvider>
     </ConfigProvider>

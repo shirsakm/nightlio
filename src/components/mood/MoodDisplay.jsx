@@ -1,7 +1,8 @@
 import { MOODS } from '../../utils/moodUtils';
 
-const MoodDisplay = ({ moodValue, size = 32 }) => {
+const MoodDisplay = ({ moodValue, size = 32, showLabel = true, children = null }) => {
   const mood = MOODS.find(m => m.value === moodValue);
+  const isIconOnly = !showLabel;
   
   if (!mood) return null;
   
@@ -12,28 +13,45 @@ const MoodDisplay = ({ moodValue, size = 32 }) => {
       style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: '1rem',
-        padding: '1rem',
+        justifyContent: children ? 'space-between' : 'center',
+        gap: isIconOnly ? '0.85rem' : '1rem',
+        padding: isIconOnly ? '0.75rem 0.9rem' : '1rem',
         background: 'var(--bg-card)',
         borderRadius: '16px',
         boxShadow: 'var(--shadow-lg)',
       }}
     >
-      <IconComponent
-        size={size}
-        strokeWidth={1.5}
-        style={{ color: mood.color }}
-      />
-      <span
+      {children && (
+        <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+          {children}
+        </div>
+      )}
+      <div
         style={{
-          fontSize: '1.2rem',
-          fontWeight: '600',
-          color: mood.color,
+          display: 'flex',
+          alignItems: 'center',
+          gap: showLabel ? '1rem' : 0,
+          flexShrink: 0,
+          marginLeft: children ? 'auto' : 0,
         }}
       >
-        Feeling {mood.label}
-      </span>
+        <IconComponent
+          size={isIconOnly ? Math.max(24, size - 2) : size}
+          strokeWidth={1.5}
+          style={{ color: mood.color }}
+        />
+        {showLabel && (
+          <span
+            style={{
+              fontSize: '1.2rem',
+              fontWeight: '600',
+              color: mood.color,
+            }}
+          >
+            Feeling {mood.label}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
