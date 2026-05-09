@@ -71,7 +71,6 @@ def create_mood_routes(mood_service: MoodService):
                         "entry_id": result["entry_id"],
                         "new_achievements": result["new_achievements"],
                         "message": "Mood entry created successfully",
-                        "insight": result.get("insight"),
                     }
                 ),
                 201,
@@ -255,5 +254,22 @@ def create_mood_routes(mood_service: MoodService):
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-
+    
+    @mood_bp.route("/mood/<int:entry_id>/insight", methods=["GET"])
+    @require_auth
+    def get_entry_insight(entry_id):
+        try:
+            user_id = get_current_user_id()
+            if user_id is None:
+                return jsonify({"error": "Unauthorized"}), 401
+            entry = mood_service.get_entry_by_id(user_id, entry_id)
+            if not entry:
+                return jsonify({"error": "Entry not found"}), 404
+            insight = mood_service.insight_service.get_connection_insight(
+                user_id, entry["content"]
+            )
+            return jsonify({"insight": insight}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
     return mood_bp

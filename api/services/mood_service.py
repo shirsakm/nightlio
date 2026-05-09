@@ -31,7 +31,7 @@ class MoodService:
         new_achievements = self.db.check_achievements(user_id)
         # Generate ai insight
         insight = self.insight_service.get_connection_insight(user_id, content)
-        return {"entry_id": entry_id, "new_achievements": new_achievements, "insight": insight}
+        return {"entry_id": entry_id, "new_achievements": new_achievements}
 
     def get_all_entries(self, user_id: int) -> List[Dict]:
         """Get all mood entries for a user"""

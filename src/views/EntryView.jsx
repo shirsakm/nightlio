@@ -23,14 +23,6 @@ Write about your thoughts, feelings, and experiences...`;
 const DEFAULT_MARKDOWN_TRIMMED = DEFAULT_MARKDOWN.trim();
 const AUTOSAVE_DEBOUNCE_MS = 1200;
 
-const ACHIEVEMENT_NAMES = {
-  first_entry: 'First Entry',
-  week_warrior: 'Week Warrior',
-  consistency_king: 'Consistency King',
-  data_lover: 'Data Lover',
-  mood_master: 'Mood Master',
-};
-
 const normalizeSelectedOptions = (optionIds = []) => (
   [...optionIds].map((id) => Number(id)).filter((id) => Number.isFinite(id)).sort((a, b) => a - b)
 );
@@ -53,7 +45,6 @@ const EntryView = ({
   onSelectMood,
   editingEntry = null,
   onEntryUpdated,
-  onEntrySubmitted,
   onEditMoodSelect,
 }) => {
   const isEditing = Boolean(editingEntry);
@@ -67,9 +58,8 @@ const EntryView = ({
   const [lastSavedAt, setLastSavedAt] = useState(null);
   const [saveErrorMessage, setSaveErrorMessage] = useState('');
 
-  // Your features: achievement banner + insight overlay
-  const [submitMessage, setSubmitMessage] = useState('');
   const [insight, setInsight] = useState('');
+  const [isFetchingInsight, setIsFetchingInsight] = useState(false);
 
   const markdownRef = useRef();
   const autosaveTimerRef = useRef(null);
@@ -107,7 +97,6 @@ const EntryView = ({
       setSelectedOptions(selectionIds);
       setActiveEntryId(editingEntry.id);
       setMarkdownContent(content);
-      setSubmitMessage('');
       setInsight('');
 
       isHydratingEditorRef.current = true;
@@ -133,7 +122,6 @@ const EntryView = ({
     setSelectedOptions([]);
     setActiveEntryId(null);
     setMarkdownContent(DEFAULT_MARKDOWN);
-    setSubmitMessage('');
     setInsight('');
     createdByAutosaveRef.current = false;
     skipAutosaveFlushRef.current = false;
@@ -243,20 +231,8 @@ const EntryView = ({
             }
           }
 
-          // Show achievement banner if new achievements unlocked
           if (response?.new_achievements?.length) {
-            const readableNames = response.new_achievements
-              .map((type) => ACHIEVEMENT_NAMES[type] || type)
-              .join(', ');
-            setSubmitMessage(`Entry saved! 🎉 New achievement unlocked: ${readableNames}`);
-            setTimeout(() => {
-              setSubmitMessage('');
-              if (response.insight) {
-                setInsight(response.insight);
-              }
-            }, 3000);
-          } else if (response?.insight) {
-            setInsight(response.insight);
+            show('Saved. New achievements unlocked.', 'success');
           }
         }
 
@@ -422,6 +398,23 @@ const EntryView = ({
     setMarkdownContent(nextMarkdown || '');
   };
 
+  const handleGetInsight = async () => {
+    setIsFetchingInsight(true);
+    try {
+      const response = await apiService.getEntryInsight(activeEntryId);
+      if (response?.insight) {
+        setInsight(response.insight);
+      } else {
+        show('No insight available yet. Try writing a bit more.', 'info');
+      }
+    } catch (error) {
+      console.error('Failed to fetch insight:', error);
+      show('Could not get insight. Please try again.', 'error');
+    } finally {
+      setIsFetchingInsight(false);
+    }
+  };
+
   const resetDraftComposer = () => {
     isHydratingEditorRef.current = true;
     markdownRef.current?.getInstance?.()?.setMarkdown(DEFAULT_MARKDOWN);
@@ -434,7 +427,6 @@ const EntryView = ({
     setShowMoodPicker(false);
     setSaveErrorMessage('');
     setSaveState('disabled');
-    setSubmitMessage('');
     setInsight('');
 
     const resetSnapshot = buildSnapshot({
@@ -555,7 +547,9 @@ const EntryView = ({
             ← Back
           </button>
         </div>
-        <h3 style={{ marginTop: 0 }}>Pick your mood to start an entry</h3>
+        <h3 style={{ marginTop: 0 }}>
+          Pick your mood to start an entry
+        </h3>
         <MoodPicker onMoodSelect={handleMoodSelection} />
       </div>
     );
@@ -672,72 +666,41 @@ const EntryView = ({
             initialMarkdown={editingEntry?.content || DEFAULT_MARKDOWN}
             onChange={handleEditorChange}
           />
+          {saveState === 'saved' && !isEditing && activeEntryId && (
+            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={handleGetInsight}
+                disabled={isFetchingInsight}
+                style={{
+                  padding: '0.55rem 1.25rem',
+                  borderRadius: '999px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--surface)',
+                  color: 'var(--text)',
+                  cursor: isFetchingInsight ? 'not-allowed' : 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 500,
+                  opacity: isFetchingInsight ? 0.6 : 1,
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                }}
+              >
+                {isFetchingInsight ? '✨ Thinking...' : '✨ Get Insight'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Achievement banner overlay (your feature) */}
-      {submitMessage && (
-        <>
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'grid',
-              placeItems: 'center',
-              zIndex: 10,
-            }}
-          >
-            <div
-              style={{
-                background: 'var(--bg-card)',
-                padding: '2rem',
-                borderRadius: '16px',
-                boxShadow: 'var(--shadow-3)',
-                border: '1px solid var(--border)',
-                textAlign: 'center',
-                minWidth: '300px',
-                maxWidth: 'min(560px, 90%)',
-              }}
-            >
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-              <div style={{
-                color: submitMessage.includes('achievement') ? 'var(--accent-600)' : 'var(--text)',
-                fontWeight: '600',
-                fontSize: '1.1rem',
-                lineHeight: '1.4',
-              }}>
-                {submitMessage}
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'var(--overlay)',
-              zIndex: 5,
-            }}
-          />
-        </>
-      )}
-
-      {/* Insight overlay (your feature) */}
       {insight && (
         <div className="insight-overlay">
           <div className="insight-card">
             <div className="insight-header">
-              <span>🌟 Entry Saved!</span>
-              <button
-                className="insight-close"
-                onClick={() => {
-                  setInsight('');
-                  if (typeof onEntrySubmitted === 'function') {
-                    onEntrySubmitted();
-                  }
-                }}
-              >
-                ✕
-              </button>
+              <span>🌟 Insight</span>
+              <button className="insight-close" onClick={() => setInsight('')}>✕</button>
             </div>
             <p className="insight-text">{insight}</p>
             <div className="insight-footer">Keep going! You've got this.</div>

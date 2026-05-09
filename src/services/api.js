@@ -257,6 +257,10 @@ class ApiService {
     const q = params.toString();
     return this.request(`/api/goals/${goalId}/completions${q ? `?${q}` : ''}`);
   }
+
+  async getEntryInsight(entryId) {
+    return this.request(`/api/mood/${entryId}/insight`);
+  }
 }
 
 const apiService = new ApiService();
