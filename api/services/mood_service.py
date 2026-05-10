@@ -1,12 +1,12 @@
 from typing import List, Optional, Dict
 from api.database import MoodDatabase
 from api.models.mood_entry import MoodEntry
-from .insight_service import InsightService
+
 
 class MoodService:
     def __init__(self, db: MoodDatabase):
         self.db = db
-        self.insight_service = InsightService(db)
+
     def create_mood_entry(
         self,
         user_id: int,
@@ -29,8 +29,7 @@ class MoodService:
 
         # Check for new achievements
         new_achievements = self.db.check_achievements(user_id)
-        # Generate ai insight
-        insight = self.insight_service.get_connection_insight(user_id, content)
+
         return {"entry_id": entry_id, "new_achievements": new_achievements}
 
     def get_all_entries(self, user_id: int) -> List[Dict]:
