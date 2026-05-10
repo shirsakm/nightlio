@@ -258,8 +258,32 @@ class ApiService {
     return this.request(`/api/goals/${goalId}/completions${q ? `?${q}` : ''}`);
   }
 
-  async getEntryInsight(entryId) {
-    return this.request(`/api/mood/${entryId}/insight`);
+  // Export endpoint
+  async exportPdf(content) {
+    const endpoint = '/api/export/pdf';
+    const base = API_BASE_URL;
+    let url;
+    if (!base) url = endpoint;
+    else if (/^https?:\/\//i.test(base)) url = `${base}${endpoint}`;
+    else url = `${base.replace(/\/+$/g, '')}${endpoint}`;
+    
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content }),
+    };
+
+    if (this.token) {
+      config.headers.Authorization = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(url, config);
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.status}`);
+    }
+    return response.blob();
   }
 }
 
