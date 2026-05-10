@@ -15,7 +15,6 @@ import MDArea from '../components/MarkdownArea.jsx';
 import apiService from '../services/api';
 import { useToast } from '../components/ui/ToastProvider';
 import { useBurner } from '../contexts/BurnerContext';
-import './EntryView.css';
 
 const DEFAULT_MARKDOWN = `# How was your day?
 
@@ -58,9 +57,6 @@ const EntryView = ({
   const [lastSavedAt, setLastSavedAt] = useState(null);
   const [saveErrorMessage, setSaveErrorMessage] = useState('');
 
-  const [insight, setInsight] = useState('');
-  const [isFetchingInsight, setIsFetchingInsight] = useState(false);
-
   const markdownRef = useRef();
   const autosaveTimerRef = useRef(null);
   const isHydratingEditorRef = useRef(false);
@@ -97,7 +93,6 @@ const EntryView = ({
       setSelectedOptions(selectionIds);
       setActiveEntryId(editingEntry.id);
       setMarkdownContent(content);
-      setInsight('');
 
       isHydratingEditorRef.current = true;
       const instance = markdownRef.current?.getInstance?.();
@@ -122,7 +117,6 @@ const EntryView = ({
     setSelectedOptions([]);
     setActiveEntryId(null);
     setMarkdownContent(DEFAULT_MARKDOWN);
-    setInsight('');
     createdByAutosaveRef.current = false;
     skipAutosaveFlushRef.current = false;
 
@@ -398,23 +392,6 @@ const EntryView = ({
     setMarkdownContent(nextMarkdown || '');
   };
 
-  const handleGetInsight = async () => {
-    setIsFetchingInsight(true);
-    try {
-      const response = await apiService.getEntryInsight(activeEntryId);
-      if (response?.insight) {
-        setInsight(response.insight);
-      } else {
-        show('No insight available yet. Try writing a bit more.', 'info');
-      }
-    } catch (error) {
-      console.error('Failed to fetch insight:', error);
-      show('Could not get insight. Please try again.', 'error');
-    } finally {
-      setIsFetchingInsight(false);
-    }
-  };
-
   const resetDraftComposer = () => {
     isHydratingEditorRef.current = true;
     markdownRef.current?.getInstance?.()?.setMarkdown(DEFAULT_MARKDOWN);
@@ -427,7 +404,6 @@ const EntryView = ({
     setShowMoodPicker(false);
     setSaveErrorMessage('');
     setSaveState('disabled');
-    setInsight('');
 
     const resetSnapshot = buildSnapshot({
       mood: selectedMood,
@@ -528,25 +504,6 @@ const EntryView = ({
   if (!selectedMood && !isEditing) {
     return (
       <div style={{ marginTop: '1rem' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <button
-            onClick={handleCancel}
-            style={{
-              padding: '0.5rem 1rem',
-              background: 'var(--accent-bg)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-pill)',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              fontWeight: '500',
-              transition: 'all 0.3s ease',
-              boxShadow: 'var(--shadow-md)',
-            }}
-          >
-            ← Back
-          </button>
-        </div>
         <h3 style={{ marginTop: 0 }}>
           Pick your mood to start an entry
         </h3>
@@ -556,7 +513,7 @@ const EntryView = ({
   }
 
   return (
-    <div className="entry-container" style={{ marginTop: '1rem', position: 'relative' }}>
+    <div className="entry-container" style={{ position: 'relative' }}>
       <div className="entry-grid">
         <div className="entry-left">
           {isEditing && editingEntry && (
@@ -575,8 +532,8 @@ const EntryView = ({
                   type="button"
                   className="entry-icon-button"
                   onClick={handleCancel}
-                  aria-label={isEditing ? 'Cancel Edit' : 'Back'}
-                  title={isEditing ? 'Cancel Edit' : 'Back'}
+                  aria-label="Cancel"
+                  title="Cancel"
                 >
                   <ArrowLeft size={16} aria-hidden="true" />
                 </button>
@@ -666,47 +623,8 @@ const EntryView = ({
             initialMarkdown={editingEntry?.content || DEFAULT_MARKDOWN}
             onChange={handleEditorChange}
           />
-          {saveState === 'saved' && !isEditing && activeEntryId && (
-            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={handleGetInsight}
-                disabled={isFetchingInsight}
-                style={{
-                  padding: '0.55rem 1.25rem',
-                  borderRadius: '999px',
-                  border: '1px solid var(--border)',
-                  background: 'var(--surface)',
-                  color: 'var(--text)',
-                  cursor: isFetchingInsight ? 'not-allowed' : 'pointer',
-                  fontSize: '0.85rem',
-                  fontWeight: 500,
-                  opacity: isFetchingInsight ? 0.6 : 1,
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                }}
-              >
-                {isFetchingInsight ? '✨ Thinking...' : '✨ Get Insight'}
-              </button>
-            </div>
-          )}
         </div>
       </div>
-
-      {insight && (
-        <div className="insight-overlay">
-          <div className="insight-card">
-            <div className="insight-header">
-              <span>🌟 Insight</span>
-              <button className="insight-close" onClick={() => setInsight('')}>✕</button>
-            </div>
-            <p className="insight-text">{insight}</p>
-            <div className="insight-footer">Keep going! You've got this.</div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
