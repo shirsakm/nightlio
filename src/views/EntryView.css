@@ -1,0 +1,56 @@
+.insight-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.insight-card {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 450px;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-3);
+  border-top: 6px solid var(--accent-bg);
+  animation: insightPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.insight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  color: var(--accent-bg);
+  margin-bottom: 1rem;
+}
+
+.insight-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.insight-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  opacity: 0.5;
+}
+
+@keyframes insightPop {
+  from { transform: scale(0.9) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
