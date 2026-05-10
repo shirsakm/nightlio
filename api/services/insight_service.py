@@ -10,7 +10,7 @@ class InsightService:
         self.db = db
         # Single client for both Embeddings and Chat
         self.client = Client(api_key=os.getenv("GEMINI_API_KEY"))
-        self.chat_model = "gemini-2.5-flash"
+        self.chat_model = "gemini-3.1-flash-lite"
         self.embed_model = "gemini-embedding-001"
 
     def get_connection_insight(self, user_id, current_content):
@@ -67,6 +67,25 @@ class InsightService:
             logger.error(f"RAG search error: {str(e)}")
             return "Reflection is the first step to growth!"
 
+    def generate_grounding_response(self, sees, hears):
+        """Specifically for the 3-3-3 grounding flow"""
+        prompt = (
+            f"The user is feeling overwhelmed. They are practicing the 3-3-3 grounding technique. "
+            f"They see: {sees}. They hear: {hears}. "
+            f"Write a 2-sentence empathetic response acknowledging these specific senses. Say something specific about these sensations. "
+            f"Be warm and remind them they are safe and present."
+        )
+
+        try:
+            response = self.client.models.generate_content(
+                model=self.chat_model,
+                contents=prompt
+            )
+            return response.text.strip()
+        except Exception as e:
+            logger.error(f"Grounding AI Error: {str(e)}")
+            return "Focus on your breath. You are safe and present right now."
+        
     def _summarize_with_llm(self, current, past):
         past_context = "\n- ".join(past)
         

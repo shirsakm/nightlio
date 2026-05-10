@@ -1,8 +1,8 @@
 from typing import Any, List, Optional
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from api.services.mood_service import MoodService
 from api.utils.auth_middleware import require_auth, get_current_user_id
-
+import requests
 
 def _normalise_selected_options(
     raw: Any, *, allow_none: bool = False
@@ -271,5 +271,17 @@ def create_mood_routes(mood_service: MoodService):
             return jsonify({"insight": insight}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-    
+    @mood_bp.route('/mood/grounding', methods=['POST'])
+    def handle_grounding():
+        data = request.get_json()
+        sees = data.get('sees', '')
+        hears = data.get('hears', '')
+
+        if not sees or not hears:
+            return jsonify({"text": "Try to focus on your surroundings first."}), 400
+
+        ai_response = mood_service.insight_service.generate_grounding_response(sees, hears)
+        
+        return jsonify({"text": ai_response})
+        
     return mood_bp
