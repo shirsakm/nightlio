@@ -1,8 +1,8 @@
 from typing import Any, List, Optional
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 from api.services.mood_service import MoodService
 from api.utils.auth_middleware import require_auth, get_current_user_id
-import requests
+
 
 def _normalise_selected_options(
     raw: Any, *, allow_none: bool = False
@@ -254,34 +254,5 @@ def create_mood_routes(mood_service: MoodService):
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-    
-    @mood_bp.route("/mood/<int:entry_id>/insight", methods=["GET"])
-    @require_auth
-    def get_entry_insight(entry_id):
-        try:
-            user_id = get_current_user_id()
-            if user_id is None:
-                return jsonify({"error": "Unauthorized"}), 401
-            entry = mood_service.get_entry_by_id(user_id, entry_id)
-            if not entry:
-                return jsonify({"error": "Entry not found"}), 404
-            insight = mood_service.insight_service.get_connection_insight(
-                user_id, entry["content"]
-            )
-            return jsonify({"insight": insight}), 200
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-    @mood_bp.route('/mood/grounding', methods=['POST'])
-    def handle_grounding():
-        data = request.get_json()
-        sees = data.get('sees', '')
-        hears = data.get('hears', '')
 
-        if not sees or not hears:
-            return jsonify({"text": "Try to focus on your surroundings first."}), 400
-
-        ai_response = mood_service.insight_service.generate_grounding_response(sees, hears)
-        
-        return jsonify({"text": ai_response})
-        
     return mood_bp

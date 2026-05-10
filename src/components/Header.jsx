@@ -9,7 +9,6 @@ import { useToast } from './ui/ToastProvider';
 
 import './Header.css';
 import SearchBar from './search/SearchBar';
-import catSupportGif from './cat-hugs.gif'
 
 const resolveShortcutElement = (target) => {
   if (!target || typeof target !== 'object') {
@@ -62,7 +61,7 @@ const shouldSkipShortcut = (target) => {
   return false;
 };
 
-const Header = ({ currentStreak, pastEntries, onSearch, showSearch = true, showCatSupport, onCatClick }) => {
+const Header = ({ currentStreak, pastEntries, onSearch, showSearch = true }) => {
   const { user, logout } = useAuth();
   useConfig();
   const { theme, cycle } = useTheme();
@@ -133,27 +132,6 @@ const Header = ({ currentStreak, pastEntries, onSearch, showSearch = true, showC
 
         {user && (
           <div className="header__right">
-
-            {showCatSupport && (
-              <button 
-                onClick={onCatClick} 
-                className="header__button header__iconButton"
-                title="A small hug"
-                aria-label="Cat Support"
-              >
-                <img 
-                  src={catSupportGif} 
-                  alt="Cat Hug" 
-                  style={{ 
-                      width: '75px',    
-                      height: 'auto', 
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)' 
-                    }}
-                />
-              </button>
-            )}
-
             <button
               type="button"
               onClick={cycle}
