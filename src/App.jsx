@@ -27,6 +27,7 @@ import { useGroups } from "./hooks/useGroups";
 import { useStatistics } from "./hooks/useStatistics";
 import MusicDock from './components/mood/MusicDock'
 import "./App.css";
+import CrisisModal from './components/crisis/CrisisModal';
 
 const MusicDockGate = () => {
   const { config } = useConfig();
@@ -44,7 +45,8 @@ const AppContent = () => {
   const [searchResults, setSearchResults] = useState(null);
   const { groups, createGroup, createGroupOption } = useGroups();
   const { statistics, currentStreak, loading: statsLoading, error: statsError, loadStatistics } = useStatistics();
-
+  const [showCatSupport, setShowCatSupport] = useState(false);
+  const [isCrisisModalOpen, setIsCrisisModalOpen] = useState(false);
   const handleMoodSelect = (moodValue) => {
     navigate('entry', { state: { mood: moodValue } });
   };
@@ -88,6 +90,16 @@ const AppContent = () => {
     } = options;
 
     upsertEntry(updatedEntry);
+
+    const riskKeywords = ['suicide', 'kill', 'harm', 'end it', 'die', 'hurt myself'];
+    const hasRiskWords = riskKeywords.some(word => 
+      updatedEntry.content?.toLowerCase().includes(word)
+    );
+
+    // 3. Trigger: Mood 1 (Terrible) OR any risk word found
+    if (updatedEntry.mood === 1 || hasRiskWords) {
+      setShowCatSupport(true); // This reveals the cat in the Header
+    }
 
     if (navigateAfterSave) {
       navigate('/dashboard');
@@ -157,6 +169,8 @@ const AppContent = () => {
             pastEntries={pastEntries}
             onSearch={handleGlobalSearch}
             showSearch={!isEntryView}
+            showCatSupport={showCatSupport}
+            onCatClick={() => setIsCrisisModalOpen(true)}
           />
 
           <div className="app-layout">
@@ -224,6 +238,10 @@ const AppContent = () => {
               } />
             </Routes>
           </div>
+          <CrisisModal 
+            open={isCrisisModalOpen} 
+            onClose={() => setIsCrisisModalOpen(false)} 
+          />
         </div>
       </div>
 
